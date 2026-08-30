@@ -39,28 +39,35 @@ const DIFFICULTY_BADGES: Record<string, { label: string; className: string }> = 
   advanced: { label: '高手', className: 'bg-coral-100 text-coral-700' },
 };
 
-const CHIP_CLASS = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-sm text-slate-700 shadow-sm transition-colors';
-const difficultyBadgeClass = `inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${DIFFICULTY_BADGES[difficulty].className}`;
+const CHIP_CLASS = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white border border-slate-200 text-xs text-slate-700 shadow-2xs transition-colors';
+const difficultyBadgeClass = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${DIFFICULTY_BADGES[difficulty].className}`;
 ---
 
 <BaseLayout
   title={`${title} · ${family} - 孔雀鱼品种图鉴`}
   description={subtitle ?? `${title}（${enName ?? ''}），${family}孔雀鱼品种`}
 >
-  <section class="max-w-6xl mx-auto px-4 py-6 sm:py-14">
-    <a
-      href="/breeds/"
-      onclick="if (window.history.length > 1) { window.history.back(); return false; }"
-      class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-abyss-100 shadow-xs text-xs sm:text-sm font-medium text-aqua-700 hover:text-aqua-800 hover:border-aqua-300 hover:bg-aqua-50/50 active:scale-95 transition-all cursor-pointer"
-    >
-      <span aria-hidden="true">←</span> 返回品种图鉴
-    </a>
+  <section class="max-w-6xl mx-auto px-4 py-4 sm:py-12">
+    <!-- 面包屑与快捷返回导航 -->
+    <nav aria-label="面包屑" class="text-xs text-slate-400 mb-3 sm:mb-5 flex items-center gap-1.5 flex-wrap">
+      <a
+        href="/breeds/"
+        onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+        class="inline-flex items-center gap-1 font-medium text-aqua-700 hover:text-aqua-800 transition-colors"
+      >
+        <span>← 返回图鉴</span>
+      </a>
+      <span class="text-slate-300">/</span>
+      <span class="text-slate-500">{family}</span>
+      <span class="text-slate-300">/</span>
+      <span class="text-slate-700 font-bold">{title}</span>
+    </nav>
 
-    <div class="mt-4 sm:mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="grid gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
       <!-- 主内容 -->
       <div>
-        <!-- 品种主图占位（绑定 View Transition 共享元素名） -->
-        <div class="rounded-2xl overflow-hidden bg-white border border-slate-200/80 sm:border-aqua-100 p-2 sm:p-3 shadow-card">
+        <!-- 品种主图（移动端最大高度 220px，宽景比例，绝不超屏） -->
+        <div class="rounded-xl sm:rounded-2xl overflow-hidden bg-white border border-slate-200/80 sm:border-aqua-100 p-1.5 sm:p-2.5 shadow-card">
           <BreedImage
             alt={title}
             image={cover}
@@ -70,22 +77,22 @@ const difficultyBadgeClass = `inline-flex items-center px-3 py-1 rounded-full te
           />
         </div>
 
-        <div class="mt-6 sm:mt-8">
+        <div class="mt-4 sm:mt-6">
           <p class="text-xs sm:text-sm font-medium text-aqua-600 tracking-wider uppercase">{family}</p>
-          <h1 class="mt-1 text-2xl sm:text-4xl font-bold text-slate-900">{title}</h1>
+          <h1 class="mt-0.5 sm:mt-1 text-xl sm:text-3xl font-bold text-slate-900">{title}</h1>
           {enName && (
-            <p class="mt-1.5 text-slate-500 text-base sm:text-lg italic font-serif">
+            <p class="mt-1 text-slate-500 text-sm sm:text-base italic font-serif">
               {enName}
             </p>
           )}
-          {subtitle && <p class="mt-2.5 sm:mt-3.5 text-slate-600 text-sm sm:text-lg leading-relaxed">{subtitle}</p>}
+          {subtitle && <p class="mt-2 text-slate-600 text-xs sm:text-base leading-relaxed">{subtitle}</p>}
         </div>
 
         <!-- 徽章行：颜色 / 鳍型 / 难度 / 体长 / 水温 -->
-        <div class="mt-5 sm:mt-7 flex flex-wrap items-center gap-2">
+        <div class="mt-3.5 sm:mt-5 flex flex-wrap items-center gap-1.5 sm:gap-2">
           <span class={CHIP_CLASS}>
             <span
-              class="w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm"
+              class="w-2 h-2 rounded-full ring-1 ring-white shadow-2xs"
               style={`background: ${COLOR_GRADIENTS[color]}`}
               aria-hidden="true"
             ></span>
@@ -98,7 +105,7 @@ const difficultyBadgeClass = `inline-flex items-center px-3 py-1 rounded-full te
         </div>
 
         <!-- MDX 正文 -->
-        <div class="prose-guppy mt-10 max-w-[68ch]">
+        <div class="prose-guppy mt-8 sm:mt-10 max-w-[68ch]">
           <Content />
         </div>
       </div>

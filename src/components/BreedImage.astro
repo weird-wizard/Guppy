@@ -1,6 +1,6 @@
 ---
 // 品种图片组件：图片未生成时优雅降级为渐变占位。
-// 占位渐变色映射到品种主色，保持 4:3 宽高比与最大高度限制，避免移动端超出一屏。
+// 手机端采用 16:10 宽景比例（max-h 220px），桌面端 4:3 比例，确保移动端图文首屏完美呈现。
 
 interface Props {
   alt: string;
@@ -43,7 +43,7 @@ export const COLOR_GLOWS: Record<string, string> = {
 ---
 
 {image ? (
-  <div class="relative w-full overflow-hidden rounded-xl aspect-[4/3] max-h-[300px] sm:max-h-[460px] bg-slate-100 flex items-center justify-center">
+  <div class="relative w-full overflow-hidden rounded-xl aspect-[16/10] sm:aspect-[4/3] max-h-[220px] sm:max-h-[440px] bg-slate-100 flex items-center justify-center">
     <img
       src={image}
       alt={alt}
@@ -57,7 +57,7 @@ export const COLOR_GLOWS: Record<string, string> = {
   </div>
 ) : (
   <div
-    class="breed-img-placeholder max-h-[300px] sm:max-h-[460px]"
+    class="breed-img-placeholder aspect-[16/10] sm:aspect-[4/3] max-h-[220px] sm:max-h-[440px]"
     style={`--ph-grad: linear-gradient(135deg, ${gradientFrom} 0%, color-mix(in srgb, ${gradientFrom} 35%, #0d2240 65%) 100%); ${transitionName ? `view-transition-name: ${transitionName};` : ''}`}
     role="img"
     aria-label={`${alt}（占位图）`}
