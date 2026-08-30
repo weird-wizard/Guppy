@@ -1,0 +1,98 @@
+---
+// 康复转归时间线与步骤轴组件 (RecoveryTimeline.astro)
+// 采用现代连线步骤条（Stepper Track）视觉，清晰表达阶段推进与康复里程碑
+
+interface TimelineItem {
+  stage: string;
+  text: string;
+  isHighlight?: boolean;
+  note?: string;
+}
+
+interface Props {
+  title?: string;
+  items: TimelineItem[];
+}
+
+const { title = '预期康复与转归时间线', items } = Astro.props;
+---
+
+<div class="my-6 p-4 sm:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs not-prose">
+  {title && (
+    <div class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-5 flex items-center gap-2 pb-3 border-b border-slate-100">
+      <div class="w-6 h-6 rounded-lg bg-aqua-50 text-aqua-700 grid place-items-center">
+        <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      </div>
+      <span>{title}</span>
+    </div>
+  )}
+
+  <div class="relative pl-6 sm:pl-7 space-y-6">
+    {/* 贯通纵向步骤轴线 */}
+    <div
+      aria-hidden="true"
+      class="absolute left-[11px] sm:left-[13px] top-2 bottom-3 w-0.5 bg-gradient-to-b from-slate-200 via-slate-200 to-emerald-400"
+    ></div>
+
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      const isHighlight = item.isHighlight ?? isLast;
+
+      return (
+        <div class="relative flex items-start gap-3.5 group">
+          {/* 步骤节点圆标 */}
+          <div
+            class:list={[
+              'absolute -left-6 sm:-left-7 top-0.5 w-6 h-6 rounded-full grid place-items-center ring-4 ring-white transition-all shadow-2xs',
+              isHighlight
+                ? 'bg-emerald-600 text-white shadow-emerald-500/20'
+                : 'bg-white border-2 border-slate-300 text-slate-500 group-hover:border-aqua-500',
+            ]}
+          >
+            {isHighlight ? (
+              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            ) : (
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+            )}
+          </div>
+
+          {/* 阶段内容 */}
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span
+                class:list={[
+                  'px-2.5 py-0.5 rounded-md text-xs font-bold font-mono tracking-tight shadow-2xs',
+                  isHighlight
+                    ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
+                    : 'bg-slate-100/80 border border-slate-200 text-slate-700',
+                ]}
+              >
+                {item.stage}
+              </span>
+              {isHighlight && (
+                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100/60 px-1.5 py-0.5 rounded">
+                  康复合缸
+                </span>
+              )}
+            </div>
+
+            <p class:list={['text-xs sm:text-sm leading-relaxed', isHighlight ? 'text-slate-900 font-medium' : 'text-slate-600']}>
+              {item.text}
+            </p>
+
+            {item.note && (
+              <p class="text-[11px] text-slate-400 mt-1 leading-normal">
+                {item.note}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>

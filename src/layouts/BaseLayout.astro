@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import PagefindConfig from 'astro-pagefind/components/PagefindConfig.astro';
+import BackToTop from '../components/BackToTop.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -207,6 +208,9 @@ const navItems = [
         </div>
       </div>
     </footer>
+    <!-- 全局回到顶部浮动按钮 -->
+    <BackToTop />
+
     <!-- PagefindConfig 必须在所有 pagefind-* 组件之前：负责导入 CSS/JS 并接线 bundle-path -->
     <PagefindConfig />
     <pagefind-modal></pagefind-modal>

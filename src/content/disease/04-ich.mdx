@@ -9,129 +9,183 @@ pathogenType: parasite
 severity: warning
 bodyParts: [body, fin, behavior]
 isolationRequired: true
-emergencyAction: 缓慢升温至 28-30℃ + 0.3-0.5% 盐浴 + 甲基蓝药浴
-tags: [白点病, 寄生虫]
+emergencyAction: 缓慢升温至 28-30℃ + 0.3% 粗盐 + 亚甲基蓝持续药浴
+tags: [白点病, 寄生虫, 小瓜虫, 升温加盐]
 ---
 
-> ⚠️ **用药提示**：本文药物剂量来自公开资料整理，仅供科普参考。观赏鱼用药请务必**以药品说明书为准**，不确定剂量时咨询水族店或水族兽医；切勿将人用药物随意用于观赏鱼。市售"白点净"类成品药多含孔雀石绿或甲醛，其中孔雀石绿为剧毒、致癌、致畸物质，在中国已被禁止用于食用动物，用于观赏鱼也务必严格按说明书剂量、在独立治疗缸操作。
+import MedicalCallout from '../../components/disease/MedicalCallout.astro';
+import TreatmentSteps from '../../components/disease/TreatmentSteps.astro';
+import TreatmentStep from '../../components/disease/TreatmentStep.astro';
+import DrugPrescriptionCard from '../../components/disease/DrugPrescriptionCard.astro';
+import RecoveryTimeline from '../../components/disease/RecoveryTimeline.astro';
+import DiffDiagnosisCard from '../../components/disease/DiffDiagnosisCard.astro';
 
-## 病原体
+<MedicalCallout type="tip" title="临床核心速览">
+  白点病是孔雀鱼最常见、传染极快，但只要遵循规范周期也是<strong>治愈率极高（>95%）</strong>的外寄生虫病。核心救治逻辑是<strong>「升温加速生命史，下盐下药消灭游离体」</strong>。切记白点肉眼消失不等于痊愈，必须坚持完整疗程防复发！
+</MedicalCallout>
 
-白点病由**多子小瓜虫**（*Ichthyophthirius multifiliis*）引起，属于单细胞纤毛虫，成虫约 0.8mm，肉眼可见——就是鱼身上那些"白点"。
+---
 
-### 三段式生活史
+## 一、病原与致病机理
 
-小瓜虫有一个典型的**三段式生活史**，理解它才能根治：
+白点病由**多子小瓜虫**（*Ichthyophthirius multifiliis*）寄生引起。成虫肉眼可见，大小约 0.5-1.0mm，呈白色半透明小颗粒嵌在鱼体表与鳍条上皮组织内。
 
-| 阶段 | 位置 | 说明 |
-|---|---|---|
-| 滋养体 | 鱼体表/鳃部上皮内 | 白色小点即此阶段，药物难以直接渗透进入 |
-| 包囊 | 缸底/装饰物表面 | 滋养体成熟后脱离鱼体，分泌胶质形成包囊，内部大量分裂 |
-| 掠食体 | 水中自由游动 | 包囊破裂后释放数百只幼虫，是**唯一对药物敏感的阶段** |
+### 小瓜虫三段式生命史（为什么药物不能立刻见效？）
 
-因此，白点病的治疗目标是"等滋养体脱落成掠食体时将其杀灭"，**用药必须覆盖整个生活史周期**，这也是为什么疗程需要 5-7 天、且中途不能随意停药——停药等于给残留的包囊复活的机会。
+理解小瓜虫的生活史，是彻底根治且不复发的唯一钥匙：
 
-### 易感条件
+<div class="my-6 space-y-2.5 not-prose">
+  <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs">
+    <div class="flex items-center gap-2 font-bold text-slate-900 text-xs sm:text-sm mb-1">
+      <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 text-xs grid place-items-center font-mono">1</span>
+      <span>滋养体（寄生期 · 鱼身白点）</span>
+    </div>
+    <p class="text-xs text-slate-600 leading-relaxed ml-7">
+      钻入鱼体表与鳃部上皮下吸取营养。<strong>⚠️ 鱼体上皮形成天然物理屏障，此时任何药浴均无法直接穿透杀灭！</strong>
+    </p>
+  </div>
 
-- 水温 **15-25℃** 是小瓜虫繁殖的适宜区间，低温期高发
-- 温差骤变、长途运输、水质恶化的鱼免疫力下降，更易感染
-- 孔雀鱼经多代人工选育后免疫普遍偏低，是白点病的高发品种之一
+  <div class="flex justify-center text-xs font-semibold text-slate-400">
+    ↓ 成熟脱落，下沉缸底
+  </div>
 
-## 症状识别
+  <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/90 shadow-2xs">
+    <div class="flex items-center gap-2 font-bold text-slate-900 text-xs sm:text-sm mb-1">
+      <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-700 text-xs grid place-items-center font-mono">2</span>
+      <span>包囊体（繁殖期 · 缸底分裂）</span>
+    </div>
+    <p class="text-xs text-slate-600 leading-relaxed ml-7">
+      脱落后附着在底砂、缸壁或粪便上分泌胶质保护壳，内部迅速分裂出数百只幼虫。
+    </p>
+  </div>
 
-### 典型症状
+  <div class="flex justify-center text-xs font-semibold text-slate-400">
+    ↓ 孵化破裂，释放幼虫
+  </div>
 
-- **白盐粒状小点**：体表、鳍条、鳃部出现 0.5-1mm 白色颗粒，初期从胸鳍、背鳍、尾鳍开始，几天内布满全身
-- **频繁蹭缸**：虫体钻入上皮引起瘙痒，病鱼不断在缸壁、底砂、水草上摩擦身体
-- **精神萎靡**：呆滞、缩鳍、常浮于水面或躲在角落
-- **鳃部感染**：呼吸急促、浮头，鳃盖开合加快——鳃部白点肉眼难以直接看到，需留意呼吸症状
-- **重症表现**：白点密集处鳍条开裂、糜烂，继发细菌感染（见 05 篇烂尾）
+  <div class="p-4 rounded-xl bg-emerald-50/90 border border-emerald-200/90 shadow-2xs">
+    <div class="flex items-center gap-2 font-bold text-emerald-950 text-xs sm:text-sm mb-1">
+      <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs grid place-items-center font-mono">3</span>
+      <span>掠食体 / 幼虫（游离期 · 唯一用药杀灭窗口）</span>
+    </div>
+    <p class="text-xs text-emerald-900 leading-relaxed ml-7">
+      幼虫在水中自由游动寻找新宿主。<strong>🎯 失去保护壳，对【高温】、【盐分】与【亚甲基蓝】极度敏感，在此阶段被彻底剿灭！</strong>
+    </p>
+  </div>
+</div>
 
-### 鉴别诊断
+---
 
-| 对比项 | 白点病 | 胡椒病（08 篇） |
-|---|---|---|
-| 斑点颜色 | 白色 | 金褐色/金黄色 |
-| 斑点形态 | 颗粒状，较大（0.5-1mm） | 粉末状，极细密如胡椒粉 |
-| 反光 | 无金属光泽 | 强光下呈金属光泽 |
-| 繁殖条件 | 低温 15-25℃ 高发 | 需光照，25-30℃ 繁殖迅速 |
+## 二、症状识别与精准鉴别
 
-## 传播途径
+### 1. 典型临床表现
+- **体表白点**：初见于尾鳍、背鳍与胸鳍边缘，随后 2-3 天内蔓延至躯干与鳃部，呈白色凸起的圆整盐粒状（散在分布，颗粒界限分明）；
+- **行为异常（瘙痒蹭缸）**：虫体在上皮内蠕动刺激神经，病鱼频繁在缸壁、沉木、加热棒或水草上剧烈摩擦鱼身；
+- **精神与体态**：缩鳍、夹尾、食欲减退、反应迟钝、常沉在缸底或悬浮于水面角落；
+- **鳃部感染征兆**：鳃盖开合剧烈、呼吸急促、浮头（鳃部寄生虫破坏呼吸上皮，极度危险）。
 
-- **随病鱼/新鱼带入**：未检疫的新鱼是最常见传染源
-- **未消毒的活饵与工具**：水蚤、红虫等活饵，以及共用渔网、捞鱼勺都可能携带掠食体
-- **传染速度**：一旦出现第一颗白点，通常 2-3 天内全缸蔓延
-- **病程**：整个病程约 5-10 天，从感染到白点肉眼可见约需 3-4 天
+### 2. 鉴别诊断（切勿误诊致死！）
 
-## 治疗
+<DiffDiagnosisCard
+  title="白点病 vs 打粉病（易致命误区）"
+  diseaseA={{
+    name: '白点病 (多子小瓜虫)',
+    feature: '白色圆颗粒，如粗盐粒微凸，独立不粘连',
+    environment: '15-25℃ 水温骤降引发',
+    criticalAction: '升温至 28-30℃ + 0.3% 粗盐 (特效)',
+    isDanger: false
+  }}
+  diseaseB={{
+    name: '打粉病 (嗜酸卵甲藻)',
+    feature: '像体表裹了一层白面粉/石膏粉，连成白膜',
+    environment: '偏酸性老水 (pH < 6.5)',
+    criticalAction: '严禁升温！加小苏打调高 pH 至 7.5',
+    isDanger: true
+  }}
+  summaryNote="打粉病若误按白点病升温处理，会加速藻体繁殖导致全缸死鱼。务必看清是独立盐粒还是连片粉末！"
+/>
 
-### 方案一：物理疗法（首选，温和安全）
+---
 
-1. **升温至 28-30℃**：每天升温不超过 2℃，维持 5-7 天。高温加速小瓜虫生活史，使其快速进入对药物敏感的掠食体阶段，同时增强鱼体免疫力
-2. **盐浴 0.3-0.5%**：每 10L 水加 30-50g 粗盐（无碘盐），分 2-3 次缓慢加入，避免渗透压骤变
+## 三、标准临床四步救治规程
 
-### 方案二：药物疗法（白点密集或物理疗法无效时）
+<TreatmentSteps title="白点病标准救治四步 SOP">
+  <TreatmentStep step="01" title="物理隔离与水体准备" tag="必须执行" isCrucial={true}>
+    <p>1. 立即将病鱼用湿润软网捞出，移入<strong>独立治疗裸缸（5-15L，无底砂水草）</strong>，切忌原缸倒药破坏主缸硝化系统；</p>
+    <p>2. 隔离缸必须开启气泵水妖精或气泡石<strong>持续强力爆氧</strong>（高温与药浴均会急剧消耗溶解氧）；</p>
+    <p>3. 原主缸同步等温换水 1/3，开启加热棒升温至 28℃ 静养 3 天，阻断残留游离体。</p>
+  </TreatmentStep>
 
-| 药物 | 参考用量 | 备注 |
-|---|---|---|
-| 甲基蓝（亚甲基蓝） | 约 2ppm，隔天重复，连用 3-5 天 | 温和、可长期药浴；**避光使用** |
-| 市售白点净 | 严格按药品说明书 | 多含孔雀石绿/甲醛，**剧毒，务必在独立治疗缸按说明精确计量** |
+  <TreatmentStep step="02" title="阶梯平稳控温 (28-30℃)" tag="核心关键">
+    <p>设定目标水温为 <strong>28℃ - 30℃</strong>（推荐 29℃ 恒温）。</p>
+    <p><strong>升温速率纪律</strong>：每 12 小时升温不超过 1-1.5℃，切忌 1 小时内暴拉 5℃ 造成二次热应激休克。</p>
+  </TreatmentStep>
 
-### 治疗期管理要点
+  <TreatmentStep step="03" title="规范药浴与渗透压调节" tag="对症下药">
+    <p>根据白点严重程度选择以下处方：</p>
+  </TreatmentStep>
 
-- **隔离治疗**：将病鱼移入独立治疗缸（5-20L 裸缸，无底砂装饰），避免原缸下药破坏硝化系统
-- **停喂或减喂**：减少排泄物对水质的污染，降低鱼体代谢负担
-- **加强打氧**：升温后水中溶氧下降，必须持续爆氧
-- **每日换水 20-30%**：等温换水，配合补药
-- **移除活性炭**：活性炭会吸附药液，使药物浓度失效
-- **疗程结束**：换水 30% 逐步稀释药物，再观察 3-5 天确认无复发后合缸
+  <TreatmentStep step="04" title="治疗期维护与 48 小时巩固期" tag="防复发死线" isCrucial={true}>
+    <p>1. <strong>停食观察</strong>：前 2 天停食，第 3 天起极少量喂食（2分钟内吃完），保持水质清洁；</p>
+    <p>2. <strong>等温换水补药</strong>：每 24-48 小时用等温新水换水 1/3，并按换出水量<strong>等比例补充粗盐与亚甲基蓝</strong>；</p>
+    <p>3. <strong>巩固 48 小时纪律</strong>：当肉眼见鱼身最后一颗白点脱落消失后，<strong>必须继续维持原水温与药效 48 小时</strong>，彻底剿灭水中孵化的掠食体幼虫！</p>
+  </TreatmentStep>
+</TreatmentSteps>
 
-### 治疗纪律（通用原则）
+### 临床推荐处方笺
 
-- 剂量**宁低勿高**，幼鱼、弱鱼剂量减半
-- 症状消失后**继续用药 1-2 天**防复发
-- 治愈后逐步换水稀释药物、逐步降温（每天 ≤2℃）、观察 7 天以上再合缸
+<DrugPrescriptionCard
+  name="亚甲基蓝水剂 (1%) + 无碘粗盐"
+  genericName="Methylene Blue + NaCl"
+  dosage="无碘粗盐 0.3% (30g/10L) + 亚甲基蓝 2mL/10L"
+  method="独立治疗缸全缸长效药浴，避光静养"
+  duration="持续 5-7 天（白点脱落后巩固 48 小时）"
+  target="多子小瓜虫游离体、继发轻度细菌感染"
+  caution="严禁使用食用加碘盐（碘对鱼鳃有强腐蚀性）。药浴期间避光，停用活性炭。"
+  badge="首选推荐 · 温和安全"
+/>
 
-## 预防
+<DrugPrescriptionCard
+  name="市售水族白点净 (含微量甲醛/孔雀石绿)"
+  genericName="Formalin & Malachite Green"
+  dosage="严格按照包装说明书标注剂量的下限使用"
+  method="独立裸缸短期浸洗或低浓度药浴"
+  duration="连续 3 天，配合每日换水"
+  target="顽固性爆发白点、重症寄生虫感染"
+  caution="孔雀石绿具有毒性，螺虾、水草及无鳞鱼坚决禁用！操作请戴手套防护。"
+  badge="重症备选 · 强效"
+/>
 
-- **保持水温 25℃ 以上**：这是最简单有效的预防手段
-- **新鱼入缸前检疫**：独立检疫缸隔离观察 7-14 天，确认无白点再合缸
-- **温差骤变 &lt;2℃**：换水、季节交替时注意保温
-- **水质稳定**：每周换水 20-30%，维持氨氮、亚硝酸盐为 0
-- **活饵处理**：水蚤、红虫等活饵清洗后或冷冻后再投喂——活饵是寄生虫最大带入途径
-- **工具管理**：捞网、刮藻刀专缸专用，避免交叉感染
+---
 
-### 治疗缸设置（标准配置）
+## 四、预期康复时间线
 
-| 项目 | 配置 |
-|---|---|
-| 缸体 | 小型裸缸 5-20L，无底砂、无装饰、无水草——便于观察与控药 |
-| 过滤 | 海绵过滤或水妖精；药浴期间可暂停过滤，靠爆氧维持溶氧 |
-| 加热棒 | 设定 28-30℃（配合升温治疗） |
-| 水源 | 用原缸水或等温困水 |
-| 换水 | 每天换水 1/2-1/3，等温并补药 |
+<RecoveryTimeline
+  title="白点病标准康复周期转归"
+  items={[
+    { stage: 'Day 1 - 2', text: '白点停止扩散，部分老白点变大变松，蹭缸行为明显减少' },
+    { stage: 'Day 3 - 4', text: '白点大量成熟脱落，鱼体表面逐渐平整，游姿恢复平稳' },
+    { stage: 'Day 5 - 6', text: '体表白点完全消失，鱼鳍自然舒展，开始正常索食' },
+    { stage: 'Day 7+', text: '48 小时巩固期结束：每天降温 1℃ 并逐步换水稀释药剂，确认健康后合缸', isHighlight: true }
+  ]}
+/>
 
-### 预期恢复时间线
+---
 
-| 时间 | 预期表现 |
-|---|---|
-| 治疗第 1-2 天 | 白点不再新增，部分白点开始脱落 |
-| 治疗第 3-5 天 | 白点明显减少，蹭缸行为缓解 |
-| 治疗第 5-7 天 | 体表白点基本消失 |
-| 疗程结束后 | 继续观察 3-5 天，确认无新白点再合缸 |
+## 五、临床高频避坑问答 (FAQ)
 
-> 白点病是少数**完全可治愈**的常见病之一，只要坚持完整疗程，预后良好。
+<MedicalCallout type="warning" title="Q1：水温升到 30℃，孔雀鱼受得了吗？">
+  完全能承受。孔雀鱼是热带淡水鱼，耐受上限可达 32℃。但升温后<strong>水的溶氧量会大幅下降</strong>，只要配备气泵打气强力爆氧，孔雀鱼在 28-30℃ 状态完全正常。
+</MedicalCallout>
 
-### 常见问题
+<MedicalCallout type="danger" title="Q2：看到白点刚掉光就立刻合缸可以吗？">
+  <strong>绝对不行！</strong> 白点刚掉落时，正是小瓜虫在缸底化为包囊并即将分裂出数百只幼虫的高危期。如果此时立刻降温停药合缸，幼虫会再次钻入鱼体引发更严重的二次感染。务必维持药浴巩固 2 天。
+</MedicalCallout>
 
-**为什么升温能治白点？** 升温加速小瓜虫生活史，让藏在鱼皮下的滋养体快速成熟脱落，暴露成对药物敏感、对盐敏感的掠食体阶段。但仅升温不换水，残留包囊仍会再感染——所以升温、换水、盐浴要配合执行。
+<MedicalCallout type="danger" title="Q3：可以用家里炒菜的食用加碘盐吗？">
+  <strong>严禁使用！</strong> 食用加碘盐中的碘化物和抗结剂（亚铁氰化钾）对鱼鳃有强烈的化学腐蚀性，极易导致鱼鳃灼伤充血死亡。必须使用<strong>水族专用无碘粗盐、海盐或天然矿物盐</strong>。
+</MedicalCallout>
 
-**为什么疗程不能提前结束？** 白点消失只是滋养体阶段结束，水中仍可能有未孵化的包囊。提前停药 = 给包囊复活机会，复发后往往更顽固。
-
-**甲基蓝和白点净选哪个？** 轻中度白点首选温和的甲基蓝；白点密集或反复发作时可用市售白点净，但其中孔雀石绿剧毒，务必在治疗缸按说明书精确计量，并做好个人防护。
-
-**治疗期间能喂食吗？** 建议停喂或减喂。鱼体代谢负担减小，水质更容易稳定，白点恢复更快。
-
-## 来源参考
-
-台湾农业知识入口网（kmweb.moa.gov.tw）、鱼百科（yubaike.com）、广东省水生动物卫生协会（gdaaah.com）、祥龙鱼场（xiantianan.cn）等公开资料整理，仅供学习交流。
+<MedicalCallout type="info" title="Q4：原主缸里没得病的鱼需要全缸下药吗？">
+  不需要。将病鱼隔离后，主缸只需<strong>等温换水 1/3 + 升温至 28℃ 保持 3-5 天 + 下 0.1% 保健粗盐</strong>。原缸中没有宿主的掠食体在 48 小时内找不到寄生目标就会自然死亡，避免破坏主缸好不容易建立的硝化系统。
+</MedicalCallout>

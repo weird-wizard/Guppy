@@ -1,0 +1,72 @@
+---
+// 易混淆疾病鉴别对比卡 (DiffDiagnosisCard.astro)
+// 用于左右对比易混淆疾病（如白点 vs 打粉、烂尾 vs 外伤），防止致命误诊
+
+interface DiseaseItem {
+  name: string;
+  feature: string;
+  environment: string;
+  criticalAction: string;
+  isDanger?: boolean;
+}
+
+interface Props {
+  title?: string;
+  diseaseA: DiseaseItem;
+  diseaseB: DiseaseItem;
+  summaryNote?: string;
+}
+
+const {
+  title = '临床极易混淆鉴别诊断（切勿误诊）',
+  diseaseA,
+  diseaseB,
+  summaryNote,
+} = Astro.props;
+---
+
+<div class="my-6 p-4 sm:p-5 rounded-xl bg-white border border-slate-200/90 shadow-2xs not-prose">
+  <div class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 pb-2 border-b border-slate-100 flex items-center gap-1.5">
+    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-aqua-700" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m21 16-4 4-4-4" />
+      <path d="M17 20V4" />
+      <path d="m3 8 4-4 4 4" />
+      <path d="M7 4v16" />
+    </svg>
+    <span>{title}</span>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+    <!-- 疾病 A -->
+    <div class:list={['p-3 rounded-xl border', diseaseA.isDanger ? 'bg-rose-50/50 border-rose-200' : 'bg-slate-50/80 border-slate-200/80']}>
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-slate-900 text-xs sm:text-sm">{diseaseA.name}</span>
+        {diseaseA.isDanger && <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-bold">高危易死鱼</span>}
+      </div>
+      <ul class="text-xs space-y-1.5 text-slate-600">
+        <li><span class="font-semibold text-slate-800">外观特征：</span>{diseaseA.feature}</li>
+        <li><span class="font-semibold text-slate-800">诱发水质：</span>{diseaseA.environment}</li>
+        <li><span class="font-semibold text-slate-800">对症处置：</span><span class="font-bold text-slate-900">{diseaseA.criticalAction}</span></li>
+      </ul>
+    </div>
+
+    <!-- 疾病 B -->
+    <div class:list={['p-3 rounded-xl border', diseaseB.isDanger ? 'bg-rose-50/50 border-rose-200' : 'bg-slate-50/80 border-slate-200/80']}>
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-bold text-slate-900 text-xs sm:text-sm">{diseaseB.name}</span>
+        {diseaseB.isDanger && <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-bold">高危易死鱼</span>}
+      </div>
+      <ul class="text-xs space-y-1.5 text-slate-600">
+        <li><span class="font-semibold text-slate-800">外观特征：</span>{diseaseB.feature}</li>
+        <li><span class="font-semibold text-slate-800">诱发水质：</span>{diseaseB.environment}</li>
+        <li><span class="font-semibold text-slate-800">对症处置：</span><span class="font-bold text-slate-900">{diseaseB.criticalAction}</span></li>
+      </ul>
+    </div>
+  </div>
+
+  {summaryNote && (
+    <div class="text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200/60 leading-relaxed">
+      <span class="font-bold text-slate-700">💡 鉴别要领：</span>{summaryNote}
+    </div>
+  )}
+</div>

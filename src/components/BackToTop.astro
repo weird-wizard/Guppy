@@ -1,0 +1,60 @@
+---
+// 回到顶部浮动按钮组件 (BackToTop.astro)
+// 当页面向下滚动超过 350px 时优雅淡入，点击平滑滚动至顶部，适配 Astro View Transitions
+---
+
+<button
+  id="back-to-top"
+  type="button"
+  aria-label="回到顶部"
+  title="回到顶部"
+  class="fixed right-5 bottom-6 sm:right-8 sm:bottom-8 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-card hover:shadow-hover hover:border-aqua-300 text-slate-600 hover:text-aqua-700 grid place-items-center opacity-0 pointer-events-none translate-y-3 scale-95 transition-all duration-300 ease-[var(--ease-spring)] active:scale-90 cursor-pointer group"
+>
+  <svg
+    viewBox="0 0 24 24"
+    class="w-4.5 h-4.5 group-hover:-translate-y-0.5 transition-transform duration-200"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M18 15l-6-6-6 6" />
+  </svg>
+</button>
+
+<script>
+  function initBackToTop() {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+
+    function handleScroll() {
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      if (scrollY > 350) {
+        btn?.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3', 'scale-95');
+        btn?.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
+      } else {
+        btn?.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0', 'scale-100');
+        btn?.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3', 'scale-95');
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+
+    window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    btn.removeEventListener('click', scrollToTop);
+    btn.addEventListener('click', scrollToTop);
+
+    // 初始化运行一次检测
+    handleScroll();
+  }
+
+  // 支持首次加载与 Astro 页面切换
+  document.addEventListener('astro:page-load', initBackToTop);
+</script>
