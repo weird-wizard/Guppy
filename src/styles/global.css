@@ -363,25 +363,44 @@ body {
   @apply text-slate-900 font-semibold;
 }
 
-/* 表格：深蓝表头 + 斑马纹（border-separate 配合圆角） */
+/* 表格：Notion / Apple 级纯净现代卡片排版 */
 .prose-guppy table {
-  @apply my-6 w-full text-sm border-separate border-spacing-0 overflow-hidden rounded-lg;
+  @apply my-5 sm:my-6 w-full text-xs sm:text-sm border-separate border-spacing-0 overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-2xs;
+  table-layout: auto;
 }
 
 .prose-guppy thead {
-  @apply bg-abyss-800;
+  @apply bg-slate-50/90;
 }
 
 .prose-guppy th {
-  @apply text-white font-semibold text-left px-4 py-3 border border-abyss-800;
+  @apply text-slate-800 font-bold text-left px-3 sm:px-4 py-2 sm:py-2.5 border-b border-slate-200 text-xs tracking-wider;
 }
 
-.prose-guppy tbody tr:nth-child(even) {
-  @apply bg-aqua-50/50;
+.prose-guppy tbody tr {
+  @apply transition-colors hover:bg-slate-50/50;
+}
+
+.prose-guppy tbody tr:not(:last-child) td {
+  @apply border-b border-slate-100;
 }
 
 .prose-guppy td {
-  @apply px-4 py-3 border border-slate-200 align-top;
+  @apply px-3 sm:px-4 py-2.5 sm:py-3 text-slate-700 leading-relaxed align-top;
+}
+
+/* 针对首列（项目名称）固定紧凑背景，第二列（详细内容）自适应换行 */
+.prose-guppy th:first-child,
+.prose-guppy td:first-child {
+  @apply font-semibold text-slate-900 bg-slate-50/40;
+  width: 28%;
+  min-width: 4.5rem;
+  max-width: 7rem;
+}
+
+.prose-guppy td:last-child {
+  @apply text-slate-600;
+  word-break: break-word;
 }
 
 .prose-guppy blockquote {
@@ -601,21 +620,6 @@ body {
   transform: translateZ(0);
 }
 
-/* 移动端表格横向滚动 */
-@media (max-width: 639px) {
-  .prose-guppy table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-  }
-  .prose-guppy thead,
-  .prose-guppy tbody,
-  .prose-guppy tr {
-    display: table;
-    width: max-content;
-  }
-}
 
 /* ─── 全站统一的触控/点击微交互（Tactile Micro-interactions）─── */
 * {
