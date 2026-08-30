@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import PagefindConfig from 'astro-pagefind/components/PagefindConfig.astro';
+import Analytics from '@vercel/analytics/astro';
 import BackToTop from '../components/BackToTop.astro';
 import '../styles/global.css';
 
@@ -261,5 +262,6 @@ const navItems = [
         initScrollProgress();
       });
     </script>
+    <Analytics />
   </body>
 </html>
