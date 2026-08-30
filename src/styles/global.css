@@ -280,15 +280,15 @@ body {
 
 /* ─── 正文排版：精致杂志感 ─── */
 .prose-guppy {
-  @apply text-slate-700;
-  line-height: 1.78;
+  @apply text-slate-700 text-[14px] sm:text-[15px] lg:text-base;
+  line-height: 1.75;
 }
 
 .prose-guppy h2 {
-  @apply mt-10 mb-4 text-2xl font-bold text-slate-900;
+  @apply mt-7 sm:mt-10 mb-3 sm:mb-4 text-lg sm:text-xl lg:text-2xl font-bold text-slate-900;
   position: relative;
   scroll-margin-top: 5.5rem;
-  padding-left: 0.9rem;
+  padding-left: 0.75rem;
 }
 
 /* h2 左侧海洋水蓝精致短竖线 */
@@ -298,7 +298,7 @@ body {
   left: 0;
   top: 0.32em;
   bottom: 0.2em;
-  width: 4px;
+  width: 3.5px;
   border-radius: 999px;
   background: linear-gradient(to bottom, var(--color-aqua-500), var(--color-aqua-700));
 }
@@ -307,28 +307,28 @@ body {
 .prose-guppy h2::after {
   content: "";
   display: block;
-  margin-top: 0.6rem;
-  width: 3.5rem;
+  margin-top: 0.5rem;
+  width: 3rem;
   height: 2px;
   border-radius: 999px;
   background: linear-gradient(to right, var(--color-aqua-300), transparent);
 }
 
 .prose-guppy h3 {
-  @apply mt-8 mb-3 text-lg sm:text-xl font-semibold text-slate-900;
+  @apply mt-6 sm:mt-8 mb-2.5 sm:mb-3 text-base sm:text-lg lg:text-xl font-semibold text-slate-900;
   scroll-margin-top: 5.5rem;
 }
 
 .prose-guppy p {
-  @apply my-4;
+  @apply my-3 sm:my-4;
 }
 
 .prose-guppy ul {
-  @apply my-4 pl-5 list-disc space-y-2;
+  @apply my-3 sm:my-4 pl-4 sm:pl-5 list-disc space-y-1.5 sm:space-y-2;
 }
 
 .prose-guppy ol {
-  @apply my-4 pl-5 list-decimal space-y-2;
+  @apply my-3 sm:my-4 pl-4 sm:pl-5 list-decimal space-y-1.5 sm:space-y-2;
 }
 
 .prose-guppy li {

@@ -43,18 +43,18 @@ const THEMES = {
 const t = THEMES[type] ?? THEMES.warning;
 ---
 
-<div class={`my-5 p-4 rounded-xl border ${t.container} shadow-2xs not-prose`}>
+<div class={`my-5 p-4 sm:p-5 rounded-xl border ${t.container} shadow-2xs not-prose`}>
   <div class="flex items-start gap-3">
     <div class={`w-6 h-6 rounded-lg ${t.iconBg} grid place-items-center shrink-0 mt-0.5`}>
-      <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d={t.iconPath} />
       </svg>
     </div>
-    <div class="flex-1 min-w-0 text-xs sm:text-sm leading-relaxed">
-      <div class={`font-bold ${t.titleColor} mb-1 flex items-center gap-1.5`}>
+    <div class="flex-1 min-w-0 text-[14px] sm:text-[15px] leading-relaxed">
+      <div class={`font-bold ${t.titleColor} text-sm sm:text-base mb-1.5 flex items-center gap-1.5`}>
         <span>{title ?? t.defaultTitle}</span>
       </div>
-      <div class="text-slate-700 space-y-1">
+      <div class="text-slate-700 space-y-1.5 leading-relaxed">
         <slot />
       </div>
     </div>

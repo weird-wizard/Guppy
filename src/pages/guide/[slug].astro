@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
+import { ArrowLeft, Clock } from '@lucide/astro';
 
 export async function getStaticPaths() {
   const guides = await getCollection('guides');
@@ -15,26 +16,55 @@ const { Content } = await render(guide);
 ---
 
 <BaseLayout title={`${guide.data.title} - 孔雀鱼百科`} description={guide.data.subtitle ?? guide.data.title}>
-  <article class="max-w-3xl mx-auto px-4 py-14">
-    <header class="mb-10">
-      <nav aria-label="面包屑" class="text-sm text-slate-400 mb-4">
-        <a href="/" class="hover:text-aqua-600">首页</a>
-        <span class="mx-2">/</span>
-        <a href="/guide/" class="hover:text-aqua-600">饲养指南</a>
+  <div class="max-w-3xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-9">
+    <header class="mb-6 sm:mb-8">
+      <nav aria-label="面包屑" class="text-[11px] sm:text-xs text-slate-400 mb-2.5 flex items-center gap-1.5 flex-wrap">
+        <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+        <span class="text-slate-300">/</span>
+        <a href="/guide/" class="hover:text-slate-900 transition-colors">饲养指南</a>
+        <span class="text-slate-300">/</span>
+        <span class="text-slate-600 font-medium truncate max-w-[200px] sm:max-w-none">{guide.data.title}</span>
       </nav>
-      <p class="text-sm font-medium text-aqua-600 mb-2">饲养指南</p>
-      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">{guide.data.title}</h1>
-      {guide.data.subtitle && <p class="mt-4 text-lg text-slate-600">{guide.data.subtitle}</p>}
-      <div class="mt-5 flex items-center gap-3 text-sm text-slate-400">
-        <span>更新于 {guide.data.pubDate.toLocaleDateString('zh-CN')}</span>
-        {guide.data.tags?.map((tag) => (
-          <span class="px-2.5 py-0.5 rounded-full bg-aqua-50 text-aqua-700">{tag}</span>
-        ))}
+
+      <span class="inline-flex items-center text-xs px-2.5 py-0.5 rounded-full bg-aqua-50 text-aqua-800 border border-aqua-200/80 font-medium mb-2">
+        饲养指南
+      </span>
+
+      <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight leading-tight">
+        {guide.data.title}
+      </h1>
+
+      {guide.data.subtitle && (
+        <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+          {guide.data.subtitle}
+        </p>
+      )}
+
+      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+        <span class="inline-flex items-center gap-1">
+          <Clock class="w-3 h-3" />
+          <span>更新于 {guide.data.pubDate.toLocaleDateString('zh-CN')}</span>
+        </span>
+        <div class="flex flex-wrap items-center gap-1">
+          {guide.data.tags?.map((tag) => (
+            <span class="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-medium">#{tag}</span>
+          ))}
+        </div>
       </div>
     </header>
 
-    <div class="prose-guppy">
+    <article class="prose-guppy max-w-none">
       <Content />
-    </div>
-  </article>
+    </article>
+
+    <footer class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200">
+      <a
+        href="/guide/"
+        class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-colors"
+      >
+        <ArrowLeft class="w-3.5 h-3.5" />
+        <span>返回饲养指南列表</span>
+      </a>
+    </footer>
+  </div>
 </BaseLayout>

@@ -27,7 +27,7 @@ const {
 
 <div class="my-5 p-4 sm:p-5 rounded-xl bg-white border border-slate-200/90 shadow-2xs not-prose">
   <div class="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100">
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2.5">
       <div class="w-7 h-7 rounded-lg bg-aqua-50 text-aqua-700 grid place-items-center shrink-0">
         <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
@@ -35,38 +35,38 @@ const {
         </svg>
       </div>
       <div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
           <h4 class="font-bold text-slate-900 text-sm sm:text-base leading-tight m-0">{name}</h4>
           {genericName && <span class="text-xs text-slate-400 font-mono">({genericName})</span>}
         </div>
-        {target && <span class="text-[11px] text-slate-500">主攻病原：{target}</span>}
+        {target && <span class="text-xs text-slate-500 mt-0.5 block">主攻病原：{target}</span>}
       </div>
     </div>
-    <span class="text-xs px-2.5 py-0.5 rounded-full bg-aqua-50 text-aqua-800 font-semibold border border-aqua-200/60">
+    <span class="text-xs px-2.5 py-0.5 rounded-full bg-aqua-50 text-aqua-800 font-semibold border border-aqua-200/60 shrink-0">
       {badge}
     </span>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs mb-3">
-    <div class="bg-slate-50/80 p-2.5 rounded-lg border border-slate-200/60">
-      <span class="text-[10px] text-slate-400 block mb-0.5">标准参考剂量</span>
-      <span class="font-bold text-slate-900 text-xs sm:text-sm">{dosage}</span>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm mb-3">
+    <div class="bg-slate-50/80 p-2.5 sm:p-3 rounded-lg border border-slate-200/60">
+      <span class="text-xs text-slate-400 block mb-1">标准参考剂量</span>
+      <span class="font-bold text-slate-900 text-xs sm:text-sm leading-relaxed block">{dosage}</span>
     </div>
-    <div class="bg-slate-50/80 p-2.5 rounded-lg border border-slate-200/60">
-      <span class="text-[10px] text-slate-400 block mb-0.5">给药手法</span>
-      <span class="font-bold text-slate-900 text-xs sm:text-sm">{method}</span>
+    <div class="bg-slate-50/80 p-2.5 sm:p-3 rounded-lg border border-slate-200/60">
+      <span class="text-xs text-slate-400 block mb-1">给药手法</span>
+      <span class="font-bold text-slate-900 text-xs sm:text-sm leading-relaxed block">{method}</span>
     </div>
   </div>
 
-  <div class="space-y-1.5 text-xs">
-    <div class="flex items-start gap-1.5 text-slate-600">
-      <span class="font-semibold text-slate-700 shrink-0">建议疗程：</span>
+  <div class="space-y-2 text-[13px] sm:text-sm leading-relaxed">
+    <div class="flex items-start gap-1.5 text-slate-700">
+      <span class="font-semibold text-slate-800 shrink-0">建议疗程：</span>
       <span>{duration}</span>
     </div>
     {caution && (
-      <div class="flex items-start gap-1.5 text-amber-900 bg-amber-50/80 p-2 rounded-md border border-amber-200/60">
-        <span class="font-bold shrink-0">⚠️ 避坑提醒：</span>
-        <span class="leading-relaxed">{caution}</span>
+      <div class="flex items-start gap-1.5 text-amber-950 bg-amber-50/90 p-2.5 rounded-lg border border-amber-200/70">
+        <span class="font-bold text-amber-900 shrink-0">⚠️ 避坑提醒：</span>
+        <span class="leading-relaxed text-amber-900">{caution}</span>
       </div>
     )}
   </div>
