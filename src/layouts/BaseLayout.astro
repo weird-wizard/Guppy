@@ -106,10 +106,12 @@ const navItems = [
             </a>
           ))}
         </div>
-        <!-- 移动端搜索与导航菜单（<640px）：搜索在左，菜单在右 -->
-        <div class="flex items-center gap-2 sm:hidden">
+        <!-- 导航栏右侧操作区（全端统一单个搜索实例，移动端在搜索右侧显示菜单） -->
+        <div class="flex items-center gap-2 sm:gap-3">
           <pagefind-modal-trigger placeholder="搜索" class="pf-nav-trigger"></pagefind-modal-trigger>
-          <details class="relative">
+
+          <!-- 移动端汉堡菜单（仅在 <640px 视口显示） -->
+          <details class="relative sm:hidden">
             <summary class="list-none w-9 h-9 rounded-full border border-abyss-100 bg-white/80 grid place-items-center text-abyss-800 cursor-pointer select-none active:scale-90 transition-transform">
               <svg viewBox="0 0 24 24" class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
                 <path d="M4 7h16M4 12h16M4 17h16" />
@@ -133,13 +135,13 @@ const navItems = [
             </div>
           </details>
         </div>
+
         <style>
           details[open] > div {
             opacity: 1;
             transform: scale(1);
           }
         </style>
-        <pagefind-modal-trigger placeholder="搜索" class="pf-nav-trigger hidden sm:block"></pagefind-modal-trigger>
       </nav>
     </header>
 
