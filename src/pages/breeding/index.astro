@@ -1,55 +1,223 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import {
+  Heart,
+  Baby,
+  Dna,
+  Sparkles,
+  ArrowRight,
+  HelpCircle,
+} from '@lucide/astro';
 
-const articles = (await getCollection('breeding')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+const allArticles = await getCollection('breeding');
+
+// 按照繁育时序组织的 4 个主要阶段
+const STAGES = [
+  {
+    id: '03-stock-selection',
+    stepNum: '01',
+    stageLabel: '选种与配对',
+    keyPoints: ['4-6月龄壮年种鱼', '4周龄处女母鱼隔离', '海绵水妖精防吸', '公母1:2配比'],
+    icon: Sparkles,
+  },
+  {
+    id: '01-pregnancy',
+    stepNum: '02',
+    stageLabel: '孕期与待产',
+    keyPoints: ['胎斑深浅观察', '腹部方肚判定', '生殖孔微张外凸', '临产隔离时机'],
+    icon: Heart,
+  },
+  {
+    id: '02-fry-care',
+    stepNum: '03',
+    stageLabel: '分娩与开口',
+    keyPoints: ['产后及时移出母鱼', '出生48h靠卵黄囊', '刚孵化丰年虾开口', '头一周避免换水'],
+    icon: Baby,
+  },
+  {
+    id: '04-line-breeding',
+    stepNum: '04',
+    stageLabel: '选育与提纯',
+    keyPoints: ['4周龄严格公母分缸', '隐性白子遗传规律', '双线交叉育种', '近交3-4代换血'],
+    icon: Dna,
+  },
+];
+
+const roadmapItems = STAGES.map((stg) => {
+  const article = allArticles.find((a) => a.id === stg.id);
+  return {
+    ...stg,
+    article,
+  };
+});
+
+const emergencyArticle = allArticles.find((a) => a.id === '05-common-problems');
 ---
 
-<BaseLayout title="繁殖技术 - 孔雀鱼百科" description="孔雀鱼繁殖技术：种鱼选择、孕期管理、小鱼护理、品系提纯与选育">
-  {/* 深蓝页头带 */}
-  <section class="relative bg-gradient-to-b from-abyss-950 via-abyss-900 to-abyss-800 text-white">
-    <div class="max-w-6xl mx-auto px-4 pt-14 pb-14">
-      <p class="text-sm font-medium text-aqua-300 mb-2">繁殖技术</p>
-      <h1 class="text-3xl sm:text-4xl font-bold">从种鱼到满缸小鱼</h1>
-      <p class="mt-3 text-aqua-100/80 max-w-2xl">孔雀鱼是"百万鱼"，繁殖并不难，但养出好品相需要系统的知识。这里从孕期管理讲到品系提纯。</p>
-    </div>
-    {/* 波浪分隔 */}
-    <div aria-hidden="true" class="h-10 w-full overflow-hidden leading-none text-slate-50">
-      <svg viewBox="0 0 1440 40" preserveAspectRatio="none" class="block h-full w-full">
-        <path fill="currentColor" d="M0 40V26c240 22 480-20 720 0s480 22 720 0v14z" />
-      </svg>
-    </div>
-  </section>
+<BaseLayout
+  title="繁殖技术 - 孔雀鱼百科"
+  description="孔雀鱼繁殖与品系选育实操指南：从种鱼选拔、母鱼待产、幼鱼开口到品系提纯的完整流程。"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-9">
+    <!-- 顶部标题区 -->
+    <header class="mb-7 sm:mb-9 pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+      <div>
+        <nav aria-label="面包屑" class="text-xs text-slate-400 mb-1.5 flex items-center gap-1.5">
+          <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+          <span class="text-slate-300">/</span>
+          <span class="text-slate-600 font-medium">繁殖技术</span>
+        </nav>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+          孔雀鱼繁殖与育种指南
+        </h1>
+        <p class="mt-1 text-xs sm:text-sm text-slate-500">
+          从选种备孕、孕期观察、幼鱼开口到品系提纯的系统实操手册
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium border border-slate-200 shrink-0">
+          平均周期 28 天/胎
+        </span>
+      </div>
+    </header>
 
-  <section class="max-w-6xl mx-auto px-4 py-10">
-    <div class="space-y-6">
-      {articles.map((article, i) => (
-        <a
-          href={`/breeding/${article.id}/`}
-          class="group block bg-white rounded-2xl border border-slate-200 hover:border-aqua-300 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 p-6"
-        >
-          <div class="flex items-start gap-5">
-            <div
-              class="shrink-0 w-14 h-14 rounded-xl grid place-items-center text-2xl font-bold text-white bg-gradient-to-br from-coral-400 to-coral-600"
-              aria-hidden="true"
-            >
-              {String(i + 1).padStart(2, '0')}
-            </div>
-            <div>
-              <h2 class="text-xl font-semibold text-slate-900 group-hover:text-coral-600 transition-colors">
-                {article.data.title}
-              </h2>
-              {article.data.subtitle && <p class="mt-1.5 text-slate-600">{article.data.subtitle}</p>}
-              <div class="mt-3 flex items-center gap-3 text-xs text-slate-400">
-                <span>更新于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
-                {article.data.tags?.map((tag) => (
-                  <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{tag}</span>
-                ))}
+    <!-- ───────────────────────────────────────────── -->
+    <!-- 4 个主要生命周期阶段卡片 (Timeline Cards) -->
+    <!-- ───────────────────────────────────────────── -->
+    <section class="relative">
+      <!-- 贯通背景连线 -->
+      <div
+        aria-hidden="true"
+        class="absolute left-4.5 sm:left-5.5 top-10 bottom-10 w-px -translate-x-1/2 bg-slate-200"
+      ></div>
+
+      <div class="space-y-4 sm:space-y-6">
+        {roadmapItems.map((item) => {
+          const Icon = item.icon;
+          const art = item.article;
+          if (!art) return null;
+
+          return (
+            <div class="relative flex items-center gap-3.5 sm:gap-5 group">
+              <!-- 左侧步骤序号圆标 -->
+              <div class="shrink-0 w-9 sm:w-11 flex justify-center z-10">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border-2 border-slate-300 group-hover:border-aqua-600 group-hover:text-aqua-600 text-slate-700 flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-2xs shrink-0 ring-4 ring-slate-50 transition-all duration-200">
+                  {item.stepNum}
+                </div>
               </div>
+
+              <!-- 右侧文章卡片 -->
+              <a
+                href={`/breeding/${art.id}/`}
+                class="flex-1 bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs hover:shadow-hover hover:border-slate-400 hover:-translate-y-0.5 active:bg-slate-50 transition-all duration-200"
+              >
+                <!-- 卡片顶栏 -->
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <span class="text-xs font-semibold text-aqua-700 flex items-center gap-1">
+                    <Icon class="w-3.5 h-3.5" />
+                    <span>步骤 {item.stepNum} · {item.stageLabel}</span>
+                  </span>
+                  <span class="text-[11px] text-slate-400">
+                    {art.data.pubDate.toLocaleDateString('zh-CN')}
+                  </span>
+                </div>
+
+                <!-- 标题与副标题 -->
+                <h2 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-aqua-700 transition-colors leading-snug">
+                  {art.data.title}
+                </h2>
+
+                {art.data.subtitle && (
+                  <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    {art.data.subtitle}
+                  </p>
+                )}
+
+                <!-- 核心要点简述 (自然文字形式) -->
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                  <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                    {item.keyPoints.map((point) => (
+                      <span class="inline-flex items-center gap-1">
+                        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <span>{point}</span>
+                      </span>
+                    ))}
+                  </div>
+
+                  <span class="text-xs font-medium text-slate-500 group-hover:text-aqua-700 transition-colors inline-flex items-center gap-1 shrink-0 ml-auto">
+                    <span>阅读指南</span>
+                    <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
+                </div>
+              </a>
             </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- ───────────────────────────────────────────── -->
+    <!-- 常见问题与突发处理 (Troubleshooting) -->
+    <!-- ───────────────────────────────────────────── -->
+    {emergencyArticle && (
+      <section class="mt-8 sm:mt-10">
+        <div class="flex items-center gap-1.5 mb-3 text-slate-900 font-bold text-xs sm:text-sm">
+          <HelpCircle class="w-4 h-4 text-slate-600" />
+          <h2>常见问题与突发情况处理</h2>
+        </div>
+
+        <a
+          href={`/breeding/${emergencyArticle.id}/`}
+          class="group block bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs hover:shadow-hover hover:border-slate-400 hover:-translate-y-0.5 active:bg-slate-50 transition-all duration-200"
+        >
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="text-xs font-semibold text-purple-700 flex items-center gap-1">
+              <HelpCircle class="w-3.5 h-3.5" />
+              <span>答疑与应急</span>
+            </span>
+            <span class="text-[11px] text-slate-400">
+              {emergencyArticle.data.pubDate.toLocaleDateString('zh-CN')}
+            </span>
+          </div>
+
+          <h3 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-purple-700 transition-colors leading-snug">
+            {emergencyArticle.data.title}
+          </h3>
+
+          {emergencyArticle.data.subtitle && (
+            <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {emergencyArticle.data.subtitle}
+            </p>
+          )}
+
+          <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+              <span class="inline-flex items-center gap-1">
+                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                <span>真假难产鉴别与安全处理</span>
+              </span>
+              <span class="inline-flex items-center gap-1">
+                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                <span>幼鱼针尾病防治</span>
+              </span>
+              <span class="inline-flex items-center gap-1">
+                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                <span>小鱼防吞食对策</span>
+              </span>
+              <span class="inline-flex items-center gap-1">
+                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                <span>产后母鱼调理</span>
+              </span>
+            </div>
+
+            <span class="text-xs font-medium text-slate-500 group-hover:text-purple-700 transition-colors inline-flex items-center gap-1 shrink-0 ml-auto">
+              <span>阅读指南</span>
+              <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            </span>
           </div>
         </a>
-      ))}
-    </div>
-  </section>
+      </section>
+    )}
+  </div>
 </BaseLayout>

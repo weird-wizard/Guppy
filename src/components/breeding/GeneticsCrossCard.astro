@@ -1,0 +1,181 @@
+---
+// 孟德尔遗传杂交推导卡 (GeneticsCrossCard.astro)
+// 用于直观展现孔雀鱼白子、缎带、燕尾等性状的亲代、F1杂合代与F2分离代遗传规律
+
+interface ParentItem {
+  name: string;
+  genotype: string;
+  phenotype: string;
+  tag?: string;
+}
+
+interface F1Item {
+  genotype: string;
+  phenotype: string;
+  description: string;
+  tag?: string;
+}
+
+interface F2Item {
+  ratio: string;
+  genotype: string;
+  phenotype: string;
+  isTarget?: boolean;
+  note?: string;
+}
+
+interface Props {
+  title?: string;
+  traitName?: string;
+  parentA: ParentItem;
+  parentB: ParentItem;
+  f1: F1Item;
+  f2?: F2Item[];
+  summaryNote?: string;
+}
+
+const {
+  title = '孟德尔遗传杂交与性状推导图解',
+  traitName = '隐性遗传性状',
+  parentA,
+  parentB,
+  f1,
+  f2,
+  summaryNote,
+} = Astro.props;
+---
+
+<div class="my-6 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs not-prose">
+  {/* 顶部标题栏 */}
+  <div class="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 grid place-items-center shrink-0">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 15c6.667-6 13.333 0 20-6" />
+          <path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993" />
+          <path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993" />
+          <path d="m17 6-2.5-2.5" />
+          <path d="m14 8-1-1" />
+          <path d="m7 18 2.5 2.5" />
+          <path d="m3.5 14.5.5.5" />
+          <path d="m20 9 .5.5" />
+          <path d="m6.5 12.5 1 1" />
+          <path d="m16.5 10.5 1 1" />
+          <path d="m10 16 1.5 1.5" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight m-0">{title}</h3>
+        <span class="text-xs text-slate-400">性状规律：{traitName}</span>
+      </div>
+    </div>
+    <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-bold border border-emerald-200/60 shrink-0">
+      遗传学公式
+    </span>
+  </div>
+
+  <div class="space-y-3.5">
+    {/* 亲代 (Parent P) */}
+    <div class="p-3 sm:p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+        <span class="w-4 h-4 rounded bg-slate-200 text-slate-700 text-[10px] grid place-items-center font-mono">P</span>
+        <span>亲本配对（Parental Generation）</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[13px] sm:text-sm">
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200/60 flex items-center justify-between">
+          <div>
+            <span class="font-bold text-slate-900">{parentA.name}</span>
+            <span class="text-xs text-slate-500 block">{parentA.phenotype}</span>
+          </div>
+          <span class="font-mono font-bold text-xs bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+            {parentA.genotype}
+          </span>
+        </div>
+        <div class="bg-white p-2.5 rounded-lg border border-slate-200/60 flex items-center justify-between">
+          <div>
+            <span class="font-bold text-slate-900">{parentB.name}</span>
+            <span class="text-xs text-slate-500 block">{parentB.phenotype}</span>
+          </div>
+          <span class="font-mono font-bold text-xs bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
+            {parentB.genotype}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* 箭头连接 */}
+    <div class="flex justify-center text-xs font-bold text-slate-400">
+      ↓ 亲代杂交受精产生子一代
+    </div>
+
+    {/* 子一代 (F1 Generation) */}
+    <div class="p-3 sm:p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-200/80">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-900 mb-2 flex items-center justify-between">
+        <span class="flex items-center gap-1.5">
+          <span class="w-4 h-4 rounded bg-indigo-600 text-white text-[10px] grid place-items-center font-mono">F1</span>
+          <span>第一子代（所有后代表现相同）</span>
+        </span>
+        <span class="font-mono font-bold text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded border border-indigo-200/60">
+          基因型：{f1.genotype}
+        </span>
+      </div>
+      <div class="bg-white p-3 rounded-lg border border-indigo-100 text-[13px] sm:text-sm">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="font-bold text-slate-900">表型特征：</span>
+          <span class="font-bold text-indigo-900">{f1.phenotype}</span>
+          {f1.tag && <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-medium">{f1.tag}</span>}
+        </div>
+        <p class="text-slate-600 text-xs sm:text-[13px] leading-relaxed m-0">
+          {f1.description}
+        </p>
+      </div>
+    </div>
+
+    {/* 子二代 (F2 Generation，若有) */}
+    {f2 && f2.length > 0 && (
+      <>
+        <div class="flex justify-center text-xs font-bold text-slate-400">
+          ↓ F1 代同胞兄妹自交（Aa × Aa）性状分离
+        </div>
+
+        <div class="p-3 sm:p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200/80">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-950 mb-2 flex items-center gap-1.5">
+            <span class="w-4 h-4 rounded bg-emerald-600 text-white text-[10px] grid place-items-center font-mono">F2</span>
+            <span>第二子代（孟德尔 3:1 性状分离比例）</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[13px] sm:text-sm">
+            {f2.map((item) => (
+              <div
+                class:list={[
+                  'p-2.5 rounded-lg border flex flex-col justify-between',
+                  item.isTarget
+                    ? 'bg-emerald-100/70 border-emerald-300 ring-2 ring-emerald-500/20'
+                    : 'bg-white border-emerald-100',
+                ]}
+              >
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-slate-900">{item.phenotype}</span>
+                  <span class="font-mono font-bold text-xs bg-white/80 px-2 py-0.5 rounded border border-slate-200">
+                    {item.ratio} ({item.genotype})
+                  </span>
+                </div>
+                {item.note && (
+                  <span class="text-xs text-slate-600 leading-snug">{item.note}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
+    )}
+  </div>
+
+  {/* 底部经验锦囊 */}
+  {summaryNote && (
+    <div class="mt-3.5 pt-3 border-t border-slate-100 text-xs sm:text-[13px] text-slate-600 leading-relaxed bg-slate-50/80 p-2.5 rounded-lg">
+      <span class="font-bold text-slate-800">💡 育种指导：</span>
+      <span>{summaryNote}</span>
+    </div>
+  )}
+</div>

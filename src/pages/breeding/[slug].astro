@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
-import { ArrowLeft, Clock } from '@lucide/astro';
+import { ArrowLeft, Clock, List, Sparkles } from '@lucide/astro';
 
 export async function getStaticPaths() {
   const articles = await getCollection('breeding');
@@ -12,59 +12,145 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const { Content } = await render(article);
+const { Content, headings } = await render(article);
+
+// 提取本篇二级章节作为目录
+const toc = headings.filter((h) => h.depth === 2);
 ---
 
 <BaseLayout title={`${article.data.title} - 孔雀鱼百科`} description={article.data.subtitle ?? article.data.title}>
-  <div class="max-w-3xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-9">
-    <header class="mb-6 sm:mb-8">
-      <nav aria-label="面包屑" class="text-[11px] sm:text-xs text-slate-400 mb-2.5 flex items-center gap-1.5 flex-wrap">
-        <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
-        <span class="text-slate-300">/</span>
-        <a href="/breeding/" class="hover:text-slate-900 transition-colors">繁殖技术</a>
-        <span class="text-slate-300">/</span>
-        <span class="text-slate-600 font-medium truncate max-w-[200px] sm:max-w-none">{article.data.title}</span>
-      </nav>
+  <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-9">
+    <!-- 响应式双栏布局：左侧贴附导航 + 主体文章居中 -->
+    <div class="lg:flex lg:gap-10 items-start">
+      <!-- ───────────────────────────────────────────── -->
+      <!-- 左侧贴附目录导航 (Sticky TOC on Left)          -->
+      <!-- ───────────────────────────────────────────── -->
+      {toc.length > 0 && (
+        <aside class="hidden lg:block lg:w-56 lg:shrink-0 lg:sticky lg:top-20 space-y-3">
+          <!-- 返回列表链接 -->
+          <a
+            href="/breeding/"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors w-full"
+          >
+            <ArrowLeft class="w-3.5 h-3.5" />
+            <span>返回繁殖技术首页</span>
+          </a>
 
-      <span class="inline-flex items-center text-xs px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200/80 font-medium mb-2">
-        繁殖技术
-      </span>
+          <!-- 本篇章节导航面板 -->
+          <div class="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-2.5">
+            <div class="text-[11px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <List class="w-3.5 h-3.5 text-aqua-700" />
+              <span>本篇章节导航</span>
+            </div>
+            <nav class="space-y-1 text-xs">
+              {toc.map((item) => (
+                <a
+                  href={`#${item.slug}`}
+                  class="block py-1 px-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors leading-snug truncate"
+                  title={item.text}
+                >
+                  {item.text}
+                </a>
+              ))}
+            </nav>
 
-      <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight leading-tight">
-        {article.data.title}
-      </h1>
-
-      {article.data.subtitle && (
-        <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
-          {article.data.subtitle}
-        </p>
+            <a
+              href="/breeding/"
+              class="pt-2.5 border-t border-slate-100 block text-[11px] font-semibold text-aqua-800 hover:text-aqua-900 transition-colors"
+            >
+              浏览全部 5 大繁育阶段 →
+            </a>
+          </div>
+        </aside>
       )}
 
-      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-        <span class="inline-flex items-center gap-1">
-          <Clock class="w-3 h-3" />
-          <span>更新于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
-        </span>
-        <div class="flex flex-wrap items-center gap-1">
-          {article.data.tags?.map((tag) => (
-            <span class="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-medium">#{tag}</span>
-          ))}
-        </div>
-      </div>
-    </header>
+      <!-- ───────────────────────────────────────────── -->
+      <!-- 中间主体内容区（在屏幕主体空间居中展开）          -->
+      <!-- ───────────────────────────────────────────── -->
+      <main class="flex-1 max-w-3xl mx-auto min-w-0">
+        <header class="mb-5 sm:mb-8">
+          <nav aria-label="面包屑" class="text-[11px] sm:text-xs text-slate-400 mb-2.5 flex items-center gap-1.5 flex-wrap">
+            <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+            <span class="text-slate-300">/</span>
+            <a href="/breeding/" class="hover:text-slate-900 transition-colors">繁殖技术</a>
+            <span class="text-slate-300">/</span>
+            <span class="text-slate-600 font-medium truncate max-w-[200px] sm:max-w-none">{article.data.title}</span>
+          </nav>
 
-    <article class="prose-guppy max-w-none">
-      <Content />
-    </article>
+          <span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200/80 font-medium mb-2">
+            <Sparkles class="w-3 h-3" />
+            <span>繁殖技术专科</span>
+          </span>
 
-    <footer class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200">
-      <a
-        href="/breeding/"
-        class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-colors"
-      >
-        <ArrowLeft class="w-3.5 h-3.5" />
-        <span>返回繁殖技术列表</span>
-      </a>
-    </footer>
+          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight leading-tight">
+            {article.data.title}
+          </h1>
+
+          {article.data.subtitle && (
+            <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {article.data.subtitle}
+            </p>
+          )}
+
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+            <span class="inline-flex items-center gap-1">
+              <Clock class="w-3 h-3" />
+              <span>更新日期：{article.data.pubDate.toLocaleDateString('zh-CN')}</span>
+            </span>
+            <div class="flex flex-wrap items-center gap-1">
+              {article.data.tags?.map((tag) => (
+                <span class="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-medium">#{tag}</span>
+              ))}
+            </div>
+          </div>
+        </header>
+
+        <!-- 移动端可折叠目录速览 -->
+        {toc.length > 0 && (
+          <details class="lg:hidden mb-5 p-3 rounded-xl bg-slate-50/90 border border-slate-200/80 text-xs">
+            <summary class="font-bold text-slate-800 cursor-pointer flex items-center justify-between select-none">
+              <span class="inline-flex items-center gap-1.5">
+                <List class="w-3.5 h-3.5 text-aqua-700" />
+                <span>章节快速导航 ({toc.length})</span>
+              </span>
+              <span class="text-slate-400 font-normal">展开 ↓</span>
+            </summary>
+            <nav class="mt-2.5 pt-2 border-t border-slate-200/60 space-y-1">
+              {toc.map((item) => (
+                <a
+                  href={`#${item.slug}`}
+                  class="block py-1 px-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-colors"
+                >
+                  {item.text}
+                </a>
+              ))}
+            </nav>
+          </details>
+        )}
+
+        <!-- 正文内容区 -->
+        <article class="prose-guppy max-w-none">
+          <Content />
+        </article>
+
+        <!-- 底部返回导航 -->
+        <footer class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <a
+            href="/breeding/"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-colors"
+          >
+            <ArrowLeft class="w-3.5 h-3.5" />
+            <span>返回繁殖技术首页</span>
+          </a>
+
+          <a
+            href="/breeds/"
+            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-xs transition-colors"
+          >
+            <span>挑选适合的纯系品种 →</span>
+          </a>
+        </footer>
+      </main>
+    </div>
   </div>
 </BaseLayout>

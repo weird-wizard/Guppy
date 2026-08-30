@@ -1,0 +1,95 @@
+---
+// 繁育实操与避坑自查清单卡片 (BreedingChecklist.astro)
+// 用于展示合缸前自查、产前自查与避坑清单，提供比纯 Markdown 更加精致清爽的交互视觉
+
+interface CheckItem {
+  title?: string;
+  text: string;
+  level?: 'required' | 'recommended' | 'warning';
+  tag?: string;
+}
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  items: CheckItem[];
+  footerNote?: string;
+}
+
+const {
+  title = '繁育前实操自查清单',
+  subtitle = '在进行合缸或产房操作前，请逐条核对以下关键指标',
+  items,
+  footerNote,
+} = Astro.props;
+
+const LEVEL_STYLES = {
+  required: {
+    badge: 'bg-rose-50 text-rose-700 border-rose-200/80',
+    label: '强制底线',
+  },
+  recommended: {
+    badge: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+    label: '黄金推荐',
+  },
+  warning: {
+    badge: 'bg-amber-50 text-amber-800 border-amber-200/80',
+    label: '避坑重点',
+  },
+};
+---
+
+<div class="my-6 p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs not-prose">
+  <div class="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 grid place-items-center shrink-0">
+        <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 11 12 14 22 4" />
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight m-0">{title}</h3>
+        {subtitle && <span class="text-xs text-slate-400">{subtitle}</span>}
+      </div>
+    </div>
+    <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold border border-slate-200/60 shrink-0">
+      自查清单
+    </span>
+  </div>
+
+  <div class="space-y-2.5">
+    {items.map((item) => {
+      const lvl = LEVEL_STYLES[item.level ?? 'recommended'];
+
+      return (
+        <div class="flex items-start gap-3 p-2.5 sm:p-3 rounded-xl bg-slate-50/70 border border-slate-200/60 hover:bg-white hover:border-slate-300 transition-colors">
+          <div class="w-5 h-5 rounded-md bg-emerald-100 text-emerald-700 grid place-items-center shrink-0 mt-0.5">
+            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+
+          <div class="flex-1 min-w-0 text-[13px] sm:text-sm leading-relaxed">
+            <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
+              {item.title && <span class="font-bold text-slate-900">{item.title}</span>}
+              <span class={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${lvl.badge}`}>
+                {item.tag ?? lvl.label}
+              </span>
+            </div>
+            <p class="text-slate-600 m-0 leading-relaxed text-xs sm:text-[13px]">
+              {item.text}
+            </p>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  {footerNote && (
+    <div class="mt-3.5 pt-3 border-t border-slate-100 text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg flex items-center gap-1.5">
+      <span>💡</span>
+      <span>{footerNote}</span>
+    </div>
+  )}
+</div>
