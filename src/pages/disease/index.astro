@@ -71,44 +71,44 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
   description="孔雀鱼疾病防治：常见病对症排查、黄金急救三步法、老三样实战准则与鱼缸用药用盐剂量计算器。"
 >
   <!-- ─────────────────────────────────────────────── -->
-  <!-- 极简自然的产品级工作台（Apple / Notion 设计哲学）   -->
+  <!-- 移动端优先与全端自适应的高质感数字工作台           -->
   <!-- ─────────────────────────────────────────────── -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+  <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-9">
     <!-- 纯粹克制的顶部标题区 -->
-    <header class="mb-8 pb-6 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
+    <header class="mb-5 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 sm:gap-2">
       <div>
-        <nav aria-label="面包屑" class="text-xs text-slate-400 mb-2 flex items-center gap-2">
+        <nav aria-label="面包屑" class="text-[11px] text-slate-400 mb-1 flex items-center gap-1.5">
           <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
           <span class="text-slate-300">/</span>
           <span class="text-slate-600 font-medium">疾病防治</span>
         </nav>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        <h1 class="text-lg sm:text-2xl font-bold tracking-tight text-slate-900">
           疾病防治与应急指南
         </h1>
       </div>
-      <p class="text-xs sm:text-sm text-slate-500">
+      <p class="text-xs text-slate-500">
         对症速查 · 急救处置 · 水体用药安全计算
       </p>
     </header>
 
-    <!-- 经典双栏布局：左侧安静导航 + 右侧清晰内容 -->
-    <div class="lg:flex lg:gap-10 items-start">
+    <!-- 响应式布局：移动端 2x2 快捷网格 / 桌面端左侧贴附导航 -->
+    <div class="lg:flex lg:gap-8 items-start">
       <!-- ───────────────────────────────────────────── -->
-      <!-- 左侧功能导航（Notion 风格利落列表 + 精致 Icon）  -->
+      <!-- 导航栏：移动端 2x2 网格，桌面端垂直侧栏          -->
       <!-- ───────────────────────────────────────────── -->
-      <aside class="lg:w-56 lg:shrink-0 mb-8 lg:mb-0 lg:sticky lg:top-24">
-        <nav aria-label="疾病防治功能导航" class="space-y-1">
+      <aside class="lg:w-52 lg:shrink-0 mb-5 lg:mb-0 lg:sticky lg:top-20">
+        <nav aria-label="疾病防治功能导航" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-1 gap-1.5">
           <button
             type="button"
             data-tab="triage"
             data-active="true"
-            class="tab-btn w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer flex items-center justify-between"
+            class="tab-btn w-full text-left px-2.5 sm:px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center justify-between"
           >
-            <span class="inline-flex items-center gap-2.5">
-              <Stethoscope class="w-4 h-4 opacity-85" />
-              <span>对症排查</span>
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 truncate">
+              <Stethoscope class="w-3.5 h-3.5 shrink-0 opacity-85" />
+              <span class="truncate">对症排查</span>
             </span>
-            <span class="text-xs font-normal opacity-70">
+            <span class="text-[10px] sm:text-[11px] font-normal opacity-70 ml-1 shrink-0">
               {articles.length}
             </span>
           </button>
@@ -117,11 +117,11 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
             type="button"
             data-tab="emergency"
             data-active="false"
-            class="tab-btn w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer flex items-center justify-between"
+            class="tab-btn w-full text-left px-2.5 sm:px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer flex items-center justify-between"
           >
-            <span class="inline-flex items-center gap-2.5">
-              <ShieldAlert class="w-4 h-4 opacity-75" />
-              <span>急救与「老三样」</span>
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 truncate">
+              <ShieldAlert class="w-3.5 h-3.5 shrink-0 opacity-75" />
+              <span class="truncate">急救与「老三样」</span>
             </span>
           </button>
 
@@ -129,11 +129,11 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
             type="button"
             data-tab="calculator"
             data-active="false"
-            class="tab-btn w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer flex items-center justify-between"
+            class="tab-btn w-full text-left px-2.5 sm:px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer flex items-center justify-between"
           >
-            <span class="inline-flex items-center gap-2.5">
-              <Calculator class="w-4 h-4 opacity-75" />
-              <span>水体用药计算器</span>
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 truncate">
+              <Calculator class="w-3.5 h-3.5 shrink-0 opacity-75" />
+              <span class="truncate">用药计算器</span>
             </span>
           </button>
 
@@ -141,11 +141,11 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
             type="button"
             data-tab="cabinet"
             data-active="false"
-            class="tab-btn w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer flex items-center justify-between"
+            class="tab-btn w-full text-left px-2.5 sm:px-3 py-2 rounded-xl text-xs font-medium transition-colors cursor-pointer flex items-center justify-between"
           >
-            <span class="inline-flex items-center gap-2.5">
-              <BriefcaseMedical class="w-4 h-4 opacity-75" />
-              <span>常备药箱</span>
+            <span class="inline-flex items-center gap-1.5 sm:gap-2 truncate">
+              <BriefcaseMedical class="w-3.5 h-3.5 shrink-0 opacity-75" />
+              <span class="truncate">常备药箱</span>
             </span>
           </button>
         </nav>
@@ -156,18 +156,18 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
       <!-- ───────────────────────────────────────────── -->
       <main class="flex-1 min-w-0">
         <!-- TAB 1: 对症排查 (Triage) -->
-        <div id="tab-panel-triage" class="tab-panel space-y-6">
-          <!-- 部位筛选：无框式胶囊按钮 -->
-          <div class="flex flex-wrap items-center gap-2 pb-2">
-            <span class="text-xs font-medium text-slate-400 mr-2 shrink-0">部位筛选：</span>
-            <div class="flex flex-wrap gap-2" id="body-part-filters">
+        <div id="tab-panel-triage" class="tab-panel space-y-4 sm:space-y-5">
+          <!-- 部位筛选：支持移动端横向丝滑滑动的胶囊栏 -->
+          <div class="flex items-center gap-1.5 pb-1 overflow-x-auto no-scrollbar -mx-3.5 px-3.5 sm:mx-0 sm:px-0 sm:flex-wrap">
+            <span class="text-[11px] font-medium text-slate-400 mr-1 shrink-0">部位筛选：</span>
+            <div class="flex items-center gap-1.5 shrink-0 sm:shrink sm:flex-wrap" id="body-part-filters">
               {BODY_PARTS.map((part) => (
                 <button
                   type="button"
                   data-filter="bodyPart"
                   data-value={part.key}
                   data-active={part.key === 'all' ? 'true' : 'false'}
-                  class="part-pill px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-colors cursor-pointer"
+                  class="part-pill whitespace-nowrap px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer shrink-0"
                 >
                   {part.label}
                 </button>
@@ -175,8 +175,8 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
             </div>
           </div>
 
-          <!-- 疾病列表：纯净白底卡片（无粗彩条、无嵌套内盒） -->
-          <div id="disease-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- 疾病列表：手机单列、桌面双列卡片 -->
+          <div id="disease-list" class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
             {articles.map((article) => {
               const sev = SEVERITY_CONFIG[article.data.severity] ?? SEVERITY_CONFIG.warning;
               const bodyPartsStr = (article.data.bodyParts ?? ['all']).join(',');
@@ -188,53 +188,53 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
                 <a
                   href={`/disease/${article.id}/`}
                   data-body-parts={bodyPartsStr}
-                  class="disease-item group block bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs hover:shadow-sm hover:border-slate-400 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
+                  class="disease-item group block bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-sm hover:border-slate-400 hover:-translate-y-0.5 active:bg-slate-50 transition-all duration-200 flex flex-col justify-between"
                 >
                   <div>
                     <!-- 顶部极简状态点 -->
-                    <div class="flex items-center justify-between gap-2 mb-3">
-                      <div class="flex items-center gap-2">
-                        <span class={`w-2 h-2 rounded-full ${sev.dotClass}`}></span>
-                        <span class="text-xs font-medium text-slate-600">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                      <div class="flex items-center gap-1.5">
+                        <span class={`w-1.5 h-1.5 rounded-full ${sev.dotClass}`}></span>
+                        <span class="text-[11px] font-medium text-slate-600">
                           {sev.label}
                         </span>
                       </div>
                       {article.data.isolationRequired && (
-                        <span class="text-xs text-rose-600 font-medium">
+                        <span class="text-[11px] text-rose-600 font-medium">
                           须隔离
                         </span>
                       )}
                     </div>
 
                     <!-- 疾病标题 -->
-                    <h3 class="text-lg font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
+                    <h3 class="text-base font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
                       {article.data.title}
                     </h3>
 
                     <!-- 典型表现 -->
                     {article.data.subtitle && (
-                      <p class="mt-2.5 text-sm text-slate-600 leading-relaxed">
+                      <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
                         {article.data.subtitle}
                       </p>
                     )}
 
-                    <!-- 处置方向（纯粹文字排版） -->
+                    <!-- 处置方向 -->
                     {article.data.emergencyAction && (
-                      <div class="mt-4 pt-3.5 border-t border-slate-100 text-xs sm:text-sm leading-relaxed">
+                      <div class="mt-3 pt-2.5 border-t border-slate-100 text-xs leading-relaxed">
                         <span class="font-semibold text-slate-900">处置：</span>
                         <span class="text-slate-600">{article.data.emergencyAction}</span>
                       </div>
                     )}
                   </div>
 
-                  <!-- 底部有价值的元数据：病原类别 + 查看处方 -->
-                  <div class="mt-5 pt-3 border-t border-slate-100/80 flex items-center justify-between text-xs text-slate-400">
-                    <span class="inline-flex items-center gap-1.5 text-slate-500 font-medium bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
-                      <span>{pathogenLabel}</span>
+                  <!-- 底部元数据 -->
+                  <div class="mt-4 pt-2.5 border-t border-slate-100/80 flex items-center justify-between text-[11px] text-slate-400">
+                    <span class="inline-flex items-center text-slate-500 font-medium bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
+                      {pathogenLabel}
                     </span>
                     <span class="text-slate-400 group-hover:text-slate-900 transition-colors font-medium inline-flex items-center gap-1">
                       <span>查看处方</span>
-                      <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </div>
                 </a>
@@ -243,98 +243,98 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
           </div>
 
           <!-- 空态 -->
-          <div id="triage-empty" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200">
-            <p class="text-sm font-medium text-slate-500">该部位暂无特定疾病条目</p>
+          <div id="triage-empty" class="hidden text-center py-10 bg-white rounded-xl border border-slate-200">
+            <p class="text-xs font-medium text-slate-500">该部位暂无特定疾病条目</p>
             <button
               type="button"
               id="triage-reset-btn"
-              class="mt-3 px-4 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 cursor-pointer"
+              class="mt-2.5 px-3 py-1 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 cursor-pointer"
             >
               查看全部疾病
             </button>
           </div>
         </div>
 
-        <!-- TAB 2: 急救与老三样准则 (Emergency - 增强顺序流向引导) -->
-        <div id="tab-panel-emergency" class="tab-panel hidden space-y-8">
+        <!-- TAB 2: 急救与老三样准则 (Emergency) -->
+        <div id="tab-panel-emergency" class="tab-panel hidden space-y-5 sm:space-y-6">
           <div>
-            <div class="flex items-baseline justify-between mb-1.5">
-              <h3 class="text-lg font-bold text-slate-900">黄金急救处置三步法</h3>
-              <span class="text-xs text-slate-400 font-medium">严禁颠倒操作次序</span>
+            <div class="flex items-baseline justify-between mb-1">
+              <h3 class="text-base font-bold text-slate-900">黄金急救处置三步法</h3>
+              <span class="text-[11px] text-slate-400 font-medium">严禁颠倒操作次序</span>
             </div>
-            <p class="text-sm text-slate-500 mb-6">发现鱼病异常时切勿盲目全缸倒药，请严格遵循以下标准程序。</p>
+            <p class="text-xs text-slate-500 mb-3.5">发现鱼病异常时切勿盲目全缸倒药，请严格遵循以下标准程序。</p>
 
-            <!-- 三步法带流向指引（卡片之间放置连接箭头） -->
-            <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch md:items-center gap-3.5">
+            <!-- 三步法卡片之间带连接箭头 -->
+            <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch md:items-center gap-2.5 sm:gap-3">
               <!-- Step 1 -->
-              <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs flex flex-col justify-between h-full">
+              <div class="bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full">
                 <div>
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="w-8 h-8 rounded-lg bg-aqua-50 border border-aqua-100 text-aqua-700 grid place-items-center">
-                      <Wind class="w-4 h-4" />
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="w-7 h-7 rounded-lg bg-aqua-50 border border-aqua-100 text-aqua-700 grid place-items-center">
+                      <Wind class="w-3.5 h-3.5" />
                     </div>
-                    <span class="text-xs font-bold text-slate-400 tracking-wider">STEP 01</span>
+                    <span class="text-[11px] font-bold text-slate-400 tracking-wider">STEP 01</span>
                   </div>
-                  <h4 class="text-base font-bold text-slate-900 mt-1 mb-1.5">隔离与打氧</h4>
-                  <p class="text-sm text-slate-600 leading-relaxed">
+                  <h4 class="text-sm font-bold text-slate-900 mt-0.5 mb-1">隔离与打氧</h4>
+                  <p class="text-xs text-slate-600 leading-relaxed">
                     将病鱼以最低惊扰移入独立治疗裸缸（无底砂水草），避免传染全缸。原缸换水 1/3。隔离缸必须持续打气爆氧。
                   </p>
                 </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 text-xs">
+                <div class="mt-3 pt-2 border-t border-slate-100 text-[11px]">
                   <span class="font-medium text-slate-500">核心目标：阻断传染源</span>
                 </div>
               </div>
 
               <!-- 连接箭头 1 ➔ 2 -->
               <div class="hidden md:flex justify-center text-slate-300">
-                <ArrowRight class="w-5 h-5 text-slate-300" />
+                <ArrowRight class="w-4 h-4 text-slate-300" />
               </div>
-              <div class="flex md:hidden justify-center py-1 text-slate-300">
-                <ArrowDown class="w-4 h-4 text-slate-300" />
+              <div class="flex md:hidden justify-center py-0.5 text-slate-300">
+                <ArrowDown class="w-3.5 h-3.5 text-slate-300" />
               </div>
 
               <!-- Step 2 -->
-              <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs flex flex-col justify-between h-full">
+              <div class="bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full">
                 <div>
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="w-8 h-8 rounded-lg bg-amber-50 border border-amber-100 text-amber-700 grid place-items-center">
-                      <Thermometer class="w-4 h-4" />
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="w-7 h-7 rounded-lg bg-amber-50 border border-amber-100 text-amber-700 grid place-items-center">
+                      <Thermometer class="w-3.5 h-3.5" />
                     </div>
-                    <span class="text-xs font-bold text-slate-400 tracking-wider">STEP 02</span>
+                    <span class="text-[11px] font-bold text-slate-400 tracking-wider">STEP 02</span>
                   </div>
-                  <h4 class="text-base font-bold text-slate-900 mt-1 mb-1.5">停食与控温</h4>
-                  <p class="text-sm text-slate-600 leading-relaxed">
+                  <h4 class="text-sm font-bold text-slate-900 mt-0.5 mb-1">停食与控温</h4>
+                  <p class="text-xs text-slate-600 leading-relaxed">
                     治疗期间停食 2-3 天，降低肠胃与水质负担。若需升温治疗，每天升幅不得超过 2℃，切忌急剧升降温。
                   </p>
                 </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 text-xs">
+                <div class="mt-3 pt-2 border-t border-slate-100 text-[11px]">
                   <span class="font-medium text-slate-500">核心目标：稳定鱼体状态</span>
                 </div>
               </div>
 
               <!-- 连接箭头 2 ➔ 3 -->
               <div class="hidden md:flex justify-center text-slate-300">
-                <ArrowRight class="w-5 h-5 text-slate-300" />
+                <ArrowRight class="w-4 h-4 text-slate-300" />
               </div>
-              <div class="flex md:hidden justify-center py-1 text-slate-300">
-                <ArrowDown class="w-4 h-4 text-slate-300" />
+              <div class="flex md:hidden justify-center py-0.5 text-slate-300">
+                <ArrowDown class="w-3.5 h-3.5 text-slate-300" />
               </div>
 
               <!-- Step 3 -->
-              <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs flex flex-col justify-between h-full">
+              <div class="bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs flex flex-col justify-between h-full">
                 <div>
-                  <div class="flex items-center justify-between mb-3">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-700 grid place-items-center">
-                      <ShieldCheck class="w-4 h-4" />
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="w-7 h-7 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-700 grid place-items-center">
+                      <ShieldCheck class="w-3.5 h-3.5" />
                     </div>
-                    <span class="text-xs font-bold text-slate-400 tracking-wider">STEP 03</span>
+                    <span class="text-[11px] font-bold text-slate-400 tracking-wider">STEP 03</span>
                   </div>
-                  <h4 class="text-base font-bold text-slate-900 mt-1 mb-1.5">对症与撤炭</h4>
-                  <p class="text-sm text-slate-600 leading-relaxed">
+                  <h4 class="text-sm font-bold text-slate-900 mt-0.5 mb-1">对症与撤炭</h4>
+                  <p class="text-xs text-slate-600 leading-relaxed">
                     确认病因后再行规范用药，严格遵循说明书下限。用药前必须取出过滤中的活性炭，避免药物被吸附失效。
                   </p>
                 </div>
-                <div class="mt-4 pt-3 border-t border-slate-100 text-xs">
+                <div class="mt-3 pt-2 border-t border-slate-100 text-[11px]">
                   <span class="font-medium text-slate-500">核心目标：精准高效根治</span>
                 </div>
               </div>
@@ -342,29 +342,29 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
           </div>
 
           <!-- 老三样实战避坑 -->
-          <div class="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-xs">
-            <h3 class="text-lg font-bold text-slate-900 mb-1.5">「老三样（升温 / 加盐 / 换水）」实战准则</h3>
-            <p class="text-sm text-slate-500 mb-6">老三样是温和调理法，但绝非万能神药。请严格对照以下适用与禁止边界。</p>
+          <div class="bg-white rounded-xl border border-slate-200/90 p-4 sm:p-6 shadow-xs">
+            <h3 class="text-base font-bold text-slate-900 mb-1">「老三样（升温 / 加盐 / 换水）」实战准则</h3>
+            <p class="text-xs text-slate-500 mb-3.5">老三样是温和调理法，但绝非万能神药。请严格对照以下适用与禁止边界。</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="bg-slate-50 rounded-xl p-5 border border-slate-200/70">
-                <h4 class="text-sm font-bold text-emerald-900 mb-3 flex items-center gap-2">
-                  <Check class="w-4 h-4 text-emerald-600" />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              <div class="bg-slate-50 rounded-lg p-3.5 sm:p-4 border border-slate-200/70">
+                <h4 class="text-xs font-bold text-emerald-900 mb-2 flex items-center gap-1.5">
+                  <Check class="w-3.5 h-3.5 text-emerald-600" />
                   何时可以使用「老三样」
                 </h4>
-                <ul class="space-y-3 text-sm text-slate-700 leading-relaxed">
+                <ul class="space-y-1.5 text-xs text-slate-700 leading-relaxed">
                   <li>• <strong>白点病初期</strong>：升温至 28-30℃ 可加速小瓜虫脱落，配合 0.3% 粗盐效果最好。</li>
                   <li>• <strong>运输应激 / 轻微缩鳍</strong>：等温困水换水 1/3 + 0.1-0.2% 粗盐调节渗透压，静养自愈。</li>
                   <li>• <strong>轻微擦伤</strong>：保持水质清洁微盐静养，避免二次细菌感染。</li>
                 </ul>
               </div>
 
-              <div class="bg-slate-50 rounded-xl p-5 border border-slate-200/70">
-                <h4 class="text-sm font-bold text-rose-900 mb-3 flex items-center gap-2">
-                  <X class="w-4 h-4 text-rose-600" />
+              <div class="bg-slate-50 rounded-lg p-3.5 sm:p-4 border border-slate-200/70">
+                <h4 class="text-xs font-bold text-rose-900 mb-2 flex items-center gap-1.5">
+                  <X class="w-3.5 h-3.5 text-rose-600" />
                   何时绝对禁止「老三样」
                 </h4>
-                <ul class="space-y-3 text-sm text-slate-700 leading-relaxed">
+                <ul class="space-y-1.5 text-xs text-slate-700 leading-relaxed">
                   <li>• <strong>水霉病严禁高温</strong>：水霉真菌耐受较高温度，盲目加温会加速病鱼体力衰竭。</li>
                   <li>• <strong>腹水 / 炸鳞严禁高盐</strong>：内脏水肿时下浓盐水会破坏渗透压，直接导致衰竭。</li>
                   <li>• <strong>烂鳃 / 氨氮超标严禁升温</strong>：水温越高水中溶氧越低、氨毒性剧增。</li>
@@ -374,79 +374,79 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
           </div>
         </div>
 
-        <!-- TAB 3: 水体用盐/用药剂量计算器 (Calculator - 双模式输入 + 一键复制备忘) -->
+        <!-- TAB 3: 水体用盐/用药剂量计算器 (Calculator) -->
         <div id="tab-panel-calculator" class="tab-panel hidden">
-          <div class="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="bg-white rounded-xl border border-slate-200/90 p-4 sm:p-6 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
             <!-- 左侧输入区 -->
-            <div class="lg:col-span-5 space-y-5">
+            <div class="lg:col-span-5 space-y-3.5 sm:space-y-4">
               <div>
-                <h3 class="text-xl font-bold text-slate-900">鱼缸参数设置</h3>
-                <p class="text-sm text-slate-500 mt-1">支持按缸体尺寸或直接输入净水升数</p>
+                <h3 class="text-base font-bold text-slate-900">鱼缸参数设置</h3>
+                <p class="text-xs text-slate-400 mt-0.5">支持按尺寸换算或直接输入升数</p>
               </div>
 
-              <!-- 双模式切换 Segmented Switch -->
-              <div class="bg-slate-100 p-1 rounded-xl flex items-center text-xs font-semibold">
+              <!-- 双模式切换 -->
+              <div class="bg-slate-100 p-0.5 rounded-lg flex items-center text-xs font-medium">
                 <button
                   type="button"
                   id="calc-mode-dim"
-                  class="calc-mode-btn flex-1 py-1.5 px-3 rounded-lg bg-white text-slate-900 shadow-xs cursor-pointer transition-all flex items-center justify-center gap-1.5"
+                  class="calc-mode-btn flex-1 py-1 px-2 rounded-md bg-white text-slate-900 shadow-2xs cursor-pointer transition-all flex items-center justify-center gap-1"
                 >
-                  <Sliders class="w-3.5 h-3.5" />
-                  <span>按长宽高尺寸换算</span>
+                  <Sliders class="w-3 h-3" />
+                  <span>按尺寸换算</span>
                 </button>
                 <button
                   type="button"
                   id="calc-mode-direct"
-                  class="calc-mode-btn flex-1 py-1.5 px-3 rounded-lg text-slate-600 hover:text-slate-900 cursor-pointer transition-all flex items-center justify-center gap-1.5"
+                  class="calc-mode-btn flex-1 py-1 px-2 rounded-md text-slate-600 hover:text-slate-900 cursor-pointer transition-all flex items-center justify-center gap-1"
                 >
-                  <Hash class="w-3.5 h-3.5" />
-                  <span>直接输入净水升数</span>
+                  <Hash class="w-3 h-3" />
+                  <span>直接输入升数</span>
                 </button>
               </div>
 
               <!-- 模式 A：长宽高输入面板 -->
-              <div id="panel-mode-dim" class="space-y-4">
-                <div class="grid grid-cols-3 gap-3">
+              <div id="panel-mode-dim" class="space-y-3">
+                <div class="grid grid-cols-3 gap-2">
                   <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">长 (cm)</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">长 (cm)</label>
                     <input
                       type="number"
                       id="tank-length"
                       value="40"
                       min="5"
                       max="300"
-                      class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-900 font-bold text-base focus:outline-none focus:border-slate-900"
+                      class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-900 font-bold text-sm focus:outline-none focus:border-slate-900"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">宽 (cm)</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">宽 (cm)</label>
                     <input
                       type="number"
                       id="tank-width"
                       value="30"
                       min="5"
                       max="200"
-                      class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-900 font-bold text-base focus:outline-none focus:border-slate-900"
+                      class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-900 font-bold text-sm focus:outline-none focus:border-slate-900"
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">水深 (cm)</label>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">水深 (cm)</label>
                     <input
                       type="number"
                       id="tank-height"
                       value="30"
                       min="5"
                       max="150"
-                      class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-900 font-bold text-base focus:outline-none focus:border-slate-900"
+                      class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-900 font-bold text-sm focus:outline-none focus:border-slate-900"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-1.5">造景与底砂占用扣除</label>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">造景与底砂占用扣除</label>
                   <select
                     id="tank-deduction"
-                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-800 font-medium text-sm focus:outline-none focus:border-slate-900 cursor-pointer"
+                    class="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-800 text-xs focus:outline-none focus:border-slate-900 cursor-pointer"
                   >
                     <option value="0.9">扣除 10%（少量底砂 / 水草）- 推荐</option>
                     <option value="1.0">不扣除（纯裸缸 / 隔离小缸）</option>
@@ -455,28 +455,28 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
                 </div>
 
                 <div>
-                  <span class="block text-sm font-medium text-slate-500 mb-2">常用鱼缸尺寸一键选择：</span>
-                  <div class="grid grid-cols-2 gap-2">
-                    <button type="button" class="preset-btn text-sm font-medium px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left" data-l="30" data-w="20" data-h="20">
-                      30 方缸 (约 12L)
+                  <span class="block text-[11px] font-medium text-slate-400 mb-1">常用鱼缸尺寸一键选择：</span>
+                  <div class="grid grid-cols-2 gap-1.5">
+                    <button type="button" class="preset-btn text-xs font-medium px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left truncate" data-l="30" data-w="20" data-h="20">
+                      30 方缸 (12L)
                     </button>
-                    <button type="button" class="preset-btn text-sm font-medium px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left" data-l="40" data-w="30" data-h="30">
-                      40 标准缸 (约 36L)
+                    <button type="button" class="preset-btn text-xs font-medium px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left truncate" data-l="40" data-w="30" data-h="30">
+                      40 标准缸 (36L)
                     </button>
-                    <button type="button" class="preset-btn text-sm font-medium px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left" data-l="50" data-w="33" data-h="35">
-                      50 缸 (约 57L)
+                    <button type="button" class="preset-btn text-xs font-medium px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left truncate" data-l="50" data-w="33" data-h="35">
+                      50 缸 (57L)
                     </button>
-                    <button type="button" class="preset-btn text-sm font-medium px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left" data-l="20" data-w="15" data-h="15">
-                      治疗小缸 (约 4.5L)
+                    <button type="button" class="preset-btn text-xs font-medium px-2 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors text-left truncate" data-l="20" data-w="15" data-h="15">
+                      治疗小缸 (4.5L)
                     </button>
                   </div>
                 </div>
               </div>
 
               <!-- 模式 B：直接输入升数面板 -->
-              <div id="panel-mode-direct" class="hidden space-y-4">
+              <div id="panel-mode-direct" class="hidden space-y-3">
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-1.5">净水体容积 (L)</label>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">净水体容积 (L)</label>
                   <div class="relative">
                     <input
                       type="number"
@@ -485,25 +485,25 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
                       min="1"
                       max="1000"
                       step="0.5"
-                      class="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-900 font-bold text-lg focus:outline-none focus:border-slate-900"
+                      class="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-900 font-bold text-base focus:outline-none focus:border-slate-900"
                     />
-                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">升 (L)</span>
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">升 (L)</span>
                   </div>
                 </div>
 
                 <div>
-                  <span class="block text-sm font-medium text-slate-500 mb-2">常用升数快捷点选：</span>
-                  <div class="grid grid-cols-4 gap-2">
-                    <button type="button" class="quick-liters-btn text-sm font-medium py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="5">
+                  <span class="block text-[11px] font-medium text-slate-400 mb-1">常用升数快捷点选：</span>
+                  <div class="grid grid-cols-4 gap-1.5">
+                    <button type="button" class="quick-liters-btn text-xs font-medium py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="5">
                       5 L
                     </button>
-                    <button type="button" class="quick-liters-btn text-sm font-medium py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="15">
+                    <button type="button" class="quick-liters-btn text-xs font-medium py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="15">
                       15 L
                     </button>
-                    <button type="button" class="quick-liters-btn text-sm font-medium py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="30">
+                    <button type="button" class="quick-liters-btn text-xs font-medium py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="30">
                       30 L
                     </button>
-                    <button type="button" class="quick-liters-btn text-sm font-medium py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="60">
+                    <button type="button" class="quick-liters-btn text-xs font-medium py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 hover:border-slate-300 cursor-pointer transition-colors" data-liters="60">
                       60 L
                     </button>
                   </div>
@@ -512,86 +512,86 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
             </div>
 
             <!-- 右侧计算结果区 -->
-            <div class="lg:col-span-7 bg-slate-50/90 rounded-2xl p-6 sm:p-7 border border-slate-200/90 flex flex-col justify-between">
+            <div class="lg:col-span-7 bg-slate-50/90 rounded-xl p-4 sm:p-5 border border-slate-200/90 flex flex-col justify-between">
               <div>
-                <!-- 水体容积 + 复制备忘按钮 -->
-                <div class="flex items-baseline justify-between pb-4 border-b border-slate-200 gap-3">
+                <!-- 水体容积 + 复制备忘 -->
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 gap-2">
                   <div>
-                    <span class="text-base font-semibold text-slate-700">计算净水体容积</span>
+                    <span class="text-xs font-semibold text-slate-600">计算净水体容积</span>
                     <div class="flex items-baseline gap-1 mt-0.5">
-                      <span id="res-volume" class="text-4xl font-mono font-bold text-slate-900 tabular-nums">32.4</span>
-                      <span class="text-base font-semibold text-slate-600">升 (L)</span>
+                      <span id="res-volume" class="text-2xl sm:text-3xl font-mono font-bold text-slate-900 tabular-nums">32.4</span>
+                      <span class="text-xs font-semibold text-slate-500">升 (L)</span>
                     </div>
                   </div>
 
                   <button
                     type="button"
                     id="copy-memo-btn"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-semibold shadow-2xs transition-all cursor-pointer shrink-0"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 text-[11px] font-semibold shadow-2xs transition-all cursor-pointer shrink-0"
                     title="复制当前水体配比备忘到剪贴板"
                   >
-                    <Copy id="copy-icon" class="w-3.5 h-3.5" />
-                    <span id="copy-text">复制处方备忘</span>
+                    <Copy id="copy-icon" class="w-3 h-3" />
+                    <span id="copy-text">复制备忘</span>
                   </button>
                 </div>
 
                 <!-- 粗盐剂量推荐 -->
-                <div class="mt-6">
-                  <span class="text-sm font-bold text-slate-900 block mb-3">
+                <div class="mt-3.5">
+                  <span class="text-xs font-bold text-slate-900 block mb-1.5">
                     🧂 粗盐（无碘盐）用量推荐
                   </span>
-                  <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-xs">
-                      <div class="text-xs font-semibold text-slate-500">0.1% 保健</div>
-                      <div class="text-xl font-bold text-slate-800 mt-1"><span id="res-salt-01" class="tabular-nums">32</span> g</div>
+                  <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5 text-center">
+                    <div class="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200/90 shadow-2xs">
+                      <div class="text-[10px] sm:text-[11px] font-medium text-slate-500">0.1% 保健</div>
+                      <div class="text-sm sm:text-base font-bold text-slate-800 mt-0.5"><span id="res-salt-01" class="tabular-nums">32</span> g</div>
                     </div>
-                    <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-xs">
-                      <div class="text-xs font-semibold text-slate-700">0.3% 轻症（常用）</div>
-                      <div class="text-xl font-bold text-slate-900 mt-1"><span id="res-salt-03" class="tabular-nums">97</span> g</div>
+                    <div class="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200/90 shadow-2xs">
+                      <div class="text-[10px] sm:text-[11px] font-semibold text-slate-700">0.3% 轻症常用</div>
+                      <div class="text-sm sm:text-base font-bold text-slate-900 mt-0.5"><span id="res-salt-03" class="tabular-nums">97</span> g</div>
                     </div>
-                    <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-xs">
-                      <div class="text-xs font-semibold text-slate-500">0.5% 标准治疗</div>
-                      <div class="text-xl font-bold text-slate-800 mt-1"><span id="res-salt-05" class="tabular-nums">162</span> g</div>
+                    <div class="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200/90 shadow-2xs">
+                      <div class="text-[10px] sm:text-[11px] font-medium text-slate-500">0.5% 标准治疗</div>
+                      <div class="text-sm sm:text-base font-bold text-slate-800 mt-0.5"><span id="res-salt-05" class="tabular-nums">162</span> g</div>
                     </div>
                   </div>
                 </div>
 
                 <!-- 常用药安全参考剂量 -->
-                <div class="mt-6 pt-5 border-t border-slate-200">
-                  <span class="text-sm font-bold text-slate-900 block mb-3">
+                <div class="mt-3.5 pt-3 border-t border-slate-200">
+                  <span class="text-xs font-bold text-slate-900 block mb-1.5">
                     🧪 常用药实用用量指南（按水体比例）
                   </span>
-                  <div class="space-y-3 text-sm text-slate-800">
-                    <!-- 亚甲基蓝：标准市售 1% 水剂 -->
-                    <div class="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-xs">
-                      <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-slate-900">亚甲基蓝（市售 1% 标准水剂）</span>
-                        <span class="font-bold text-aqua-800 text-base">约 <span id="res-med-mb-ml">6.5</span> mL</span>
+                  <div class="space-y-1.5 text-xs text-slate-800">
+                    <!-- 亚甲基蓝 -->
+                    <div class="bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-2xs">
+                      <div class="flex justify-between items-center mb-0.5">
+                        <span class="font-medium text-slate-900">亚甲基蓝（市售 1% 水剂）</span>
+                        <span class="font-bold text-aqua-800">约 <span id="res-med-mb-ml">6.5</span> mL</span>
                       </div>
-                      <p class="text-xs text-slate-500">
-                        标准药浴浓度（2ppm）：每 10 升水约添加 2 mL（可用针筒/刻度吸管量取），水色呈通透浅蓝即可
+                      <p class="text-[10px] sm:text-[11px] text-slate-400">
+                        标准药浴（2ppm）：每 10 升水添加 2 mL，水色呈通透浅蓝
                       </p>
                     </div>
 
-                    <!-- 黄粉 / 呋喃西林 -->
-                    <div class="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-xs">
-                      <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-slate-900">黄粉 / 呋喃西林（全缸温和药浴）</span>
-                        <span class="font-bold text-amber-800 text-base">约 <span id="res-med-yf">0.3</span> g</span>
+                    <!-- 黄粉 -->
+                    <div class="bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-2xs">
+                      <div class="flex justify-between items-center mb-0.5">
+                        <span class="font-medium text-slate-900">黄粉 / 呋喃西林（温和药浴）</span>
+                        <span class="font-bold text-amber-800">约 <span id="res-med-yf">0.3</span> g</span>
                       </div>
-                      <p class="text-xs text-slate-500">
-                        持续药浴浓度 1-2ppm（每 100L 水用 1g，水色微黄）；高浓度浸洗（15分钟）为每 10L 用 1g
+                      <p class="text-[10px] sm:text-[11px] text-slate-400">
+                        持续药浴 1-2ppm（每 100L 用 1g，水色微黄）；高浓度浸洗每 10L 用 1g
                       </p>
                     </div>
 
                     <!-- 甲硝唑 -->
-                    <div class="bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-xs">
-                      <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-slate-900">甲硝唑（肠炎 / 内寄）</span>
-                        <span class="font-bold text-slate-900 text-base">约 <span id="res-med-mn">1.3</span> 粒（200mg/粒）</span>
+                    <div class="bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-2xs">
+                      <div class="flex justify-between items-center mb-0.5">
+                        <span class="font-medium text-slate-900">甲硝唑（肠炎 / 内寄）</span>
+                        <span class="font-bold text-slate-900">约 <span id="res-med-mn">1.3</span> 粒（200mg/粒）</span>
                       </div>
-                      <p class="text-xs text-slate-500">
-                        标准剂量为每 25L 水投 1 粒，药片碾碎温水化开后均匀倒入隔离缸
+                      <p class="text-[10px] sm:text-[11px] text-slate-400">
+                        标准剂量每 25L 水投 1 粒，温水化开后倒入隔离缸
                       </p>
                     </div>
                   </div>
@@ -599,91 +599,91 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
               </div>
 
               <!-- 底部安全提示 -->
-              <div class="mt-6 p-3.5 rounded-xl bg-amber-50 border border-amber-200/70 text-sm text-amber-950 leading-relaxed">
-                <strong>用药准则：</strong>幼鱼、弱鱼及螺虾类剂量减半。药浴期间必须取出过滤中的活性炭，避免药效被吸附失效。
+              <div class="mt-3.5 p-2.5 rounded-lg bg-amber-50 border border-amber-200/70 text-[11px] text-amber-950 leading-relaxed">
+                <strong>用药准则：</strong>幼鱼、弱鱼剂量减半。药浴期间必须取出过滤活性炭。
               </div>
             </div>
           </div>
         </div>
 
-        <!-- TAB 4: 常备药箱 (Cabinet - 结构化清单视图) -->
-        <div id="tab-panel-cabinet" class="tab-panel hidden space-y-6">
-          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-            <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <!-- TAB 4: 常备药箱 (Cabinet) -->
+        <div id="tab-panel-cabinet" class="tab-panel hidden space-y-4 sm:space-y-5">
+          <div class="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden">
+            <div class="p-3.5 sm:p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
               <div>
-                <h3 class="text-lg font-bold text-slate-900">家庭水族常备药箱配置清单</h3>
-                <p class="text-xs sm:text-sm text-slate-500 mt-0.5">备齐以下 4 类核心物资，即可从容应对 90% 以上的常见突发鱼病</p>
+                <h3 class="text-base font-bold text-slate-900">家庭水族常备药箱配置清单</h3>
+                <p class="text-xs text-slate-500">备齐以下 4 类核心物资，即可从容应对 90% 以上的常见突发鱼病</p>
               </div>
-              <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-xs shrink-0 self-start sm:self-auto">
-                <BriefcaseMedical class="w-3.5 h-3.5 text-aqua-700" />
+              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-2xs shrink-0 self-start sm:self-auto">
+                <BriefcaseMedical class="w-3 h-3 text-aqua-700" />
                 4 项基础配置
               </span>
             </div>
 
             <div class="divide-y divide-slate-100">
               <!-- 物资 01 -->
-              <div class="p-6 sm:p-7 flex flex-col md:flex-row md:items-start gap-4 sm:gap-6">
-                <div class="flex items-center gap-3.5 md:w-56 shrink-0">
-                  <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 grid place-items-center shrink-0">
-                    <Droplets class="w-5 h-5" />
+              <div class="p-3.5 sm:p-5 flex flex-col md:flex-row md:items-start gap-2.5 sm:gap-4">
+                <div class="flex items-center gap-2.5 md:w-52 shrink-0">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 text-slate-700 grid place-items-center shrink-0">
+                    <Droplets class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                   <div>
-                    <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">01 必备基石</span>
-                    <h4 class="text-base font-bold text-slate-900">无碘粗盐 / 海盐</h4>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">01 必备基石</span>
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-900">无碘粗盐 / 海盐</h4>
                   </div>
                 </div>
-                <div class="flex-1 text-sm leading-relaxed text-slate-600 space-y-1.5">
+                <div class="flex-1 text-xs leading-relaxed text-slate-600 space-y-1">
                   <p><strong class="text-slate-800">主要用途：</strong>调节渗透压、抑菌杀虫、缓解轻度水霉与新鱼运输应激。</p>
                   <p><strong class="text-slate-800">实战用法：</strong>日常调水 0.1%，轻症急救 0.3%，重症药浴 0.5%。<span class="text-rose-600 font-medium">严禁使用含碘食用盐。</span></p>
                 </div>
               </div>
 
               <!-- 物资 02 -->
-              <div class="p-6 sm:p-7 flex flex-col md:flex-row md:items-start gap-4 sm:gap-6">
-                <div class="flex items-center gap-3.5 md:w-56 shrink-0">
-                  <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 grid place-items-center shrink-0">
-                    <FlaskConical class="w-5 h-5" />
+              <div class="p-3.5 sm:p-5 flex flex-col md:flex-row md:items-start gap-2.5 sm:gap-4">
+                <div class="flex items-center gap-2.5 md:w-52 shrink-0">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 text-slate-700 grid place-items-center shrink-0">
+                    <FlaskConical class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                   <div>
-                    <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">02 广谱防霉</span>
-                    <h4 class="text-base font-bold text-slate-900">亚甲基蓝水剂 (1%)</h4>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">02 广谱防霉</span>
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-900">亚甲基蓝水剂 (1%)</h4>
                   </div>
                 </div>
-                <div class="flex-1 text-sm leading-relaxed text-slate-600 space-y-1.5">
+                <div class="flex-1 text-xs leading-relaxed text-slate-600 space-y-1">
                   <p><strong class="text-slate-800">主要用途：</strong>针对白点病初期、水霉真菌白毛、幼鱼卵防霉孵化，药性温和不伤鱼。</p>
                   <p><strong class="text-slate-800">实战用法：</strong>每 10 升水加 2 mL，水色呈通透浅蓝。使用期间建议避光静养。</p>
                 </div>
               </div>
 
               <!-- 物资 03 -->
-              <div class="p-6 sm:p-7 flex flex-col md:flex-row md:items-start gap-4 sm:gap-6">
-                <div class="flex items-center gap-3.5 md:w-56 shrink-0">
-                  <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 grid place-items-center shrink-0">
-                    <Pill class="w-5 h-5" />
+              <div class="p-3.5 sm:p-5 flex flex-col md:flex-row md:items-start gap-2.5 sm:gap-4">
+                <div class="flex items-center gap-2.5 md:w-52 shrink-0">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 text-slate-700 grid place-items-center shrink-0">
+                    <Pill class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                   <div>
-                    <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">03 抗菌消炎</span>
-                    <h4 class="text-base font-bold text-slate-900">黄粉 / 土霉素</h4>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">03 抗菌消炎</span>
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-900">黄粉 / 土霉素</h4>
                   </div>
                 </div>
-                <div class="flex-1 text-sm leading-relaxed text-slate-600 space-y-1.5">
+                <div class="flex-1 text-xs leading-relaxed text-slate-600 space-y-1">
                   <p><strong class="text-slate-800">主要用途：</strong>广谱抗菌药，主治细菌性烂尾、烂肉、外伤充血及立鳞初期感染。</p>
                   <p><strong class="text-slate-800">实战用法：</strong>持续药浴每 100L 用 1g（水色微黄）。<span class="text-amber-800 font-medium">必须在隔离缸使用，避免破坏主缸硝化。</span></p>
                 </div>
               </div>
 
               <!-- 物资 04 -->
-              <div class="p-6 sm:p-7 flex flex-col md:flex-row md:items-start gap-4 sm:gap-6">
-                <div class="flex items-center gap-3.5 md:w-56 shrink-0">
-                  <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 grid place-items-center shrink-0">
-                    <Box class="w-5 h-5" />
+              <div class="p-3.5 sm:p-5 flex flex-col md:flex-row md:items-start gap-2.5 sm:gap-4">
+                <div class="flex items-center gap-2.5 md:w-52 shrink-0">
+                  <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 text-slate-700 grid place-items-center shrink-0">
+                    <Box class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </div>
                   <div>
-                    <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">04 硬件防线</span>
-                    <h4 class="text-base font-bold text-slate-900">隔离小缸 + 水妖精</h4>
+                    <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">04 硬件防线</span>
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-900">隔离小缸 + 水妖精</h4>
                   </div>
                 </div>
-                <div class="flex-1 text-sm leading-relaxed text-slate-600 space-y-1.5">
+                <div class="flex-1 text-xs leading-relaxed text-slate-600 space-y-1">
                   <p><strong class="text-slate-800">主要用途：</strong>治病第一道物理防线，阻断传染源，便于精确控温、控药与打氧爆气。</p>
                   <p><strong class="text-slate-800">实战用法：</strong>备好 5-15L 简易小裸缸（无底砂水草）+ 迷你加热棒 + 气泵水妖精。</p>
                 </div>
@@ -691,8 +691,8 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
             </div>
 
             <!-- 底部保存须知 -->
-            <div class="p-4 bg-slate-50/70 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between">
-              <span>💡 <strong>保存建议：</strong>各类水族药剂请常温避光密封保存，远离儿童；过期变色药剂请勿使用。</span>
+            <div class="p-3 bg-slate-50/70 border-t border-slate-100 text-[11px] text-slate-500">
+              💡 <strong>保存建议：</strong>各类水族药剂请常温避光密封保存，远离儿童；过期变色药剂请勿使用。
             </div>
           </div>
         </div>
@@ -728,6 +728,15 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
   .part-pill[data-active="false"]:hover {
     color: #0f172a;
     border-color: #cbd5e1;
+  }
+
+  /* 隐藏水平滚动条 */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 </style>
 
@@ -829,12 +838,12 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
 
       btnModeDim?.classList.toggle('bg-white', isDim);
       btnModeDim?.classList.toggle('text-slate-900', isDim);
-      btnModeDim?.classList.toggle('shadow-xs', isDim);
+      btnModeDim?.classList.toggle('shadow-2xs', isDim);
       btnModeDim?.classList.toggle('text-slate-600', !isDim);
 
       btnModeDirect?.classList.toggle('bg-white', !isDim);
       btnModeDirect?.classList.toggle('text-slate-900', !isDim);
-      btnModeDirect?.classList.toggle('shadow-xs', !isDim);
+      btnModeDirect?.classList.toggle('shadow-2xs', !isDim);
       btnModeDirect?.classList.toggle('text-slate-600', isDim);
 
       panelModeDim?.classList.toggle('hidden', !isDim);
@@ -920,10 +929,10 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
 
       try {
         await navigator.clipboard.writeText(memoText);
-        if (copyText) copyText.textContent = '已复制处方！';
+        if (copyText) copyText.textContent = '已复制！';
         copyBtn.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         setTimeout(() => {
-          if (copyText) copyText.textContent = '复制处方备忘';
+          if (copyText) copyText.textContent = '复制备忘';
           copyBtn.classList.remove('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
         }, 2000);
       } catch {
