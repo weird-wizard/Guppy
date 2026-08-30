@@ -24,8 +24,8 @@ const {
   type = 'website',
 } = Astro.props;
 
-const canonicalUrl = new URL(path, Astro.site ?? 'https://guppy.example.com').toString();
-const ogImage = new URL(image, Astro.site ?? 'https://guppy.example.com').toString();
+const canonicalUrl = new URL(path, Astro.site ?? 'https://guppy.qichiyoufeng.top').toString();
+const ogImage = new URL(image, Astro.site ?? 'https://guppy.qichiyoufeng.top').toString();
 
 // 主导航：/breeds/ 需同时匹配 /breed/ 详情页
 const pathname = Astro.url.pathname;
@@ -212,9 +212,9 @@ const navItems = [
     <!-- 全局回到顶部浮动按钮 -->
     <BackToTop />
 
-    <!-- PagefindConfig 必须在所有 pagefind-* 组件之前：负责导入 CSS/JS 并接线 bundle-path -->
-    <PagefindConfig />
-    <pagefind-modal></pagefind-modal>
+    <!-- PagefindConfig 必须在所有 pagefind-* 组件之前：添加 transition:persist 保持切页状态连贯 -->
+    <PagefindConfig transition:persist="pagefind-config" />
+    <pagefind-modal transition:persist="pagefind-modal"></pagefind-modal>
     <script>
       // 移动端汉堡菜单：点击外部自动关闭（兼容 View Transitions）
       function bindMenuDismiss() {
@@ -252,6 +252,101 @@ const navItems = [
         updateProgress();
       }
 
+      // 核心补丁：修复 @pagefind/component-ui 在二次 render 时将自身 dialog 误当做子节点导致输入框丢失（仅剩 mask）的缺陷
+      function patchPagefindModal() {
+        if (typeof customElements === 'undefined') return;
+        customElements.whenDefined('pagefind-modal').then(() => {
+          const PagefindModalClass = customElements.get('pagefind-modal');
+          if (PagefindModalClass && !PagefindModalClass.__patched) {
+            PagefindModalClass.__patched = true;
+            PagefindModalClass.prototype.render = function () {
+              const rawChildren = Array.from(this.children);
+              const validUserChildren = rawChildren.filter(
+                (c) => c.tagName.toLowerCase() !== 'dialog' && !c.classList.contains('pf-modal')
+              );
+              const hasUserChildren = validUserChildren.length > 0;
+
+              this.innerHTML = '';
+              const dialogId = this.id || (this.instance ? this.instance.generateId('pagefind-modal') : 'pagefind-modal-dialog');
+              const searchLabel = this.instance?.translate?.('keyboard_search') || '搜索';
+
+              if (this.instance?.direction === 'rtl') {
+                this.setAttribute('dir', 'rtl');
+              } else {
+                this.removeAttribute('dir');
+              }
+
+              this.dialogEl = document.createElement('dialog');
+              this.dialogEl.className = 'pf-modal';
+              this.dialogEl.id = dialogId;
+              this.dialogEl.setAttribute('aria-label', searchLabel);
+
+              if (hasUserChildren) {
+                validUserChildren.forEach((child) => this.dialogEl.appendChild(child));
+              } else {
+                const inst = this.getAttribute('instance');
+                const header = document.createElement('pagefind-modal-header');
+                const input = document.createElement('pagefind-input');
+                if (inst) input.setAttribute('instance', inst);
+                header.appendChild(input);
+
+                const body = document.createElement('pagefind-modal-body');
+                const summary = document.createElement('pagefind-summary');
+                const results = document.createElement('pagefind-results');
+                if (inst) {
+                  summary.setAttribute('instance', inst);
+                  results.setAttribute('instance', inst);
+                }
+                body.append(summary, results);
+
+                const footer = document.createElement('pagefind-modal-footer');
+                const hints = document.createElement('pagefind-keyboard-hints');
+                if (inst) hints.setAttribute('instance', inst);
+                footer.appendChild(hints);
+
+                this.dialogEl.append(header, body, footer);
+              }
+
+              this.appendChild(this.dialogEl);
+              this.setupEventHandlers();
+            };
+          }
+        });
+      }
+      patchPagefindModal();
+
+      // 增强 View Transitions 下 Pagefind 搜索框的点击与快捷键呼起
+      function setupSearchModal() {
+        const trigger = document.querySelector('pagefind-modal-trigger');
+        if (trigger && !trigger.dataset.searchBound) {
+          trigger.dataset.searchBound = '1';
+          trigger.addEventListener('click', () => {
+            const modal = document.querySelector('pagefind-modal');
+            if (modal && typeof modal.open === 'function' && !modal.isOpen) {
+              modal.open();
+            }
+          });
+        }
+      }
+
+      // 全局快捷键保障：Ctrl+K / Cmd+K 唤起搜索
+      if (!window.__guppySearchKeyBound) {
+        window.__guppySearchKeyBound = true;
+        document.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            const modal = document.querySelector('pagefind-modal');
+            if (modal && typeof modal.open === 'function') {
+              if (modal.isOpen) {
+                modal.close();
+              } else {
+                modal.open();
+              }
+            }
+          }
+        });
+      }
+
       document.addEventListener('astro:page-load', () => {
         // 每次页面加载（含 View Transitions 导航）重新绑定
         const nav = document.querySelector('header > nav');
@@ -260,6 +355,7 @@ const navItems = [
           bindMenuDismiss();
         }
         initScrollProgress();
+        setupSearchModal();
       });
     </script>
     <Analytics />

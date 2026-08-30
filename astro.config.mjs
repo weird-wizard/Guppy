@@ -6,7 +6,7 @@ import pagefind from 'astro-pagefind';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://guppy.example.com',
+  site: 'https://guppy.qichiyoufeng.top',
   integrations: [mdx(), pagefind()],
   vite: {
     plugins: [tailwindcss()],

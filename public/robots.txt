@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://guppy.example.com/sitemap.xml
+Sitemap: https://guppy.qichiyoufeng.top/sitemap.xml

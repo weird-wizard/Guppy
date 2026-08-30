@@ -67,6 +67,16 @@ html {
   scroll-behavior: smooth;
 }
 
+/* 全局图片禁止原生拖拽幽灵阴影与选中，提升原生交互质感 */
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 body {
   @apply bg-abyss-50/40 text-slate-800 antialiased;
   font-family: var(--font-sans);
@@ -274,7 +284,7 @@ body {
 }
 
 ::selection {
-  background: var(--color-coral-500);
+  background: var(--color-aqua-500);
   color: #fff;
 }
 
@@ -505,6 +515,22 @@ body {
   --pf-accent: #224e8c;
   --pf-accent-hover: #16335e;
   --pf-border: #e2e8f0;
+}
+
+/* Pagefind modal 弹窗定位与居中增强（防塌陷与脱模） */
+dialog.pf-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  margin: var(--pf-modal-top, 10dvh) auto auto auto !important;
+  width: calc(100% - 32px) !important;
+  max-width: var(--pf-modal-max-width, 560px) !important;
+  max-height: var(--pf-modal-max-height, min(80dvh, 800px)) !important;
+  z-index: 99999 !important;
+}
+
+dialog.pf-modal::backdrop {
+  background: rgba(13, 34, 64, 0.45) !important;
+  backdrop-filter: blur(4px) !important;
 }
 
 /* ─── 微交互工具类 ─── */

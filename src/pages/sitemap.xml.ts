@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
 // 全站 URL 清单：sitemap.xml 由内容集合动态生成
-const SITE = 'https://guppy.example.com';
+const SITE = 'https://guppy.qichiyoufeng.top';
 
 export const GET: APIRoute = async ({ site }) => {
   const baseUrl = site ?? new URL(SITE);

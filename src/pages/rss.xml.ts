@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 
 // RSS 订阅：汇总最新发布的品种/文章
-const SITE = 'https://guppy.example.com';
+const SITE = 'https://guppy.qichiyoufeng.top';
 
 export const GET: APIRoute = async ({ site }) => {
   const baseUrl = site ?? new URL(SITE);

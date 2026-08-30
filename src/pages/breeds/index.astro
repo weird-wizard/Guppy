@@ -203,7 +203,6 @@ function getCoverSrc(breed: CollectionEntry<'breeds'>): string | undefined {
                 alt={breed.data.title}
                 image={getCoverSrc(breed)}
                 gradientFrom={COLOR_GRADIENTS[breed.data.color]}
-                transitionName={`breed-img-${breed.id}`}
               />
               {/* 静态底部渐变蒙层：水中深度感 */}
               <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-abyss-950/35 to-transparent"></div>
