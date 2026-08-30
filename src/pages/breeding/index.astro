@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('breeding')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+---
+
+<BaseLayout title="繁殖技术 - 孔雀鱼百科" description="孔雀鱼繁殖技术：种鱼选择、孕期管理、小鱼护理、品系提纯与选育">
+  {/* 深蓝页头带 */}
+  <section class="relative bg-gradient-to-b from-abyss-950 via-abyss-900 to-abyss-800 text-white">
+    <div class="max-w-6xl mx-auto px-4 pt-14 pb-14">
+      <p class="text-sm font-medium text-aqua-300 mb-2">繁殖技术</p>
+      <h1 class="text-3xl sm:text-4xl font-bold">从种鱼到满缸小鱼</h1>
+      <p class="mt-3 text-aqua-100/80 max-w-2xl">孔雀鱼是"百万鱼"，繁殖并不难，但养出好品相需要系统的知识。这里从孕期管理讲到品系提纯。</p>
+    </div>
+    {/* 波浪分隔 */}
+    <div aria-hidden="true" class="h-10 w-full overflow-hidden leading-none text-slate-50">
+      <svg viewBox="0 0 1440 40" preserveAspectRatio="none" class="block h-full w-full">
+        <path fill="currentColor" d="M0 40V26c240 22 480-20 720 0s480 22 720 0v14z" />
+      </svg>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 py-10">
+    <div class="space-y-6">
+      {articles.map((article, i) => (
+        <a
+          href={`/breeding/${article.id}/`}
+          class="group block bg-white rounded-2xl border border-slate-200 hover:border-aqua-300 shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 p-6"
+        >
+          <div class="flex items-start gap-5">
+            <div
+              class="shrink-0 w-14 h-14 rounded-xl grid place-items-center text-2xl font-bold text-white bg-gradient-to-br from-coral-400 to-coral-600"
+              aria-hidden="true"
+            >
+              {String(i + 1).padStart(2, '0')}
+            </div>
+            <div>
+              <h2 class="text-xl font-semibold text-slate-900 group-hover:text-coral-600 transition-colors">
+                {article.data.title}
+              </h2>
+              {article.data.subtitle && <p class="mt-1.5 text-slate-600">{article.data.subtitle}</p>}
+              <div class="mt-3 flex items-center gap-3 text-xs text-slate-400">
+                <span>更新于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
+                {article.data.tags?.map((tag) => (
+                  <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

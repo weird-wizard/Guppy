@@ -1,0 +1,257 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import PagefindConfig from 'astro-pagefind/components/PagefindConfig.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** 页面 URL 路径，用于 canonical 和 OpenGraph（默认取当前路径） */
+  path?: string;
+  /** 社交分享图片（默认用 favicon 占位） */
+  image?: string;
+  /** 文章类型（article 或 website，默认 website） */
+  type?: 'website' | 'article';
+}
+
+const {
+  title = '孔雀鱼百科',
+  description = '孔雀鱼（Poecilia reticulata）知识百科：品种图鉴、饲养指南、繁殖技术、疾病防治',
+  path = Astro.url.pathname,
+  image = '/favicon.svg',
+  type = 'website',
+} = Astro.props;
+
+const canonicalUrl = new URL(path, Astro.site ?? 'https://guppy.example.com').toString();
+const ogImage = new URL(image, Astro.site ?? 'https://guppy.example.com').toString();
+
+// 主导航：/breeds/ 需同时匹配 /breed/ 详情页
+const pathname = Astro.url.pathname;
+const navItems = [
+  { href: '/breeds/', label: '品种图鉴', active: pathname.startsWith('/breeds/') || pathname.startsWith('/breed/') },
+  { href: '/guide/', label: '饲养指南', active: pathname.startsWith('/guide/') },
+  { href: '/breeding/', label: '繁殖技术', active: pathname.startsWith('/breeding/') },
+  { href: '/disease/', label: '疾病防治', active: pathname.startsWith('/disease/') },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- SEO: canonical -->
+    <link rel="canonical" href={canonicalUrl} />
+    <!-- SEO: OpenGraph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="孔雀鱼百科" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="zh_CN" />
+    <!-- SEO: Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <!-- 站点结构数据 -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': type === 'article' ? 'Article' : 'WebSite',
+      name: '孔雀鱼百科',
+      description: '孔雀鱼知识百科：品种图鉴、饲养指南、繁殖技术、疾病防治',
+      url: canonicalUrl,
+    })} />
+    <ClientRouter />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-40 bg-abyss-50/85 backdrop-blur border-b border-abyss-100/60">
+      <!-- 动态阅读进度条（未滚动时为极细浅槽，滚动时注水彩色流光） -->
+      <div class="h-[3px] w-full bg-slate-200/40 relative overflow-hidden" aria-hidden="true">
+        <div
+          id="reading-progress"
+          class="h-full w-0 bg-gradient-to-r from-aqua-500 via-aqua-400 to-coral-500 transition-[width] duration-75 ease-out shadow-[0_0_8px_rgba(53,164,255,0.7)]"
+        ></div>
+      </div>
+      <nav aria-label="主导航" class="max-w-6xl mx-auto px-4 h-18 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2.5 font-bold text-lg text-aqua-700 hover:text-aqua-600 transition-colors hover:scale-[1.02]">
+          <span aria-hidden="true" class="w-9 h-9 rounded-full border-2 border-aqua-400 grid place-items-center text-aqua-600">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
+              <circle cx="9" cy="12" r="0.6" fill="currentColor" />
+            </svg>
+          </span>
+          <span>孔雀鱼百科</span>
+        </a>
+        <div class="hidden sm:flex items-center gap-7 text-sm font-medium">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              aria-current={item.active ? 'page' : undefined}
+              class:list={[
+                'relative py-1.5 transition-colors duration-200',
+                'after:absolute after:left-0 after:-bottom-0.5 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:rounded-full after:bg-gradient-to-r after:from-aqua-500 after:to-coral-400 after:transition-transform after:duration-300 after:ease-[var(--ease-out-expo)]',
+                'hover:after:scale-x-100',
+                item.active
+                  ? 'text-aqua-700 after:scale-x-100'
+                  : 'text-slate-600 hover:text-aqua-600',
+              ]}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+        <!-- 移动端导航（<640px） -->
+        <details class="relative sm:hidden">
+          <summary class="list-none w-10 h-10 rounded-full border border-abyss-100 bg-white/60 grid place-items-center text-abyss-800 cursor-pointer select-none">
+            <svg viewBox="0 0 24 24" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+          </summary>
+          <div class="absolute right-0 top-12 w-56 rounded-2xl bg-white border border-slate-200 shadow-card p-2.5 flex flex-col gap-0.5 origin-top scale-95 opacity-0 transition-all duration-200 ease-out">
+            <pagefind-modal-trigger placeholder="搜索" class="pf-nav-trigger w-full mb-2"></pagefind-modal-trigger>
+            {navItems.map((item) => (
+              <a
+                href={item.href}
+                aria-current={item.active ? 'page' : undefined}
+                class:list={[
+                  'px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                  item.active
+                    ? 'bg-aqua-50 text-aqua-700'
+                    : 'text-slate-600 hover:bg-abyss-50 hover:text-aqua-700',
+                ]}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </details>
+        <style>
+          details[open] > div {
+            opacity: 1;
+            transform: scale(1);
+          }
+        </style>
+        <pagefind-modal-trigger placeholder="搜索" class="pf-nav-trigger hidden sm:block"></pagefind-modal-trigger>
+      </nav>
+    </header>
+
+    <!-- 跳过导航直达正文（可访问性） -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:rounded-full focus:bg-abyss-900 focus:text-white focus:text-sm focus:font-medium"
+    >
+      跳到正文
+    </a>
+
+    <main id="main-content" class="flex-1">
+      <div data-pagefind-body>
+        <slot />
+      </div>
+    </main>
+
+    <footer class="bg-abyss-950 text-slate-300">
+      {/* 页脚顶部：渐变细线 + 中央小鱼装饰（与 Hero 波浪差异化） */}
+      <div aria-hidden="true" class="max-w-6xl mx-auto px-4 pt-8 flex flex-col items-center">
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-aqua-400/30 to-transparent"></div>
+        <div class="-mt-3 w-8 h-8 rounded-full bg-abyss-950 border border-aqua-400/30 grid place-items-center text-aqua-400/30">
+          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
+            <circle cx="9" cy="12" r="0.6" fill="currentColor" />
+          </svg>
+        </div>
+      </div>
+      <div class="max-w-6xl mx-auto px-4 py-10">
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-6">
+          <div>
+            <p class="flex items-center gap-2.5 font-semibold text-white text-lg">
+              <span aria-hidden="true" class="w-8 h-8 rounded-full border-2 border-aqua-400/70 grid place-items-center text-aqua-300">
+                <svg viewBox="0 0 24 24" class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
+                  <circle cx="9" cy="12" r="0.6" fill="currentColor" />
+                </svg>
+              </span>
+              孔雀鱼百科
+            </p>
+            <p class="mt-2 text-sm text-slate-400 max-w-md">
+              面向爱好者的孔雀鱼知识百科：品种图鉴、饲养指南、繁殖技术与疾病防治。
+              内容整理自公开资料，供学习交流使用。
+            </p>
+          </div>
+          <nav aria-label="页脚导航" class="text-sm grid grid-cols-2 gap-x-10 gap-y-2">
+            {navItems.map((item) => (
+              <a
+                href={item.href}
+                class:list={[
+                  'relative py-1 transition-colors duration-200',
+                  'after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-aqua-300 after:transition-transform after:duration-300',
+                  'hover:after:scale-x-100 hover:text-aqua-300',
+                ]}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+        <div class="mt-8 pt-6 border-t border-abyss-800/80 text-xs text-slate-500">
+          © {new Date().getFullYear()} 孔雀鱼百科 · 图片由 AI 生成，逐步补充中
+        </div>
+      </div>
+    </footer>
+    <!-- PagefindConfig 必须在所有 pagefind-* 组件之前：负责导入 CSS/JS 并接线 bundle-path -->
+    <PagefindConfig />
+    <pagefind-modal></pagefind-modal>
+    <script>
+      // 移动端汉堡菜单：点击外部自动关闭（兼容 View Transitions）
+      function bindMenuDismiss() {
+        const nav = document.querySelector('header > nav');
+        if (!nav) return;
+        document.addEventListener('click', (e) => {
+          const details = nav.querySelector('details');
+          if (details?.open && !details.contains(e.target)) {
+            details.open = false;
+          }
+        });
+      }
+
+      // 文章注水阅读进度条计算
+      function initScrollProgress() {
+        const progressBar = document.getElementById('reading-progress');
+        if (!progressBar) return;
+
+        function updateProgress() {
+          const docElement = document.documentElement;
+          const docBody = document.body;
+          const scrollTop = docElement.scrollTop || docBody.scrollTop;
+          const scrollHeight = (docElement.scrollHeight || docBody.scrollHeight) - docElement.clientHeight;
+
+          if (scrollHeight <= 0) {
+            progressBar.style.width = '0%';
+            return;
+          }
+          const progress = Math.min(100, Math.max(0, (scrollTop / scrollHeight) * 100));
+          progressBar.style.width = `${progress}%`;
+        }
+
+        window.removeEventListener('scroll', updateProgress);
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
+      }
+
+      document.addEventListener('astro:page-load', () => {
+        // 每次页面加载（含 View Transitions 导航）重新绑定
+        const nav = document.querySelector('header > nav');
+        if (nav && !nav.dataset.menuBound) {
+          nav.dataset.menuBound = '1';
+          bindMenuDismiss();
+        }
+        initScrollProgress();
+      });
+    </script>
+  </body>
+</html>

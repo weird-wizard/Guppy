@@ -1,0 +1,73 @@
+---
+// 品种图片组件：图片未生成时优雅降级为渐变占位。
+// TODO(图片): AI 生成品种图（如 Gemini）后，将 src/content/breeds/*/cover.jpg 放入并替换此组件中的占位逻辑。
+// 占位渐变色映射到品种主色，保持 4:3 宽高比避免布局跳动。
+// 渐变通过 --ph-grad 变量注入，高光/点阵/水印/玻璃徽章由 global.css 的 .breed-img-placeholder 系列样式叠加。
+
+interface Props {
+  alt: string;
+  /** 渐变起始色，默认取品种主色 */
+  gradientFrom?: string;
+  image?: string;
+  /** 首屏关键图：eager 加载 + 高优先级（用于详情页主图） */
+  priority?: boolean;
+  /** View Transitions 共享元素形变名称 */
+  transitionName?: string;
+}
+
+const { alt, gradientFrom = '#5cc3ff', image, priority = false, transitionName } = Astro.props;
+
+// 颜色枚举 → 渐变主色映射（与 content.config.ts 的 color 字段对应）
+export const COLOR_GRADIENTS: Record<string, string> = {
+  red: '#f55643',
+  blue: '#35a4ff',
+  green: '#34d399',
+  yellow: '#fbbf24',
+  purple: '#a78bfa',
+  white: '#e2e8f0',
+  black: '#1e293b',
+  snake: '#f59e0b',
+  multi: '#a855f7',
+};
+
+// 颜色枚举 → 卡片悬浮专属溢彩光晕颜色（半透明）
+export const COLOR_GLOWS: Record<string, string> = {
+  red: 'rgba(245, 86, 67, 0.28)',
+  blue: 'rgba(53, 164, 255, 0.28)',
+  green: 'rgba(52, 211, 153, 0.28)',
+  yellow: 'rgba(251, 191, 36, 0.28)',
+  purple: 'rgba(167, 139, 250, 0.28)',
+  white: 'rgba(226, 232, 240, 0.35)',
+  black: 'rgba(30, 41, 59, 0.3)',
+  snake: 'rgba(245, 158, 11, 0.28)',
+  multi: 'rgba(168, 85, 247, 0.28)',
+};
+---
+
+{image ? (
+  <img
+    src={image}
+    alt={alt}
+    width={800}
+    height={600}
+    class="w-full h-full object-cover rounded-xl transition-transform duration-700 ease-[var(--ease-out-expo)]"
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : undefined}
+    style={transitionName ? `view-transition-name: ${transitionName};` : undefined}
+  />
+) : (
+  <div
+    class="breed-img-placeholder"
+    style={`--ph-grad: linear-gradient(135deg, ${gradientFrom} 0%, color-mix(in srgb, ${gradientFrom} 35%, #0d2240 65%) 100%); ${transitionName ? `view-transition-name: ${transitionName};` : ''}`}
+    role="img"
+    aria-label={`${alt}（占位图）`}
+  >
+    <span class="ph-watermark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
+        <circle cx="9" cy="12" r="0.6" fill="currentColor" />
+      </svg>
+    </span>
+    <span class="ph-badge" aria-hidden="true">待补图</span>
+  </div>
+)}

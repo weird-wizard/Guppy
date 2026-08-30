@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="页面未找到 - 孔雀鱼百科" description="您访问的页面不存在">
+  <section class="max-w-3xl mx-auto px-4 py-24 text-center">
+    <p class="text-8xl font-bold text-aqua-200" aria-hidden="true">404</p>
+    <h1 class="mt-6 text-3xl font-bold text-slate-900">这条鱼游走了</h1>
+    <p class="mt-4 text-slate-600">
+      您访问的页面不存在或已被移动。也许可以试试逛逛品种图鉴，找一条合眼缘的孔雀鱼。
+    </p>
+    <div class="mt-10 flex flex-wrap justify-center gap-4">
+      <a
+        href="/"
+        class="px-8 py-3.5 rounded-full bg-aqua-600 text-white font-semibold hover:bg-aqua-700 transition-colors"
+      >
+        返回首页
+      </a>
+      <a
+        href="/breeds/"
+        class="px-8 py-3.5 rounded-full bg-white text-slate-700 font-semibold border border-slate-200 hover:border-aqua-300 hover:text-aqua-700 transition-colors"
+      >
+        浏览品种图鉴
+      </a>
+    </div>
+  </section>
+</BaseLayout>

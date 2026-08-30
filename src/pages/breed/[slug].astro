@@ -1,0 +1,258 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BreedImage, { COLOR_GRADIENTS } from '../../components/BreedImage.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const breeds = await getCollection('breeds');
+  return breeds.map((breed) => {
+    // 相关品种：同品系的其他品种（最多 3 个）
+    const related = breeds
+      .filter((b) => b.id !== breed.id && b.data.family === breed.data.family)
+      .slice(0, 3);
+    return {
+      params: { slug: breed.id },
+      props: { breed, related },
+    };
+  });
+}
+
+const { breed, related } = Astro.props;
+const { Content } = await render(breed);
+
+const { title, enName, subtitle, color, finType, difficulty, family, genetics, size, temp, tags } =
+  breed.data;
+const cover = breed.data.image?.src;
+
+// ─── 分类字段 → 中文文案/徽章映射（与 content.config.ts schema 枚举对应） ───
+const COLOR_LABELS: Record<string, string> = {
+  red: '红色', blue: '蓝色', green: '绿色', yellow: '黄色', purple: '紫色',
+  white: '白色', black: '黑色', snake: '蛇纹', multi: '多彩',
+};
+const FIN_LABELS: Record<string, string> = {
+  delta: '三角尾', fan: '扇尾', sword: '剑尾', crown: '皇冠尾',
+  ribbon: '缎带尾', round: '圆尾', flag: '旗尾', veil: '纱尾',
+};
+const DIFFICULTY_BADGES: Record<string, { label: string; className: string }> = {
+  beginner: { label: '入门', className: 'bg-aqua-100 text-aqua-700' },
+  intermediate: { label: '进阶', className: 'bg-amber-100 text-amber-700' },
+  advanced: { label: '高手', className: 'bg-coral-100 text-coral-700' },
+};
+
+const CHIP_CLASS = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200 text-sm text-slate-700 shadow-sm transition-colors';
+const difficultyBadgeClass = `inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${DIFFICULTY_BADGES[difficulty].className}`;
+---
+
+<BaseLayout
+  title={`${title} · ${family} - 孔雀鱼品种图鉴`}
+  description={subtitle ?? `${title}（${enName ?? ''}），${family}孔雀鱼品种`}
+>
+  <section class="max-w-6xl mx-auto px-4 py-14 sm:py-16">
+    <a
+      href="/breeds/"
+      onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+      class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-abyss-100 shadow-sm text-sm font-medium text-aqua-700 hover:text-aqua-800 hover:border-aqua-300 hover:bg-aqua-50/50 hover:-translate-x-0.5 transition-all ease-[var(--ease-spring)] cursor-pointer"
+    >
+      <span aria-hidden="true">←</span> 返回品种图鉴
+    </a>
+
+    <div class="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <!-- 主内容 -->
+      <div>
+        <!-- 品种主图占位（绑定 View Transition 共享元素名） -->
+        <div class="rounded-2xl overflow-hidden bg-white border border-aqua-100 p-3 shadow-card">
+          <BreedImage
+            alt={title}
+            image={cover}
+            gradientFrom={COLOR_GRADIENTS[color]}
+            priority
+            transitionName={`breed-img-${breed.id}`}
+          />
+        </div>
+
+        <div class="mt-10">
+          <p class="text-sm font-medium text-aqua-600 tracking-wider uppercase">{family}</p>
+          <h1 class="mt-1 text-3xl sm:text-4xl font-bold text-slate-900">{title}</h1>
+          {enName && (
+            <p class="mt-2 text-slate-500 text-lg italic font-serif">
+              {enName}
+            </p>
+          )}
+          {subtitle && <p class="mt-4 text-slate-600 text-lg leading-relaxed">{subtitle}</p>}
+        </div>
+
+        <!-- 徽章行：颜色 / 鳍型 / 难度 / 体长 / 水温 -->
+        <div class="mt-8 flex flex-wrap items-center gap-2.5">
+          <span class={CHIP_CLASS}>
+            <span
+              class="w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm"
+              style={`background: ${COLOR_GRADIENTS[color]}`}
+              aria-hidden="true"
+            ></span>
+            {COLOR_LABELS[color]}
+          </span>
+          <span class={CHIP_CLASS}>{FIN_LABELS[finType]}</span>
+          <span class={difficultyBadgeClass}>{DIFFICULTY_BADGES[difficulty].label}</span>
+          {size && <span class={CHIP_CLASS}>体长 {size}</span>}
+          {temp && <span class={CHIP_CLASS}>水温 {temp}</span>}
+        </div>
+
+        <!-- MDX 正文 -->
+        <div class="prose-guppy mt-10 max-w-[68ch]">
+          <Content />
+        </div>
+      </div>
+
+      <!-- 品种参数速查表（可视化升级） -->
+      <aside class="lg:sticky lg:top-24 h-fit">
+        <div class="glass-card rounded-2xl shadow-card overflow-hidden">
+          {/* 渐变顶部条 */}
+          <div aria-hidden="true" class="h-1.5 bg-gradient-to-r from-abyss-900 via-aqua-500 to-coral-400"></div>
+          <div class="p-6">
+            <h2 class="text-lg font-bold text-abyss-900 flex items-center gap-2">
+              <span aria-hidden="true" class="w-7 h-7 rounded-lg bg-aqua-50 text-aqua-600 grid place-items-center">
+                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
+                  <circle cx="9" cy="12" r="0.6" fill="currentColor" />
+                </svg>
+              </span> 品种参数
+            </h2>
+
+            <dl class="mt-5 space-y-4 text-sm">
+              <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <dt class="text-slate-500">品系</dt>
+                <dd class="text-slate-900 font-semibold px-2.5 py-0.5 rounded-md bg-abyss-50 text-abyss-800">{family}</dd>
+              </div>
+
+              <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <dt class="text-slate-500">颜色 / 鳍型</dt>
+                <dd class="text-slate-800 font-medium flex items-center gap-1.5">
+                  <span
+                    class="w-2.5 h-2.5 rounded-full"
+                    style={`background: ${COLOR_GRADIENTS[color]}`}
+                    aria-hidden="true"
+                  ></span>
+                  <span>{COLOR_LABELS[color]} · {FIN_LABELS[finType]}</span>
+                </dd>
+              </div>
+
+              <!-- 饲养难度可视化槽 -->
+              <div class="pb-3 border-b border-slate-100">
+                <div class="flex justify-between items-center mb-1.5">
+                  <dt class="text-slate-500">饲养难度</dt>
+                  <dd class="font-semibold text-xs">
+                    <span class={`px-2 py-0.5 rounded-full ${DIFFICULTY_BADGES[difficulty].className}`}>
+                      {DIFFICULTY_BADGES[difficulty].label}
+                    </span>
+                  </dd>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 mt-2" aria-hidden="true">
+                  <div class={`h-1.5 rounded-full ${difficulty === 'beginner' ? 'bg-aqua-500' : difficulty === 'intermediate' ? 'bg-amber-400' : 'bg-coral-500'}`}></div>
+                  <div class={`h-1.5 rounded-full ${difficulty === 'intermediate' ? 'bg-amber-400' : difficulty === 'advanced' ? 'bg-coral-500' : 'bg-slate-200'}`}></div>
+                  <div class={`h-1.5 rounded-full ${difficulty === 'advanced' ? 'bg-coral-500' : 'bg-slate-200'}`}></div>
+                </div>
+              </div>
+
+              <!-- 水温可视化温度刻度 -->
+              {temp && (
+                <div class="pb-3 border-b border-slate-100">
+                  <div class="flex justify-between items-center mb-1.5">
+                    <dt class="text-slate-500">适宜水温</dt>
+                    <dd class="text-slate-800 font-semibold tabular-nums">{temp}</dd>
+                  </div>
+                  <div class="relative h-2 bg-slate-100 rounded-full overflow-hidden mt-2" aria-hidden="true">
+                    <div class="absolute left-[20%] right-[20%] top-0 bottom-0 bg-gradient-to-r from-aqua-400 via-emerald-400 to-amber-400 rounded-full"></div>
+                  </div>
+                  <div class="flex justify-between text-[10px] text-slate-400 mt-1" aria-hidden="true">
+                    <span>18°C</span>
+                    <span class="text-aqua-600 font-medium">舒适区 22-26°C</span>
+                    <span>30°C</span>
+                  </div>
+                </div>
+              )}
+
+              {size && (
+                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                  <dt class="text-slate-500">成年成鱼体长</dt>
+                  <dd class="text-slate-800 font-medium tabular-nums">{size}</dd>
+                </div>
+              )}
+
+              {genetics && (
+                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                  <dt class="text-slate-500">遗传特性</dt>
+                  <dd class="text-slate-800 font-medium text-right text-xs max-w-[170px] leading-tight">{genetics}</dd>
+                </div>
+              )}
+            </dl>
+
+            {tags.length > 0 && (
+              <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-1.5">
+                {tags.map((tag) => (
+                  <span
+                    class="px-2.5 py-1 rounded-lg bg-aqua-50/80 text-aqua-700 text-xs border border-aqua-100/80 hover:bg-aqua-100 transition-colors"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    {/* 相关品种：同品系延伸阅读 */}
+    {related.length > 0 && (
+      <section class="mt-16">
+        <div class="flex items-end justify-between mb-6">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900">相关品种</h2>
+          <a href="/breeds/" class="text-sm text-aqua-600 hover:text-aqua-700 font-medium">
+            更多品种 →
+          </a>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {related.map((item) => (
+            <a
+              href={`/breed/${item.id}/`}
+              class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1.5 hover:border-aqua-400/70 transition-all duration-300 flex flex-col"
+            >
+              <div class="relative aspect-[4/3] overflow-hidden">
+                <div class="h-full transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.05]">
+                  <BreedImage
+                    alt={item.data.title}
+                    image={item.data.image?.src}
+                    gradientFrom={COLOR_GRADIENTS[item.data.color]}
+                  />
+                </div>
+              </div>
+              <div class="p-5 flex flex-col gap-2 flex-1">
+                <h3 class="font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
+                  {item.data.title}
+                </h3>
+                {item.data.enName && (
+                  <p class="text-xs text-slate-400 font-serif italic">{item.data.enName}</p>
+                )}
+                <div class="mt-auto pt-2 flex items-center justify-between">
+                  <span
+                    class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${DIFFICULTY_BADGES[item.data.difficulty].className}`}
+                  >
+                    {DIFFICULTY_BADGES[item.data.difficulty].label}
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 text-xs text-slate-400">
+                    <span
+                      class="w-2 h-2 rounded-full"
+                      style={`background: ${COLOR_GRADIENTS[item.data.color]}`}
+                      aria-hidden="true"
+                    ></span>
+                    {COLOR_LABELS[item.data.color]}
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </section>
+</BaseLayout>

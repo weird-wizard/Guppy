@@ -1,0 +1,633 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  /* 学名 / 编号衬线字体：杂志感排版 */
+  --font-serif: Georgia, "Times New Roman", "Songti SC", "STSong", "SimSun", serif;
+
+  /* 深藏蓝：深海主调（Hero / 页脚 / 表头 / 页头带） */
+  --color-abyss-50: #eef4fb;
+  --color-abyss-100: #d9e7f6;
+  --color-abyss-200: #b3cde8;
+  --color-abyss-300: #7fa9d6;
+  --color-abyss-400: #4d82c0;
+  --color-abyss-500: #2f64a8;
+  --color-abyss-600: #224e8c;
+  --color-abyss-700: #1c4075;
+  --color-abyss-800: #16335e;
+  --color-abyss-900: #0d2240;
+  --color-abyss-950: #081830;
+
+  --color-aqua-50: #eff9ff;
+  --color-aqua-100: #daf1ff;
+  --color-aqua-200: #bde8ff;
+  --color-aqua-300: #90daff;
+  --color-aqua-400: #5cc3ff;
+  --color-aqua-500: #35a4ff;
+  --color-aqua-600: #1f84f5;
+  --color-aqua-700: #176ae1;
+  --color-aqua-800: #1956b6;
+  --color-aqua-900: #1a4a8f;
+  --color-coral-50: #fff2f0;
+  --color-coral-100: #ffe2de;
+  --color-coral-200: #ffcac3;
+  --color-coral-300: #ffa699;
+  --color-coral-400: #ff7f6e;
+  --color-coral-500: #f55643;
+  --color-coral-600: #e03a28;
+  --color-coral-700: #bc2d1f;
+  --color-coral-800: #9b2a1f;
+  --color-coral-900: #802920;
+
+  /* 卡片阴影：静态 / hover 抬升 */
+  --shadow-card: 0 1px 2px rgb(13 34 64 / 0.04), 0 4px 12px -2px rgb(13 34 64 / 0.06), 0 12px 24px -8px rgb(13 34 64 / 0.08);
+  --shadow-card-hover: 0 2px 4px rgb(13 34 64 / 0.06), 0 12px 24px -4px rgb(13 34 64 / 0.12), 0 28px 56px -12px rgb(13 34 64 / 0.18);
+
+  /* 设计令牌：间距节奏 */
+  --spacing-section: clamp(4rem, 3rem + 4vw, 7rem);
+  --spacing-block: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  --spacing-card: 1.5rem;
+
+  /* 设计令牌：动效时长与缓动曲线 */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 全局键盘焦点样式（可访问性） */
+:focus-visible {
+  outline: 2px solid var(--color-aqua-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-abyss-50/40 text-slate-800 antialiased;
+  font-family: var(--font-sans);
+  /* aqua 顶部光晕 + 极细点状纹理（水族杂志纸张感） */
+  background-image:
+    radial-gradient(1100px 460px at 50% -180px, rgb(53 164 255 / 0.1), transparent 68%),
+    radial-gradient(circle at 1px 1px, rgb(13 34 64 / 0.045) 1px, transparent 1.6px);
+  background-size: 100% 100%, 26px 26px;
+  background-repeat: no-repeat, repeat;
+}
+
+/* 气泡正弦波上浮动画（Hero 装饰，包含左右摇摆和微形变） */
+@keyframes guppy-rise {
+  0% {
+    transform: translate3d(0, 30px, 0) scale(0.85);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+    transform: translate3d(-6px, -20px, 0) scale(1);
+  }
+  45% {
+    transform: translate3d(8px, -80px, 0) scale(0.95, 1.05);
+  }
+  75% {
+    opacity: 0.45;
+    transform: translate3d(-5px, -140px, 0) scale(1.05, 0.95);
+  }
+  100% {
+    transform: translate3d(10px, -220px, 0) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.animate-guppy-rise {
+  animation: guppy-rise 9s ease-in-out infinite;
+}
+
+/* ─── 视野外无缝掉头自主巡游（在屏幕外完成转身，屏幕内始终保持优美侧身姿态） ─── */
+
+/* 1 号主鱼（蓝色大扇尾）：
+   0% 在 15vw，向右中上层游弋 -> 42% 游出右侧 (108vw) -> 在右侧外掉头朝左 -> 48%~92% 从右向左斜向下潜穿行 -> 92% 游出左侧 (-14vw) -> 在左侧外掉头朝右 -> 98% 回到 15vw */
+@keyframes guppy-seamless-cruise-1 {
+  0% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
+  }
+  16% {
+    transform: translate3d(24vw, -25px, 0px) scaleX(1) rotate(-8deg);
+  }
+  32% {
+    transform: translate3d(58vw, -36px, 0px) scaleX(1) rotate(-3deg);
+  }
+  /* 42%: 完全游出屏幕右侧边缘 */
+  42% {
+    transform: translate3d(92vw, -28px, 0px) scaleX(1) rotate(2deg);
+  }
+  /* 43%~46%: 在屏幕外看不见的地方掉头朝左并调整水深 */
+  44% {
+    transform: translate3d(96vw, -10px, 0px) scaleX(-1) rotate(6deg);
+  }
+  /* 48%: 以朝左姿态从右侧屏幕外优雅游入 */
+  50% {
+    transform: translate3d(85vw, 15px, 0px) scaleX(-1) rotate(8deg);
+  }
+  65% {
+    transform: translate3d(52vw, 32px, 0px) scaleX(-1) rotate(4deg);
+  }
+  78% {
+    transform: translate3d(22vw, 26px, 0px) scaleX(-1) rotate(-2deg);
+  }
+  /* 90%: 完全游出屏幕左侧边缘 */
+  90% {
+    transform: translate3d(-18vw, 15px, 0px) scaleX(-1) rotate(-5deg);
+  }
+  /* 92%~95%: 在屏幕左侧外掉头朝右并调整高度 */
+  93% {
+    transform: translate3d(-20vw, 4px, 0px) scaleX(1) rotate(-4deg);
+  }
+  /* 98%: 回到初始 15vw 视野内 */
+  100% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
+  }
+}
+
+/* 2 号鱼（珊瑚红大扇尾）：
+   0% 在 65vw，向左中下层游弋 -> 38% 游出左侧 (-14vw) -> 在左侧外掉头朝右 -> 44%~88% 从左向右斜向上浮穿行 -> 88% 游出右侧 (110vw) -> 在右侧外掉头朝左 -> 96% 回到 65vw */
+@keyframes guppy-seamless-cruise-2 {
+  0% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(-1) rotate(0deg);
+  }
+  15% {
+    transform: translate3d(-22vw, 18px, 0px) scaleX(-1) rotate(6deg);
+  }
+  28% {
+    transform: translate3d(-48vw, 24px, 0px) scaleX(-1) rotate(1deg);
+  }
+  /* 38%: 完全游出屏幕左侧边缘 */
+  38% {
+    transform: translate3d(-72vw, 12px, 0px) scaleX(-1) rotate(-4deg);
+  }
+  /* 40%~43%: 在屏幕左侧外掉头朝右并调整水深 */
+  41% {
+    transform: translate3d(-75vw, -6px, 0px) scaleX(1) rotate(-6deg);
+  }
+  /* 46%: 以朝右姿态从左侧屏幕外游入 */
+  48% {
+    transform: translate3d(-58vw, -22px, 0px) scaleX(1) rotate(-8deg);
+  }
+  64% {
+    transform: translate3d(-24vw, -30px, 0px) scaleX(1) rotate(-3deg);
+  }
+  78% {
+    transform: translate3d(12vw, -18px, 0px) scaleX(1) rotate(4deg);
+  }
+  /* 88%: 完全游出屏幕右侧边缘 */
+  88% {
+    transform: translate3d(42vw, -6px, 0px) scaleX(1) rotate(6deg);
+  }
+  /* 90%~94%: 在屏幕右侧外掉头朝左 */
+  92% {
+    transform: translate3d(45vw, 0px, 0px) scaleX(-1) rotate(2deg);
+  }
+  100% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(-1) rotate(0deg);
+  }
+}
+
+/* 3 号远景深水小鱼 */
+@keyframes guppy-seamless-cruise-3 {
+  0% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
+  }
+  20% {
+    transform: translate3d(24vw, -20px, 0px) scaleX(1) rotate(-6deg);
+  }
+  40% {
+    transform: translate3d(65vw, 10px, 0px) scaleX(1) rotate(4deg);
+  }
+  43% {
+    transform: translate3d(70vw, 12px, 0px) scaleX(-1) rotate(2deg);
+  }
+  65% {
+    transform: translate3d(30vw, 24px, 0px) scaleX(-1) rotate(6deg);
+  }
+  88% {
+    transform: translate3d(-48vw, 8px, 0px) scaleX(-1) rotate(-3deg);
+  }
+  92% {
+    transform: translate3d(-52vw, 4px, 0px) scaleX(1) rotate(-4deg);
+  }
+  100% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
+  }
+}
+
+/* 飘逸大尾鳍柔和水波（原点精确锚定在尾柄连接处） */
+@keyframes guppy-tail-wave {
+  0%, 100% {
+    transform: rotate(0deg) skewY(0deg) scaleY(1);
+  }
+  25% {
+    transform: rotate(7deg) skewY(3deg) scaleY(1.02);
+  }
+  50% {
+    transform: rotate(0deg) skewY(0deg) scaleY(0.99);
+  }
+  75% {
+    transform: rotate(-7deg) skewY(-3deg) scaleY(1.02);
+  }
+}
+
+/* 胸鳍轻柔慢扇动（原点锚定在鱼肋生长点） */
+@keyframes guppy-pectoral-flutter {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(16deg);
+  }
+}
+
+.animate-tank-fish-1 {
+  animation: guppy-seamless-cruise-1 32s cubic-bezier(0.35, 0.05, 0.25, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-tank-fish-2 {
+  animation: guppy-seamless-cruise-2 38s cubic-bezier(0.35, 0.05, 0.25, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-tank-fish-3 {
+  animation: guppy-seamless-cruise-3 46s cubic-bezier(0.35, 0.05, 0.25, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-fish-tail {
+  transform-origin: 36px 30px;
+  animation: guppy-tail-wave 2.1s ease-in-out infinite;
+}
+
+.animate-fish-pectoral {
+  transform-origin: 66px 33px;
+  animation: guppy-pectoral-flutter 1.35s ease-in-out infinite;
+}
+
+::selection {
+  background: var(--color-coral-500);
+  color: #fff;
+}
+
+/* ─── 正文排版：精致杂志感 ─── */
+.prose-guppy {
+  @apply text-slate-700;
+  line-height: 1.78;
+}
+
+.prose-guppy h2 {
+  @apply mt-10 mb-4 text-2xl font-bold text-slate-900;
+  position: relative;
+  scroll-margin-top: 5.5rem;
+  padding-left: 0.9rem;
+}
+
+/* h2 左侧珊瑚橙短竖线 */
+.prose-guppy h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.32em;
+  bottom: 0.2em;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to bottom, var(--color-coral-400), var(--color-coral-600));
+}
+
+/* h2 下方半宽渐变短底线 */
+.prose-guppy h2::after {
+  content: "";
+  display: block;
+  margin-top: 0.6rem;
+  width: 3.5rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-aqua-300), transparent);
+}
+
+.prose-guppy h3 {
+  @apply mt-8 mb-3 text-xl font-semibold text-slate-900;
+}
+
+.prose-guppy p {
+  @apply my-4;
+}
+
+.prose-guppy ul {
+  @apply my-4 pl-5 list-disc space-y-2;
+}
+
+.prose-guppy ol {
+  @apply my-4 pl-5 list-decimal space-y-2;
+}
+
+.prose-guppy li {
+  @apply leading-relaxed;
+}
+
+/* 列表符号品牌色 */
+.prose-guppy ul li::marker {
+  color: var(--color-aqua-500);
+}
+.prose-guppy ol li::marker {
+  color: var(--color-coral-500);
+  font-weight: 600;
+}
+
+/* 图注 / 分隔线 / 图片 */
+.prose-guppy figure {
+  @apply my-8;
+}
+.prose-guppy figcaption {
+  @apply mt-3 text-center text-sm text-slate-500 italic;
+}
+.prose-guppy hr {
+  @apply my-8 border-0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-abyss-200), transparent);
+}
+.prose-guppy img {
+  @apply rounded-lg w-full;
+}
+
+.prose-guppy strong {
+  @apply text-slate-900 font-semibold;
+}
+
+/* 表格：深蓝表头 + 斑马纹（border-separate 配合圆角） */
+.prose-guppy table {
+  @apply my-6 w-full text-sm border-separate border-spacing-0 overflow-hidden rounded-lg;
+}
+
+.prose-guppy thead {
+  @apply bg-abyss-800;
+}
+
+.prose-guppy th {
+  @apply text-white font-semibold text-left px-4 py-3 border border-abyss-800;
+}
+
+.prose-guppy tbody tr:nth-child(even) {
+  @apply bg-aqua-50/50;
+}
+
+.prose-guppy td {
+  @apply px-4 py-3 border border-slate-200 align-top;
+}
+
+.prose-guppy blockquote {
+  @apply my-4 pl-4 border-l-4 border-aqua-400 bg-aqua-50/50 py-2 pr-4 text-slate-600 italic;
+}
+
+.prose-guppy code {
+  @apply bg-abyss-50 px-1.5 py-0.5 rounded text-sm text-abyss-800;
+}
+
+/* 编辑式 eyebrow：小号字距大写 + 短底线（杂志栏目眉题） */
+.eyebrow {
+  @apply inline-flex items-center gap-2 text-xs font-medium tracking-[0.2em] uppercase text-aqua-600;
+}
+.eyebrow::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+/* 链接：底部下划线滑入动画 */
+.prose-guppy a {
+  @apply text-aqua-600 no-underline;
+  font-weight: 500;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease, color 0.2s ease;
+}
+
+.prose-guppy a:hover {
+  @apply text-aqua-700;
+  background-size: 100% 1.5px;
+}
+
+/* ─── 品种图片占位（AI 生成图补充前的优雅降级）───
+   背景色由组件内联 --ph-grad 变量注入，此处叠加径向高光 + 鳞纹点阵 */
+.breed-img-placeholder {
+  @apply relative w-full overflow-hidden rounded-xl;
+  aspect-ratio: 4 / 3;
+  background-image:
+    var(--ph-grad, linear-gradient(135deg, #5cc3ff 0%, #94a3b8 100%)),
+    radial-gradient(120% 90% at 28% 16%, rgb(255 255 255 / 0.38), transparent 55%),
+    radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.22) 1px, transparent 1.6px);
+  background-size: 100% 100%, 100% 100%, 22px 22px;
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat;
+}
+
+/* 中央鱼形水印（SVG 线条鱼，微浮动） */
+.ph-watermark {
+  @apply absolute inset-0 grid place-items-center;
+  color: #fff;
+  opacity: 0.22;
+  filter: drop-shadow(0 6px 16px rgb(13 34 64 / 0.25));
+  animation: ph-float 6s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+.ph-watermark svg {
+  width: clamp(4rem, 18vw, 6.5rem);
+  height: clamp(4rem, 18vw, 6.5rem);
+}
+
+/* 右下玻璃徽章（呼吸提示） */
+.ph-badge {
+  @apply absolute right-3 bottom-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium text-white/95;
+  background: rgb(255 255 255 / 0.18);
+  border: 1px solid rgb(255 255 255 / 0.4);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgb(13 34 64 / 0.22);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  animation: ph-badge-pulse 2.5s ease-in-out infinite;
+}
+
+/* ─── Pagefind 搜索触发按钮样式 ───
+   pagefind-modal-trigger 是 Web Component，host 应用 all: initial，
+   Tailwind class 不会作用到内部按钮，须通过 --pf-* 变量与 host 级样式定制 */
+.pf-nav-trigger {
+  --pf-trigger-background: #eef4fb;
+  --pf-trigger-border: #b3cde8;
+  --pf-trigger-text: #1c4075;
+  --pf-trigger-background-hover: #d9e7f6;
+  --pf-trigger-border-hover: #7fa9d6;
+  --pf-trigger-text-hover: #0d2240;
+  --pf-trigger-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Pagefind modal 配色：与站点深藏蓝主题一致 */
+:root {
+  --pf-background: #ffffff;
+  --pf-text: #1e293b;
+  --pf-accent: #224e8c;
+  --pf-accent-hover: #16335e;
+  --pf-border: #e2e8f0;
+}
+
+/* ─── 微交互工具类 ─── */
+
+/* 按钮按压回弹：active 时下沉 + 微缩（配合 --ease-spring 带回弹） */
+.btn-press {
+  transition: transform var(--duration-fast) var(--ease-spring);
+}
+.btn-press:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* 首屏 stagger 入场 */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up var(--duration-normal) var(--ease-out-expo) both;
+}
+
+/* 占位水印漂浮（鱼在水中悬停） */
+@keyframes ph-float {
+  0%,
+  100% {
+    transform: rotate(-6deg) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(-4deg) translate3d(2px, -3px, 0);
+  }
+}
+
+/* "待补图"徽章呼吸提示 */
+@keyframes ph-badge-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 2px 14px rgb(13 34 64 / 0.35);
+  }
+}
+
+/* 页脚波浪微脉动 */
+@keyframes wave-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ─── 卡片品种专属光晕与水体质感 ─── */
+.breed-card-aura {
+  transition: transform var(--duration-normal) var(--ease-out-expo),
+              box-shadow var(--duration-normal) var(--ease-out-expo),
+              border-color var(--duration-normal) ease;
+}
+
+.breed-card-aura:hover {
+  box-shadow: 0 16px 36px -8px var(--card-glow, rgba(53, 164, 255, 0.2)),
+              0 2px 6px rgba(13, 34, 64, 0.04);
+}
+
+/* 水体玻璃态面板 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* ─── View Transitions 共享元素形变缓动与性能优化 ─── */
+::view-transition-old(root) {
+  animation: 160ms cubic-bezier(0.4, 0, 1, 1) both fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 200ms cubic-bezier(0, 0, 0.2, 1) 40ms both fade-in;
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+::view-transition-group(*) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+::view-transition-image-pair(*) {
+  isolation: isolate;
+}
+
+::view-transition-old(*),
+::view-transition-new(*) {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* 移动端表格横向滚动 */
+@media (max-width: 639px) {
+  .prose-guppy table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .prose-guppy thead,
+  .prose-guppy tbody,
+  .prose-guppy tr {
+    display: table;
+    width: max-content;
+  }
+}
+
+/* 尊重系统减弱动效设置 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

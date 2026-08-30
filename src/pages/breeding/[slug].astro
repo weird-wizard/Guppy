@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('breeding');
+  return articles.map((article) => ({
+    params: { slug: article.id },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+---
+
+<BaseLayout title={`${article.data.title} - 孔雀鱼百科`} description={article.data.subtitle ?? article.data.title}>
+  <article class="max-w-3xl mx-auto px-4 py-14">
+    <header class="mb-10">
+      <nav aria-label="面包屑" class="text-sm text-slate-400 mb-4">
+        <a href="/" class="hover:text-aqua-600">首页</a>
+        <span class="mx-2">/</span>
+        <a href="/breeding/" class="hover:text-aqua-600">繁殖技术</a>
+      </nav>
+      <p class="text-sm font-medium text-coral-600 mb-2">繁殖技术</p>
+      <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">{article.data.title}</h1>
+      {article.data.subtitle && <p class="mt-4 text-lg text-slate-600">{article.data.subtitle}</p>}
+      <div class="mt-5 flex items-center gap-3 text-sm text-slate-400">
+        <span>更新于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
+        {article.data.tags?.map((tag) => (
+          <span class="px-2.5 py-0.5 rounded-full bg-coral-50 text-coral-700">{tag}</span>
+        ))}
+      </div>
+    </header>
+
+    <div class="prose-guppy">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

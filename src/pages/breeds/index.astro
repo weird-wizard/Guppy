@@ -1,0 +1,349 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BreedImage, { COLOR_GRADIENTS, COLOR_GLOWS } from '../../components/BreedImage.astro';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+const breeds = (await getCollection('breeds')).sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+// ─── 分类字段 → 中文文案/徽章映射（与 content.config.ts schema 枚举对应） ───
+const COLOR_LABELS: Record<string, string> = {
+  red: '红色', blue: '蓝色', green: '绿色', yellow: '黄色', purple: '紫色',
+  white: '白色', black: '黑色', snake: '蛇纹', multi: '多彩',
+};
+const FIN_LABELS: Record<string, string> = {
+  delta: '三角尾', fan: '扇尾', sword: '剑尾', crown: '皇冠尾',
+  ribbon: '缎带尾', round: '圆尾', flag: '旗尾', veil: '纱尾',
+};
+const DIFFICULTY_BADGES: Record<string, { label: string; className: string }> = {
+  beginner: { label: '入门', className: 'bg-aqua-100 text-aqua-700' },
+  intermediate: { label: '进阶', className: 'bg-amber-100 text-amber-700' },
+  advanced: { label: '高手', className: 'bg-coral-100 text-coral-700' },
+};
+
+const COLOR_VALUES = Object.keys(COLOR_LABELS);
+const FIN_VALUES = Object.keys(FIN_LABELS);
+const DIFFICULTY_VALUES = Object.keys(DIFFICULTY_BADGES);
+
+// ─── URL 参数筛选（服务端预过滤，SSR 部署时首屏即结果） ───
+const params = Astro.url.searchParams;
+const rawColor = params.get('color') ?? '';
+const rawFin = params.get('fin') ?? '';
+const rawDifficulty = params.get('difficulty') ?? '';
+
+const activeColor = COLOR_VALUES.includes(rawColor) ? rawColor : null;
+const activeFin = FIN_VALUES.includes(rawFin) ? rawFin : null;
+const activeDifficulty = DIFFICULTY_VALUES.includes(rawDifficulty) ? rawDifficulty : null;
+
+const filteredBreeds = breeds.filter((breed) => {
+  if (activeColor && breed.data.color !== activeColor) return false;
+  if (activeFin && breed.data.finType !== activeFin) return false;
+  if (activeDifficulty && breed.data.difficulty !== activeDifficulty) return false;
+  return true;
+});
+
+const hasFilters = Boolean(activeColor || activeFin || activeDifficulty);
+
+// 构建筛选链接：设置当前维度参数，同时保留其他维度已激活的值（支持组合筛选）
+function filterHref(key: string, value: string): string {
+  const url = new URL(Astro.url);
+  url.searchParams.set(key, value);
+  return url.pathname + url.search;
+}
+
+const PILL_BASE = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 ease-[var(--ease-spring)] hover:shadow-sm active:scale-95';
+
+function pillClass(active: boolean): string {
+  return active
+    ? 'bg-aqua-600 text-white border-aqua-600 shadow-sm'
+    : 'bg-white text-slate-600 border-slate-200 hover:border-aqua-400 hover:text-aqua-700';
+}
+
+const activeFilterLabels = [
+  activeColor ? COLOR_LABELS[activeColor] : null,
+  activeFin ? FIN_LABELS[activeFin] : null,
+  activeDifficulty ? DIFFICULTY_BADGES[activeDifficulty].label : null,
+]
+  .filter(Boolean)
+  .join(' · ');
+
+function getCoverSrc(breed: CollectionEntry<'breeds'>): string | undefined {
+  return breed.data.image?.src;
+}
+---
+
+<BaseLayout
+  title={`${hasFilters ? '已筛选 · ' : ''}品种图鉴 - 孔雀鱼百科`}
+  description="孔雀鱼品种图鉴：涵盖 17 大品系，支持按颜色、鳍型与饲养难度筛选品种"
+>
+  {/* 深蓝页头带 */}
+  <section class="relative bg-gradient-to-b from-abyss-950 via-abyss-900 to-abyss-800 text-white">
+    <div class="max-w-6xl mx-auto px-4 pt-16 sm:pt-20 pb-16">
+      <p class="eyebrow mb-3">BREEDS · 图鉴</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-3xl sm:text-4xl font-bold">品种图鉴</h1>
+        <span
+          class={`filter-badge px-2.5 py-1 rounded-full bg-coral-500/20 text-coral-300 border border-coral-400/40 text-xs font-semibold ${hasFilters ? '' : 'hidden'}`}
+        >
+          已筛选
+        </span>
+      </div>
+      <p class="mt-3 text-aqua-100/80 max-w-2xl">
+        涵盖 17 大品系的孔雀鱼品种，支持按颜色、鳍型与饲养难度组合筛选。
+        <span class="text-aqua-200/60">
+          共 <span class="breed-count">{filteredBreeds.length}</span> 个品种
+          {hasFilters ? ` / 全部 ${breeds.length} 个` : ''}
+        </span>
+        <span class="filter-labels-header text-aqua-300 font-medium">{hasFilters ? ` · ${activeFilterLabels}` : ''}</span>
+      </p>
+    </div>
+    {/* 波浪分隔 */}
+    <div aria-hidden="true" class="h-10 w-full overflow-hidden leading-none text-slate-50">
+      <svg viewBox="0 0 1440 40" preserveAspectRatio="none" class="block h-full w-full">
+        <path fill="currentColor" d="M0 40V26c240 22 480-20 720 0s480 22 720 0v14z" />
+      </svg>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 py-10">
+    <!-- 筛选栏：每个维度一组胶囊按钮，点击改变 URL 参数触发 View Transitions -->
+    <nav aria-label="品种筛选" class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 sm:p-6 mb-10">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 pb-5 border-b border-slate-100">
+        <span class="sm:w-12 shrink-0 text-sm font-medium text-slate-500">颜色</span>
+        <div class="flex flex-wrap gap-2">
+          {COLOR_VALUES.map((value) => {
+            const active = activeColor === value;
+            return (
+              <a
+                href={filterHref('color', value)}
+                data-filter="color"
+                data-value={value}
+                aria-current={active ? 'true' : undefined}
+                class={`${PILL_BASE} ${pillClass(active)}`}
+              >
+                <span
+                  class="w-2 h-2 rounded-full"
+                  style={`background: ${COLOR_GRADIENTS[value]}`}
+                  aria-hidden="true"
+                ></span>
+                {COLOR_LABELS[value]}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 py-5 border-b border-slate-100">
+        <span class="sm:w-12 shrink-0 text-sm font-medium text-slate-500">鳍型</span>
+        <div class="flex flex-wrap gap-2">
+          {FIN_VALUES.map((value) => {
+            const active = activeFin === value;
+            return (
+              <a
+                href={filterHref('fin', value)}
+                data-filter="fin"
+                data-value={value}
+                aria-current={active ? 'true' : undefined}
+                class={`${PILL_BASE} ${pillClass(active)}`}
+              >
+                {FIN_LABELS[value]}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-5">
+        <span class="sm:w-12 shrink-0 text-sm font-medium text-slate-500">难度</span>
+        <div class="flex flex-wrap gap-2">
+          {DIFFICULTY_VALUES.map((value) => {
+            const active = activeDifficulty === value;
+            return (
+              <a
+                href={filterHref('difficulty', value)}
+                data-filter="difficulty"
+                data-value={value}
+                aria-current={active ? 'true' : undefined}
+                class={`${PILL_BASE} ${pillClass(active)}`}
+              >
+                {DIFFICULTY_BADGES[value].label}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+      {/* 已选摘要条 */}
+      {hasFilters && (
+        <div class="mt-5 pt-5 border-t border-slate-100">
+          <div class="flex items-center justify-between gap-3 bg-aqua-50 rounded-lg px-4 py-2.5">
+            <span class="text-sm text-aqua-900">
+              已选：<span class="filter-labels font-semibold text-aqua-900">{activeFilterLabels}</span>
+            </span>
+            <a href="/breeds/" class="text-sm font-medium text-coral-600 hover:text-coral-700 transition-colors shrink-0">
+              清除全部
+            </a>
+          </div>
+        </div>
+      )}
+    </nav>
+
+    <!-- 品种卡片网格 -->
+    <div class={`breed-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${filteredBreeds.length === 0 ? 'hidden' : ''}`}>
+      {filteredBreeds.map((breed) => (
+        <article
+          data-color={breed.data.color}
+          data-fin={breed.data.finType}
+          data-difficulty={breed.data.difficulty}
+          style={`--card-glow: ${COLOR_GLOWS[breed.data.color]};`}
+          class="breed-card breed-card-aura group bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col shadow-card hover:-translate-y-1.5 hover:border-aqua-400/70"
+        >
+          <a href={`/breed/${breed.id}/`} class="flex flex-col flex-1">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <BreedImage
+                alt={breed.data.title}
+                image={getCoverSrc(breed)}
+                gradientFrom={COLOR_GRADIENTS[breed.data.color]}
+                transitionName={`breed-img-${breed.id}`}
+              />
+              {/* 静态底部渐变蒙层：水中深度感 */}
+              <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-abyss-950/35 to-transparent"></div>
+              {/* hover 滑入"查看详情"提示条 */}
+              <div
+                class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-gradient-to-t from-abyss-950/90 to-abyss-900/40 backdrop-blur-[2px] px-4 py-2.5 text-sm font-medium text-white"
+                aria-hidden="true"
+              >
+                查看详情 <span aria-hidden="true">→</span>
+              </div>
+            </div>
+            <div class="p-6 flex flex-col gap-3 flex-1">
+              <h2 class="text-lg font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
+                {breed.data.title}
+              </h2>
+              {breed.data.enName && (
+                <p class="text-xs text-slate-400 font-serif italic mt-0.5">{breed.data.enName}</p>
+              )}
+              <p class="text-xs font-medium text-aqua-600">{breed.data.family}</p>
+              {breed.data.subtitle && (
+                <p class="text-sm text-slate-600 line-clamp-2">{breed.data.subtitle}</p>
+              )}
+              <div class="mt-auto pt-3 flex items-center justify-between gap-2">
+                <span
+                  class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${DIFFICULTY_BADGES[breed.data.difficulty].className}`}
+                >
+                  {DIFFICULTY_BADGES[breed.data.difficulty].label}
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-xs text-slate-400">
+                  <span
+                    class="w-2 h-2 rounded-full"
+                    style={`background: ${COLOR_GRADIENTS[breed.data.color]}`}
+                    aria-hidden="true"
+                  ></span>
+                  {COLOR_LABELS[breed.data.color]}
+                </span>
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <div class={`filter-empty text-center py-20 bg-white rounded-2xl border border-slate-200 ${filteredBreeds.length === 0 ? '' : 'hidden'}`}>
+      <svg viewBox="0 0 24 24" class="mx-auto w-14 h-14 text-slate-300" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
+        <circle cx="9" cy="12" r="0.6" fill="currentColor" />
+      </svg>
+      <p class="mt-4 text-lg font-semibold font-serif text-slate-900">没有匹配的品种</p>
+      <p class="mt-2 text-sm text-slate-500">换个筛选条件，或查看全部品种</p>
+      <a
+        href="/breeds/"
+        class="inline-block mt-6 px-5 py-2.5 rounded-full bg-aqua-600 text-white text-sm font-medium hover:bg-aqua-700 transition-colors"
+      >
+        查看全部品种
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  // 静态部署下 Astro.url 不含查询参数，服务端预过滤只在 SSR 时生效。
+  // 此脚本在每次页面加载（含 View Transitions 导航后）按 URL 参数在客户端
+  // 完成：激活胶囊高亮、卡片过滤、计数/空态更新，以及"再次点击取消筛选"。
+  const ACTIVE_CLASSES = ['bg-aqua-600', 'text-white', 'border-aqua-600', 'shadow-sm'];
+  const INACTIVE_CLASSES = ['bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-aqua-400', 'hover:text-aqua-700'];
+  const g = globalThis as typeof globalThis & { __guppyFilterReady?: boolean };
+
+  function applyFilters() {
+    const params = new URLSearchParams(window.location.search);
+    const hasAny = Boolean(params.get('color') || params.get('fin') || params.get('difficulty'));
+
+    // 激活胶囊高亮
+    document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((link) => {
+      const key = link.dataset.filter;
+      const value = link.dataset.value;
+      if (!key || !value) return;
+      const active = params.get(key) === value;
+      link.classList.remove(...(active ? INACTIVE_CLASSES : ACTIVE_CLASSES));
+      link.classList.add(...(active ? ACTIVE_CLASSES : INACTIVE_CLASSES));
+      if (active) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+
+    // 按 color/fin/difficulty 过滤卡片
+    let visible = 0;
+    document.querySelectorAll<HTMLElement>('.breed-card').forEach((card) => {
+      const match =
+        (!params.get('color') || card.dataset.color === params.get('color')) &&
+        (!params.get('fin') || card.dataset.fin === params.get('fin')) &&
+        (!params.get('difficulty') || card.dataset.difficulty === params.get('difficulty'));
+      card.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+
+    // 计数 / 已筛选徽章 / 空态 / 已选条件摘要
+    const count = document.querySelector<HTMLElement>('.breed-count');
+    if (count) count.textContent = String(visible);
+    document.querySelector('.filter-badge')?.classList.toggle('hidden', !hasAny);
+    document.querySelector('.breed-grid')?.classList.toggle('hidden', visible === 0);
+    document.querySelector('.filter-empty')?.classList.toggle('hidden', visible > 0);
+    // 已选摘要：同时更新页头（带 · 前缀）与筛选面板摘要条
+    const activeLabels = Array.from(document.querySelectorAll('[data-filter][aria-current="true"]'))
+      .map((el) => el.textContent?.trim() ?? '')
+      .filter(Boolean);
+    const labelText = activeLabels.join(' · ');
+    document.querySelectorAll<HTMLElement>('.filter-labels').forEach((el) => {
+      el.textContent = labelText;
+    });
+    const headerLabel = document.querySelector<HTMLElement>('.filter-labels-header');
+    if (headerLabel) headerLabel.textContent = labelText ? ` · ${labelText}` : '';
+  }
+
+  function bindFilterToggles() {
+    const current = new URLSearchParams(window.location.search);
+    document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((link) => {
+      const key = link.dataset.filter;
+      const value = link.dataset.value;
+      if (key && value && current.get(key) === value) {
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          const url = new URL(window.location.href);
+          url.searchParams.delete(key);
+          void navigate(url.pathname + url.search);
+        });
+      }
+    });
+  }
+
+  function init() {
+    applyFilters();
+    bindFilterToggles();
+  }
+
+  // 防止 View Transitions 导航后脚本重复执行叠加 document 监听器
+  if (!g.__guppyFilterReady) {
+    g.__guppyFilterReady = true;
+    document.addEventListener('astro:page-load', init);
+  }
+  init();
+</script>
