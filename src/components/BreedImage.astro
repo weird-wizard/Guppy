@@ -1,8 +1,6 @@
 ---
 // 品种图片组件：图片未生成时优雅降级为渐变占位。
-// TODO(图片): AI 生成品种图（如 Gemini）后，将 src/content/breeds/*/cover.jpg 放入并替换此组件中的占位逻辑。
-// 占位渐变色映射到品种主色，保持 4:3 宽高比避免布局跳动。
-// 渐变通过 --ph-grad 变量注入，高光/点阵/水印/玻璃徽章由 global.css 的 .breed-img-placeholder 系列样式叠加。
+// 占位渐变色映射到品种主色，保持 4:3 宽高比与最大高度限制，避免移动端超出一屏。
 
 interface Props {
   alt: string;
@@ -45,19 +43,21 @@ export const COLOR_GLOWS: Record<string, string> = {
 ---
 
 {image ? (
-  <img
-    src={image}
-    alt={alt}
-    width={800}
-    height={600}
-    class="w-full h-full object-cover rounded-xl transition-transform duration-700 ease-[var(--ease-out-expo)]"
-    loading={priority ? 'eager' : 'lazy'}
-    fetchpriority={priority ? 'high' : undefined}
-    style={transitionName ? `view-transition-name: ${transitionName};` : undefined}
-  />
+  <div class="relative w-full overflow-hidden rounded-xl aspect-[4/3] max-h-[300px] sm:max-h-[460px] bg-slate-100 flex items-center justify-center">
+    <img
+      src={image}
+      alt={alt}
+      width={800}
+      height={600}
+      class="w-full h-full object-cover transition-transform duration-700 ease-[var(--ease-out-expo)]"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : undefined}
+      style={transitionName ? `view-transition-name: ${transitionName};` : undefined}
+    />
+  </div>
 ) : (
   <div
-    class="breed-img-placeholder"
+    class="breed-img-placeholder max-h-[300px] sm:max-h-[460px]"
     style={`--ph-grad: linear-gradient(135deg, ${gradientFrom} 0%, color-mix(in srgb, ${gradientFrom} 35%, #0d2240 65%) 100%); ${transitionName ? `view-transition-name: ${transitionName};` : ''}`}
     role="img"
     aria-label={`${alt}（占位图）`}

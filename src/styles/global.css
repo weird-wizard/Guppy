@@ -617,6 +617,53 @@ body {
   }
 }
 
+/* ─── 全站统一的触控/点击微交互（Tactile Micro-interactions）─── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 按钮、开关与胶囊微弹动效 */
+button:not(:disabled),
+a[role="button"],
+summary,
+.tab-btn,
+.part-pill,
+.calc-mode-btn,
+.preset-btn,
+.quick-liters-btn,
+.pf-nav-trigger {
+  cursor: pointer;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+}
+
+button:not(:disabled):active,
+a[role="button"]:active,
+summary:active,
+.tab-btn:active,
+.part-pill:active,
+.calc-mode-btn:active,
+.preset-btn:active,
+.quick-liters-btn:active {
+  transform: scale(0.95);
+}
+
+/* 卡片点击微缩动效 */
+.disease-item,
+.breed-card,
+.guide-card,
+.article-card,
+a.group {
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.disease-item:active,
+.breed-card:active,
+.guide-card:active,
+.article-card:active,
+a.group:active {
+  transform: scale(0.985) !important;
+}
+
 /* 尊重系统减弱动效设置 */
 @media (prefers-reduced-motion: reduce) {
   html {

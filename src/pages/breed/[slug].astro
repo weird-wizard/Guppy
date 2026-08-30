@@ -47,20 +47,20 @@ const difficultyBadgeClass = `inline-flex items-center px-3 py-1 rounded-full te
   title={`${title} · ${family} - 孔雀鱼品种图鉴`}
   description={subtitle ?? `${title}（${enName ?? ''}），${family}孔雀鱼品种`}
 >
-  <section class="max-w-6xl mx-auto px-4 py-14 sm:py-16">
+  <section class="max-w-6xl mx-auto px-4 py-6 sm:py-14">
     <a
       href="/breeds/"
       onclick="if (window.history.length > 1) { window.history.back(); return false; }"
-      class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-abyss-100 shadow-sm text-sm font-medium text-aqua-700 hover:text-aqua-800 hover:border-aqua-300 hover:bg-aqua-50/50 hover:-translate-x-0.5 transition-all ease-[var(--ease-spring)] cursor-pointer"
+      class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-abyss-100 shadow-xs text-xs sm:text-sm font-medium text-aqua-700 hover:text-aqua-800 hover:border-aqua-300 hover:bg-aqua-50/50 active:scale-95 transition-all cursor-pointer"
     >
       <span aria-hidden="true">←</span> 返回品种图鉴
     </a>
 
-    <div class="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div class="mt-4 sm:mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
       <!-- 主内容 -->
       <div>
         <!-- 品种主图占位（绑定 View Transition 共享元素名） -->
-        <div class="rounded-2xl overflow-hidden bg-white border border-aqua-100 p-3 shadow-card">
+        <div class="rounded-2xl overflow-hidden bg-white border border-slate-200/80 sm:border-aqua-100 p-2 sm:p-3 shadow-card">
           <BreedImage
             alt={title}
             image={cover}
@@ -70,19 +70,19 @@ const difficultyBadgeClass = `inline-flex items-center px-3 py-1 rounded-full te
           />
         </div>
 
-        <div class="mt-10">
-          <p class="text-sm font-medium text-aqua-600 tracking-wider uppercase">{family}</p>
-          <h1 class="mt-1 text-3xl sm:text-4xl font-bold text-slate-900">{title}</h1>
+        <div class="mt-6 sm:mt-8">
+          <p class="text-xs sm:text-sm font-medium text-aqua-600 tracking-wider uppercase">{family}</p>
+          <h1 class="mt-1 text-2xl sm:text-4xl font-bold text-slate-900">{title}</h1>
           {enName && (
-            <p class="mt-2 text-slate-500 text-lg italic font-serif">
+            <p class="mt-1.5 text-slate-500 text-base sm:text-lg italic font-serif">
               {enName}
             </p>
           )}
-          {subtitle && <p class="mt-4 text-slate-600 text-lg leading-relaxed">{subtitle}</p>}
+          {subtitle && <p class="mt-2.5 sm:mt-3.5 text-slate-600 text-sm sm:text-lg leading-relaxed">{subtitle}</p>}
         </div>
 
         <!-- 徽章行：颜色 / 鳍型 / 难度 / 体长 / 水温 -->
-        <div class="mt-8 flex flex-wrap items-center gap-2.5">
+        <div class="mt-5 sm:mt-7 flex flex-wrap items-center gap-2">
           <span class={CHIP_CLASS}>
             <span
               class="w-2.5 h-2.5 rounded-full ring-2 ring-white shadow-sm"
