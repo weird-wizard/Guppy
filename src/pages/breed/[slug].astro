@@ -39,10 +39,9 @@ export async function getStaticPaths() {
 
 const { breed, related, prevBreed, nextBreed, totalCount, currentIndex } = Astro.props;
 const { Content } = await render(breed);
-
 const { title, enName, subtitle, color, finType, difficulty, family, genetics, size, temp, tags } =
   breed.data;
-const cover = breed.data.image?.src;
+const cover = breed.data.image;
 
 // ─── 分类字段 → 中文文案/徽章映射 ───
 const COLOR_LABELS: Record<string, string> = {
@@ -389,8 +388,11 @@ const glowColor = COLOR_GLOWS[color] || 'rgba(53, 164, 255, 0.2)';
               <div class="relative aspect-[16/10] overflow-hidden bg-slate-100">
                 <BreedImage
                   alt={item.data.title}
-                  image={item.data.image?.src}
+                  image={item.data.image}
                   gradientFrom={COLOR_GRADIENTS[item.data.color]}
+                  width={400}
+                  height={300}
+                  quality={80}
                 />
               </div>
 

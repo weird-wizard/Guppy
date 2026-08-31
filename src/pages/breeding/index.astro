@@ -7,8 +7,8 @@ import {
   Dna,
   Sparkles,
   ArrowRight,
-  HelpCircle,
-} from '@lucide/astro';
+  AlertTriangle,
+} from 'lucide-astro';
 
 const allArticles = await getCollection('breeding');
 
@@ -59,161 +59,140 @@ const emergencyArticle = allArticles.find((a) => a.id === '05-common-problems');
   title="繁殖技术 - 孔雀鱼百科"
   description="孔雀鱼繁殖与品系选育实操指南：从种鱼选拔、母鱼待产、幼鱼开口到品系提纯的完整流程。"
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-9">
-    <!-- 顶部标题区 -->
-    <header class="mb-7 sm:mb-9 pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+  <div class="max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8">
+    <!-- ───────────────────────────────────────────── -->
+    <!-- 顶部标题区 (Apple-style Editorial Header)      -->
+    <!-- ───────────────────────────────────────────── -->
+    <header class="mb-6 sm:mb-8 pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
       <div>
         <nav aria-label="面包屑" class="text-xs text-slate-400 mb-1.5 flex items-center gap-1.5">
           <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
           <span class="text-slate-300">/</span>
           <span class="text-slate-600 font-medium">繁殖技术</span>
         </nav>
-        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-          孔雀鱼繁殖与育种指南
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
+          孔雀鱼繁殖与育种
         </h1>
         <p class="mt-1 text-xs sm:text-sm text-slate-500">
-          从选种备孕、孕期观察、幼鱼开口到品系提纯的系统实操手册
+          从选种备孕、孕期观察、幼鱼开口到品系提纯的系统实操流程
         </p>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium border border-slate-200 shrink-0">
-          平均周期 28 天/胎
+
+      <div class="flex items-center gap-2 text-xs shrink-0">
+        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-medium border border-slate-200/80 flex items-center gap-1.5 shadow-2xs">
+          <span>完整周期</span>
+          <strong class="text-aqua-700 font-bold">28天 / 胎</strong>
         </span>
       </div>
     </header>
 
     <!-- ───────────────────────────────────────────── -->
-    <!-- 4 个主要生命周期阶段卡片 (Timeline Cards) -->
+    <!-- 4 大繁育核心生命周期时序路线 (Stepped Roadmap)  -->
     <!-- ───────────────────────────────────────────── -->
-    <section class="relative">
-      <!-- 贯通背景连线 -->
+    <section class="relative space-y-4 sm:space-y-5">
+      {/* 贯通背景中轴连线 */}
       <div
         aria-hidden="true"
-        class="absolute left-4.5 sm:left-5.5 top-10 bottom-10 w-px -translate-x-1/2 bg-slate-200"
+        class="absolute left-4.5 sm:left-5.5 top-8 bottom-8 w-px -translate-x-1/2 bg-slate-200"
       ></div>
 
-      <div class="space-y-4 sm:space-y-6">
-        {roadmapItems.map((item) => {
-          const Icon = item.icon;
-          const art = item.article;
-          if (!art) return null;
+      {roadmapItems.map((item) => {
+        const Icon = item.icon;
+        const art = item.article;
+        if (!art) return null;
 
-          return (
-            <div class="relative flex items-center gap-3.5 sm:gap-5 group">
-              <!-- 左侧步骤序号圆标 -->
-              <div class="shrink-0 w-9 sm:w-11 flex justify-center z-10">
-                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border-2 border-slate-300 group-hover:border-aqua-600 group-hover:text-aqua-600 text-slate-700 flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-2xs shrink-0 ring-4 ring-slate-50 transition-all duration-200">
-                  {item.stepNum}
-                </div>
+        return (
+          <div class="relative flex items-start gap-3.5 sm:gap-5 group">
+            {/* 左侧步骤序号圆标 */}
+            <div class="shrink-0 w-9 sm:w-11 flex justify-center z-10 pt-4">
+              <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border-2 border-slate-300 group-hover:border-aqua-600 group-hover:text-aqua-600 text-slate-700 flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-2xs shrink-0 ring-4 ring-slate-50 transition-all duration-300">
+                {item.stepNum}
               </div>
+            </div>
 
-              <!-- 右侧文章卡片 -->
-              <a
-                href={`/breeding/${art.id}/`}
-                class="flex-1 bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs hover:shadow-hover hover:border-slate-400 hover:-translate-y-0.5 active:bg-slate-50 transition-all duration-200"
-              >
-                <!-- 卡片顶栏 -->
+            {/* 右侧卡片主体 */}
+            <a
+              href={`/breeding/${art.id}/`}
+              class="flex-1 bg-white rounded-2xl border border-slate-200/90 p-4.5 sm:p-5 shadow-2xs hover:shadow-card hover:border-aqua-400 hover:-translate-y-0.5 active:bg-slate-50 transition-all duration-300 flex flex-col justify-between gap-3"
+            >
+              <div>
+                {/* 卡片顶栏：阶段标识与箭头 */}
                 <div class="flex items-center justify-between gap-2 mb-1.5">
-                  <span class="text-xs font-semibold text-aqua-700 flex items-center gap-1">
-                    <Icon class="w-3.5 h-3.5" />
-                    <span>步骤 {item.stepNum} · {item.stageLabel}</span>
+                  <span class="text-xs font-bold text-aqua-700 flex items-center gap-1.5">
+                    <Icon class="w-3.5 h-3.5 shrink-0" />
+                    <span>阶段 {item.stepNum} · {item.stageLabel}</span>
                   </span>
-                  <span class="text-[11px] text-slate-400">
-                    {art.data.pubDate.toLocaleDateString('zh-CN')}
+
+                  <span class="text-xs font-semibold text-slate-400 group-hover:text-aqua-700 flex items-center gap-1 transition-colors">
+                    <span class="hidden sm:inline">阅读指南</span>
+                    <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
                   </span>
                 </div>
 
-                <!-- 标题与副标题 -->
+                {/* 文章标题 */}
                 <h2 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-aqua-700 transition-colors leading-snug">
                   {art.data.title}
                 </h2>
 
+                {/* 文章导读 */}
                 {art.data.subtitle && (
-                  <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  <p class="mt-1 text-xs sm:text-sm text-slate-600 leading-relaxed">
                     {art.data.subtitle}
                   </p>
                 )}
+              </div>
 
-                <!-- 核心要点简述 (自然文字形式) -->
-                <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-                  <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                    {item.keyPoints.map((point) => (
-                      <span class="inline-flex items-center gap-1">
-                        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                        <span>{point}</span>
-                      </span>
-                    ))}
-                  </div>
-
-                  <span class="text-xs font-medium text-slate-500 group-hover:text-aqua-700 transition-colors inline-flex items-center gap-1 shrink-0 ml-auto">
-                    <span>阅读指南</span>
-                    <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                  </span>
+              {/* 核心关键点标签条 */}
+              {item.keyPoints && item.keyPoints.length > 0 && (
+                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
+                  {item.keyPoints.map((pt) => (
+                    <span class="text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-slate-50 text-slate-600 border border-slate-200/60">
+                      {pt}
+                    </span>
+                  ))}
                 </div>
-              </a>
-            </div>
-          );
-        })}
-      </div>
+              )}
+            </a>
+          </div>
+        );
+      })}
     </section>
 
     <!-- ───────────────────────────────────────────── -->
-    <!-- 常见问题与突发处理 (Troubleshooting) -->
+    <!-- 底部附录：繁殖疑难与避坑指南                   -->
     <!-- ───────────────────────────────────────────── -->
     {emergencyArticle && (
-      <section class="mt-8 sm:mt-10">
-        <div class="flex items-center gap-1.5 mb-3 text-slate-900 font-bold text-xs sm:text-sm">
-          <HelpCircle class="w-4 h-4 text-slate-600" />
-          <h2>常见问题与突发情况处理</h2>
-        </div>
-
+      <section class="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-slate-200/80">
         <a
           href={`/breeding/${emergencyArticle.id}/`}
-          class="group block bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs hover:shadow-hover hover:border-slate-400 hover:-translate-y-0.5 active:bg-slate-50 transition-all duration-200"
+          class="group block bg-gradient-to-br from-amber-50/70 via-white to-amber-50/30 rounded-2xl border border-amber-200/80 p-4.5 sm:p-5 shadow-2xs hover:shadow-card hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-300"
         >
-          <div class="flex items-center justify-between gap-2 mb-1.5">
-            <span class="text-xs font-semibold text-purple-700 flex items-center gap-1">
-              <HelpCircle class="w-3.5 h-3.5" />
-              <span>答疑与应急</span>
-            </span>
-            <span class="text-[11px] text-slate-400">
-              {emergencyArticle.data.pubDate.toLocaleDateString('zh-CN')}
-            </span>
-          </div>
-
-          <h3 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-purple-700 transition-colors leading-snug">
-            {emergencyArticle.data.title}
-          </h3>
-
-          {emergencyArticle.data.subtitle && (
-            <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {emergencyArticle.data.subtitle}
-            </p>
-          )}
-
-          <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-            <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-              <span class="inline-flex items-center gap-1">
-                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                <span>真假难产鉴别与安全处理</span>
-              </span>
-              <span class="inline-flex items-center gap-1">
-                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                <span>幼鱼针尾病防治</span>
-              </span>
-              <span class="inline-flex items-center gap-1">
-                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                <span>小鱼防吞食对策</span>
-              </span>
-              <span class="inline-flex items-center gap-1">
-                <span class="w-1 h-1 rounded-full bg-slate-300"></span>
-                <span>产后母鱼调理</span>
-              </span>
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 grid place-items-center shrink-0 mt-0.5">
+                <AlertTriangle class="w-4 h-4" />
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-bold px-2 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-200/80">
+                    实战避坑
+                  </span>
+                  <span class="text-xs text-slate-400 font-medium hidden sm:inline">难产 · 畸形 · 近交衰退</span>
+                </div>
+                <h3 class="text-sm sm:text-base font-bold text-slate-900 group-hover:text-amber-900 transition-colors mt-1">
+                  {emergencyArticle.data.title}
+                </h3>
+                {emergencyArticle.data.subtitle && (
+                  <p class="mt-1 text-xs text-slate-600 leading-relaxed">
+                    {emergencyArticle.data.subtitle}
+                  </p>
+                )}
+              </div>
             </div>
 
-            <span class="text-xs font-medium text-slate-500 group-hover:text-purple-700 transition-colors inline-flex items-center gap-1 shrink-0 ml-auto">
-              <span>阅读指南</span>
-              <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            <span class="text-xs font-semibold text-amber-800 group-hover:text-amber-900 flex items-center gap-1 shrink-0 mt-1">
+              <span>查阅避坑手册</span>
+              <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-200" />
             </span>
           </div>
         </a>

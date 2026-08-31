@@ -237,16 +237,16 @@ const {
               
               {/* 标尺上方目标区间定位气泡 */}
               <div
-                class="absolute top-2 h-5 rounded-md border border-emerald-300 bg-white px-2 text-[10px] sm:text-[11px] font-bold text-emerald-800 shadow-2xs flex items-center gap-1.5 z-10 whitespace-nowrap"
+                class="ruler-bubble absolute top-2 h-5 rounded-md border border-emerald-300 bg-white px-2 text-[10px] sm:text-[11px] font-bold text-emerald-800 shadow-2xs flex items-center gap-1.5 z-10 whitespace-nowrap"
                 style={`left: clamp(0.75rem, calc(0.875rem + (100% - 1.75rem) * ${parseFloat(param.targetLeft) / 100}), calc(100% - 11rem));`}
               >
-                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-xs shrink-0"></span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-xs shrink-0 animate-pulse"></span>
                 <span>{param.targetLabel}</span>
               </div>
 
-              {/* 标尺色阶主轨道 */}
+              {/* 标尺色阶主轨道（充能扫描入场动效） */}
               <div
-                class="h-2.5 w-full rounded-full overflow-hidden shadow-xs ring-1 ring-slate-200"
+                class="ruler-track h-2.5 w-full rounded-full overflow-hidden shadow-xs ring-1 ring-slate-200"
                 style={`background: ${param.trackGradient}`}
               ></div>
 
@@ -305,3 +305,35 @@ const {
     </div>
   )}
 </div>
+
+<style>
+  /* 标尺色轨充能横扫入场动效 */
+  .ruler-track {
+    animation: ruler-sweep 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes ruler-sweep {
+    0% {
+      clip-path: inset(0 100% 0 0 round 9999px);
+      opacity: 0.6;
+    }
+    100% {
+      clip-path: inset(0 0 0 0 round 9999px);
+      opacity: 1;
+    }
+  }
+
+  /* 标尺悬浮目标区间气泡弹性降落动效 */
+  .ruler-bubble {
+    animation: bubble-spring-drop 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) 0.15s both;
+  }
+  @keyframes bubble-spring-drop {
+    0% {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.92);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+</style>

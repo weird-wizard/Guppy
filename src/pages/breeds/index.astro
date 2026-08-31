@@ -3,346 +3,1140 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import BreedImage, { COLOR_GRADIENTS, COLOR_GLOWS } from '../../components/BreedImage.astro';
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import {
+  Palette,
+  RotateCcw,
+  Sparkles,
+  Layers,
+  Award,
+  SlidersHorizontal,
+  ChevronDown,
+  CircleDot,
+  ArrowRight
+} from 'lucide-astro';
 
-const breeds = (await getCollection('breeds')).sort(
+const allBreeds = (await getCollection('breeds')).sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 
-// ─── 分类字段 → 中文文案/徽章映射（与 content.config.ts schema 枚举对应） ───
+// 提取所有唯一定义的品系大类
+const ALL_FAMILIES = Array.from(new Set(allBreeds.map((b) => b.data.family))).filter(Boolean);
+
+// ─── 分类字段 → 中文文案/徽章映射 ───
 const COLOR_LABELS: Record<string, string> = {
-  red: '红色', blue: '蓝色', green: '绿色', yellow: '黄色', purple: '紫色',
-  white: '白色', black: '黑色', snake: '蛇纹', multi: '多彩',
+  red: '红色系', blue: '蓝色系', green: '绿色系', yellow: '黄色系', purple: '紫色系',
+  white: '白色系', black: '黑色系', snake: '蛇纹系', multi: '多彩系',
 };
 const FIN_LABELS: Record<string, string> = {
   delta: '三角尾', fan: '扇尾', sword: '剑尾', crown: '皇冠尾',
   ribbon: '缎带尾', round: '圆尾', flag: '旗尾', veil: '纱尾',
 };
-const DIFFICULTY_BADGES: Record<string, { label: string; className: string }> = {
-  beginner: { label: '入门', className: 'bg-aqua-100 text-aqua-700' },
-  intermediate: { label: '进阶', className: 'bg-amber-100 text-amber-700' },
-  advanced: { label: '高手', className: 'bg-coral-100 text-coral-700' },
+const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgClass: string }> = {
+  beginner: { label: '入门级', textClass: 'text-emerald-300 border-emerald-500/40', bgClass: 'bg-emerald-500/20' },
+  intermediate: { label: '进阶级', textClass: 'text-amber-300 border-amber-500/40', bgClass: 'bg-amber-500/20' },
+  advanced: { label: '大师级', textClass: 'text-rose-300 border-rose-500/40', bgClass: 'bg-rose-500/20' },
 };
 
 const COLOR_VALUES = Object.keys(COLOR_LABELS);
 const FIN_VALUES = Object.keys(FIN_LABELS);
-const DIFFICULTY_VALUES = Object.keys(DIFFICULTY_BADGES);
+const DIFFICULTY_VALUES = Object.keys(DIFFICULTY_CONFIG);
 
-// ─── URL 参数筛选（服务端预过滤，SSR 部署时首屏即结果） ───
-const params = Astro.url.searchParams;
-const rawColor = params.get('color') ?? '';
-const rawFin = params.get('fin') ?? '';
-const rawDifficulty = params.get('difficulty') ?? '';
-
-const activeColor = COLOR_VALUES.includes(rawColor) ? rawColor : null;
-const activeFin = FIN_VALUES.includes(rawFin) ? rawFin : null;
-const activeDifficulty = DIFFICULTY_VALUES.includes(rawDifficulty) ? rawDifficulty : null;
-
-const filteredBreeds = breeds.filter((breed) => {
-  if (activeColor && breed.data.color !== activeColor) return false;
-  if (activeFin && breed.data.finType !== activeFin) return false;
-  if (activeDifficulty && breed.data.difficulty !== activeDifficulty) return false;
-  return true;
-});
-
-const hasFilters = Boolean(activeColor || activeFin || activeDifficulty);
-
-// 构建筛选链接：设置当前维度参数，同时保留其他维度已激活的值（支持组合筛选）
-function filterHref(key: string, value: string): string {
-  const url = new URL(Astro.url);
-  url.searchParams.set(key, value);
-  return url.pathname + url.search;
-}
-
-const PILL_BASE = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 ease-[var(--ease-spring)] hover:shadow-sm active:scale-95';
-
-function pillClass(active: boolean): string {
-  return active
-    ? 'bg-aqua-600 text-white border-aqua-600 shadow-sm'
-    : 'bg-white text-slate-600 border-slate-200 hover:border-aqua-400 hover:text-aqua-700';
-}
-
-const activeFilterLabels = [
-  activeColor ? COLOR_LABELS[activeColor] : null,
-  activeFin ? FIN_LABELS[activeFin] : null,
-  activeDifficulty ? DIFFICULTY_BADGES[activeDifficulty].label : null,
-]
-  .filter(Boolean)
-  .join(' · ');
-
-function getCoverSrc(breed: CollectionEntry<'breeds'>): string | undefined {
-  return breed.data.image?.src;
+function getCover(breed: CollectionEntry<'breeds'>) {
+  return breed.data.image;
 }
 ---
 
 <BaseLayout
-  title={`${hasFilters ? '已筛选 · ' : ''}品种图鉴 - 孔雀鱼百科`}
-  description="孔雀鱼品种图鉴：涵盖 17 大品系，支持按颜色、鳍型与饲养难度筛选品种"
+  title="品种图鉴 - 孔雀鱼百科"
+  description="孔雀鱼全品系图鉴库：收录24个经典主流纯系品种，支持按品系大系、主色系、尾型分类与培育难度即时侧边栏筛选。"
 >
-  {/* 深蓝页头带 */}
-  <section class="relative bg-gradient-to-b from-abyss-950 via-abyss-900 to-abyss-800 text-white">
-    <div class="max-w-6xl mx-auto px-4 pt-16 sm:pt-20 pb-16">
-      <p class="eyebrow mb-3">BREEDS · 图鉴</p>
-      <div class="flex flex-wrap items-center gap-3">
-        <h1 class="text-3xl sm:text-4xl font-bold">品种图鉴</h1>
-        <span
-          class={`filter-badge px-2.5 py-1 rounded-full bg-coral-500/20 text-coral-300 border border-coral-400/40 text-xs font-semibold ${hasFilters ? '' : 'hidden'}`}
+  <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8">
+    <!-- ───────────────────────────────────────────── -->
+    <!-- 左右分栏布局：左侧电脑侧栏 + 右侧标题与画廊网格 -->
+    <!-- ───────────────────────────────────────────── -->
+    <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+      
+      {/* ────────────────────────────────────────── */}
+      {/* 电脑端专属：左侧高定筛选侧边栏 (lg:block)   */}
+      {/* ────────────────────────────────────────── */}
+      <aside class="hidden lg:block lg:w-68 lg:shrink-0 lg:sticky lg:top-20 z-20">
+        <section
+          aria-label="品种多维筛选"
+          class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-4 sm:p-5 space-y-4.5 transition-all duration-300 hover:shadow-card-hover"
         >
-          已筛选
-        </span>
-      </div>
-      <p class="mt-3 text-aqua-100/80 max-w-2xl">
-        涵盖 17 大品系的孔雀鱼品种，支持按颜色、鳍型与饲养难度组合筛选。
-        <span class="text-aqua-200/60">
-          共 <span class="breed-count">{filteredBreeds.length}</span> 个品种
-          {hasFilters ? ` / 全部 ${breeds.length} 个` : ''}
-        </span>
-        <span class="filter-labels-header text-aqua-300 font-medium">{hasFilters ? ` · ${activeFilterLabels}` : ''}</span>
-      </p>
-    </div>
-    {/* 波浪分隔 */}
-    <div aria-hidden="true" class="h-10 w-full overflow-hidden leading-none text-slate-50">
-      <svg viewBox="0 0 1440 40" preserveAspectRatio="none" class="block h-full w-full">
-        <path fill="currentColor" d="M0 40V26c240 22 480-20 720 0s480 22 720 0v14z" />
-      </svg>
-    </div>
-  </section>
+          {/* 侧边栏标题与重置 */}
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-1.5 font-bold text-slate-900 text-sm">
+              <SlidersHorizontal class="w-4 h-4 text-aqua-600 animate-pulse-slow" />
+              <span>多维筛选</span>
+            </div>
 
-  <section class="max-w-6xl mx-auto px-4 py-10">
-    <!-- 筛选栏：每个维度一组胶囊按钮，点击改变 URL 参数触发 View Transitions -->
-    <nav aria-label="品种筛选" class="bg-white rounded-2xl border border-slate-200 shadow-card p-5 sm:p-6 mb-10">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 pb-5 border-b border-slate-100">
-        <span class="sm:w-12 shrink-0 text-sm font-medium text-slate-500">颜色</span>
-        <div class="flex flex-wrap gap-2">
-          {COLOR_VALUES.map((value) => {
-            const active = activeColor === value;
-            return (
-              <a
-                href={filterHref('color', value)}
-                data-filter="color"
-                data-value={value}
-                aria-current={active ? 'true' : undefined}
-                class={`${PILL_BASE} ${pillClass(active)}`}
+            <button
+              type="button"
+              id="btn-reset-filters"
+              class="hidden text-[11px] text-rose-600 hover:text-rose-700 font-semibold items-center gap-1 py-0.5 px-2 rounded-md hover:bg-rose-50 transition-all duration-200 active:scale-95 cursor-pointer"
+            >
+              <RotateCcw class="w-2.5 h-2.5" />
+              <span>重置</span>
+            </button>
+          </div>
+
+          {/* 1. 🧬 品系家族大类 */}
+          <div class="space-y-1.5 relative" id="family-dropdown-wrapper">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+              <span class="flex items-center gap-1.5">
+                <Layers class="w-3.5 h-3.5 text-aqua-600 shrink-0" />
+                <span>品系家族</span>
+              </span>
+              <span id="selected-family-badge" class="text-[10px] font-normal text-slate-400 transition-colors duration-200">全部</span>
+            </div>
+
+            <button
+              type="button"
+              id="btn-family-trigger"
+              class="w-full text-xs bg-slate-50 hover:bg-slate-100/90 border border-slate-200/90 rounded-xl px-3 py-2 text-slate-800 font-medium flex items-center justify-between transition-all duration-200 shadow-2xs hover:border-slate-300 active:scale-[0.99] cursor-pointer"
+            >
+              <span id="btn-family-label" class="truncate font-semibold">🧬 全部品系家族</span>
+              <ChevronDown class="w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ease-[var(--ease-out-expo)] shrink-0 ml-1.5" id="family-chevron" />
+            </button>
+
+            <div
+              id="family-popover"
+              class="popover-panel hidden absolute left-0 right-0 top-full mt-1.5 max-h-60 overflow-y-auto rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl p-1.5 z-50 space-y-0.5 divide-y divide-slate-50"
+            >
+              <button
+                type="button"
+                data-fam-val=""
+                class="fam-opt fam-opt-active w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
               >
-                <span
-                  class="w-2 h-2 rounded-full"
-                  style={`background: ${COLOR_GRADIENTS[value]}`}
-                  aria-hidden="true"
-                ></span>
-                {COLOR_LABELS[value]}
-              </a>
-            );
-          })}
-        </div>
-      </div>
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 py-5 border-b border-slate-100">
-        <span class="sm:w-12 shrink-0 text-sm font-medium text-slate-500">鳍型</span>
-        <div class="flex flex-wrap gap-2">
-          {FIN_VALUES.map((value) => {
-            const active = activeFin === value;
-            return (
-              <a
-                href={filterHref('fin', value)}
-                data-filter="fin"
-                data-value={value}
-                aria-current={active ? 'true' : undefined}
-                class={`${PILL_BASE} ${pillClass(active)}`}
+                <span>🧬 全部品系家族</span>
+                <span class="text-[10px] text-slate-400">全部 {allBreeds.length}</span>
+              </button>
+              {ALL_FAMILIES.map((fam) => {
+                const count = allBreeds.filter((b) => b.data.family === fam).length;
+                return (
+                  <button
+                    type="button"
+                    data-fam-val={fam}
+                    class="fam-opt fam-opt-idle w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                  >
+                    <span>{fam}</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500">
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 2. 🎨 色彩色系 */}
+          <div class="pt-3 border-t border-slate-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <Palette class="w-3.5 h-3.5 text-aqua-600 shrink-0" />
+                <span>主色系</span>
+              </span>
+              <span id="active-color-name" class="text-[11px] font-medium text-slate-400 transition-colors duration-200">全部</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1.5" id="color-palette-group">
+              <button
+                type="button"
+                data-color-val=""
+                class="color-pill color-pill-active col-span-3 py-1.5 px-2.5 rounded-xl border text-xs font-medium flex items-center justify-between transition-all duration-200 active:scale-[0.98] cursor-pointer"
               >
-                {FIN_LABELS[value]}
-              </a>
-            );
-          })}
-        </div>
-      </div>
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-5">
-        <span class="sm:w-12 shrink-0 text-sm font-medium text-slate-500">难度</span>
-        <div class="flex flex-wrap gap-2">
-          {DIFFICULTY_VALUES.map((value) => {
-            const active = activeDifficulty === value;
-            return (
-              <a
-                href={filterHref('difficulty', value)}
-                data-filter="difficulty"
-                data-value={value}
-                aria-current={active ? 'true' : undefined}
-                class={`${PILL_BASE} ${pillClass(active)}`}
+                <div class="flex items-center gap-2">
+                  <CircleDot class="w-3.5 h-3.5 text-aqua-600" />
+                  <span>全部主色系</span>
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">24</span>
+              </button>
+
+              {COLOR_VALUES.map((val) => (
+                <button
+                  type="button"
+                  data-color-val={val}
+                  class="color-pill color-pill-idle py-1.5 px-2 rounded-xl border text-xs font-medium flex items-center gap-1.5 transition-all duration-200 active:scale-[0.96] cursor-pointer truncate"
+                >
+                  <span
+                    class="w-2.5 h-2.5 rounded-full shadow-2xs shrink-0 ring-1 ring-black/10 transition-transform duration-200 group-hover:scale-110"
+                    style={`background: ${COLOR_GRADIENTS[val]}`}
+                  ></span>
+                  <span class="truncate text-[11px]">{COLOR_LABELS[val].replace('系', '')}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. 🎏 尾鳍类型 */}
+          <div class="pt-3 border-t border-slate-100 space-y-1.5 relative" id="fin-dropdown-wrapper">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+              <span class="flex items-center gap-1.5">
+                <Sparkles class="w-3.5 h-3.5 text-aqua-600 shrink-0" />
+                <span>尾鳍类型</span>
+              </span>
+              <span id="selected-fin-badge" class="text-[10px] font-normal text-slate-400 transition-colors duration-200">全部</span>
+            </div>
+
+            <button
+              type="button"
+              id="btn-fin-trigger"
+              class="w-full text-xs bg-slate-50 hover:bg-slate-100/90 border border-slate-200/90 rounded-xl px-3 py-2 text-slate-800 font-medium flex items-center justify-between transition-all duration-200 shadow-2xs hover:border-slate-300 active:scale-[0.99] cursor-pointer"
+            >
+              <span id="btn-fin-label" class="truncate font-semibold">🎏 全部尾鳍类型</span>
+              <ChevronDown class="w-3.5 h-3.5 text-slate-400 transition-transform duration-300 ease-[var(--ease-out-expo)] shrink-0 ml-1.5" id="fin-chevron" />
+            </button>
+
+            <div
+              id="fin-popover"
+              class="popover-panel hidden absolute left-0 right-0 top-full mt-1.5 max-h-56 overflow-y-auto rounded-xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl p-1.5 z-50 space-y-0.5"
+            >
+              <button
+                type="button"
+                data-fin-val=""
+                class="fin-opt fin-opt-active w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
               >
-                {DIFFICULTY_BADGES[value].label}
-              </a>
-            );
-          })}
-        </div>
-      </div>
-      {/* 已选摘要条 */}
-      {hasFilters && (
-        <div class="mt-5 pt-5 border-t border-slate-100">
-          <div class="flex items-center justify-between gap-3 bg-aqua-50 rounded-lg px-4 py-2.5">
-            <span class="text-sm text-aqua-900">
-              已选：<span class="filter-labels font-semibold text-aqua-900">{activeFilterLabels}</span>
+                <span>🎏 全部尾鳍类型</span>
+                <span class="text-[10px] text-slate-400">全部 8种</span>
+              </button>
+              {FIN_VALUES.map((val) => {
+                const count = allBreeds.filter((b) => b.data.finType === val).length;
+                return (
+                  <button
+                    type="button"
+                    data-fin-val={val}
+                    class="fin-opt fin-opt-idle w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                  >
+                    <span>{FIN_LABELS[val]}</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-500">
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 4. 📈 培育难度 */}
+          <div class="pt-3 border-t border-slate-100 space-y-1.5">
+            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <Award class="w-3.5 h-3.5 text-aqua-600 shrink-0" />
+              <span>培育难度</span>
             </span>
-            <a href="/breeds/" class="text-sm font-medium text-coral-600 hover:text-coral-700 transition-colors shrink-0">
-              清除全部
-            </a>
+
+            <div class="bg-slate-100/90 p-1 rounded-xl grid grid-cols-4 gap-1 text-center font-medium text-[11px]" id="difficulty-segmented-group">
+              <button
+                type="button"
+                data-diff-val=""
+                class="diff-seg diff-seg-active py-1.5 rounded-lg transition-all duration-200 active:scale-95 cursor-pointer"
+              >
+                全部
+              </button>
+              {DIFFICULTY_VALUES.map((val) => (
+                <button
+                  type="button"
+                  data-diff-val={val}
+                  class="diff-seg diff-seg-idle py-1.5 rounded-lg transition-all duration-200 active:scale-95 cursor-pointer"
+                >
+                  {DIFFICULTY_CONFIG[val].label.replace('级', '')}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      {/* ────────────────────────────────────────── */}
+      {/* 右侧主内容区：标题 + 移动端单行筛选 + 画廊网格 */}
+      {/* ────────────────────────────────────────── */}
+      <main class="flex-1 min-w-0 w-full">
+        {/* 顶部标题区：严格与画廊网格左侧对齐 */}
+        <header class="mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div>
+            <nav aria-label="面包屑" class="text-xs text-slate-400 mb-1.5 flex items-center gap-1.5">
+              <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+              <span class="text-slate-300">/</span>
+              <span class="text-slate-600 font-medium">品种图鉴</span>
+            </nav>
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
+              孔雀鱼纯系品种图鉴
+            </h1>
+            <p class="mt-1 text-xs sm:text-sm text-slate-500">
+              收录 24 个国际主流纯系品种，轻触或悬停卡片即可查阅品系档案
+            </p>
+          </div>
+
+          <div class="hidden sm:flex items-center gap-2 text-xs shrink-0">
+            <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-medium border border-slate-200/80 flex items-center gap-1.5 shadow-2xs transition-all duration-300">
+              <span>当前显示</span>
+              <strong id="visible-count" class="text-aqua-700 font-bold tabular-nums transition-transform duration-200">{allBreeds.length}</strong>
+              <span class="text-slate-400">/ 全套 {allBreeds.length} 品种</span>
+            </span>
+          </div>
+        </header>
+
+        {/* ────────────────────────────────────────── */}
+        {/* 📱 移动端专属：单行水平 4 维紧凑下拉筛选栏    */}
+        {/* ────────────────────────────────────────── */}
+        <div class="lg:hidden w-full sticky top-14 z-30 bg-slate-50/95 backdrop-blur-md py-2 px-0.5 border-b border-slate-200/80 mb-4">
+          <div class="grid grid-cols-4 gap-1.5 relative" id="mobile-filter-bar">
+            {/* 1. 品种/家族 */}
+            <div class="relative" id="m-family-dropdown-wrapper">
+              <button
+                type="button"
+                id="btn-m-family"
+                class="m-filter-btn w-full py-2 px-2 rounded-xl bg-white border border-slate-200/90 text-xs font-semibold text-slate-700 flex items-center justify-between shadow-2xs transition-all duration-200 hover:border-slate-300 active:scale-[0.97] cursor-pointer"
+              >
+                <span class="truncate" id="btn-m-family-label">🧬 品种</span>
+                <ChevronDown class="w-3 h-3 text-slate-400 shrink-0 ml-0.5 transition-transform duration-300 ease-[var(--ease-out-expo)]" id="m-family-chevron" />
+              </button>
+
+              <div
+                id="m-family-popover"
+                class="popover-panel hidden absolute left-0 top-full mt-1.5 w-48 max-h-64 overflow-y-auto rounded-xl bg-white/98 backdrop-blur-md border border-slate-200/90 shadow-xl p-1.5 z-50 space-y-0.5 divide-y divide-slate-50"
+              >
+                <button
+                  type="button"
+                  data-fam-val=""
+                  class="fam-opt fam-opt-active w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                >
+                  <span>🧬 全部品种</span>
+                  <span class="text-[10px] text-slate-400">24</span>
+                </button>
+                {ALL_FAMILIES.map((fam) => {
+                  const count = allBreeds.filter((b) => b.data.family === fam).length;
+                  return (
+                    <button
+                      type="button"
+                      data-fam-val={fam}
+                      class="fam-opt fam-opt-idle w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                    >
+                      <span>{fam}</span>
+                      <span class="text-[10px] font-mono px-1 rounded bg-slate-100 text-slate-500">
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 2. 色系 */}
+            <div class="relative" id="m-color-dropdown-wrapper">
+              <button
+                type="button"
+                id="btn-m-color"
+                class="m-filter-btn w-full py-2 px-2 rounded-xl bg-white border border-slate-200/90 text-xs font-semibold text-slate-700 flex items-center justify-between shadow-2xs transition-all duration-200 hover:border-slate-300 active:scale-[0.97] cursor-pointer"
+              >
+                <span class="truncate" id="btn-m-color-label">🎨 色系</span>
+                <ChevronDown class="w-3 h-3 text-slate-400 shrink-0 ml-0.5 transition-transform duration-300 ease-[var(--ease-out-expo)]" id="m-color-chevron" />
+              </button>
+
+              <div
+                id="m-color-popover"
+                class="popover-panel hidden absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-60 rounded-xl bg-white/98 backdrop-blur-md border border-slate-200/90 shadow-xl p-2 z-50"
+              >
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button
+                    type="button"
+                    data-color-val=""
+                    class="color-pill color-pill-active col-span-3 py-1.5 px-2 rounded-lg border text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                  >
+                    <span>全部主色系</span>
+                    <span class="text-[10px] font-mono opacity-70">24</span>
+                  </button>
+                  {COLOR_VALUES.map((val) => (
+                    <button
+                      type="button"
+                      data-color-val={val}
+                      class="color-pill color-pill-idle py-1.5 px-1.5 rounded-lg border text-xs font-medium flex items-center gap-1 transition-all duration-150 cursor-pointer truncate"
+                    >
+                      <span
+                        class="w-2 h-2 rounded-full shadow-2xs shrink-0 ring-1 ring-black/10"
+                        style={`background: ${COLOR_GRADIENTS[val]}`}
+                      ></span>
+                      <span class="truncate text-[11px]">{COLOR_LABELS[val].replace('系', '')}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 3. 尾巴/尾鳍 */}
+            <div class="relative" id="m-fin-dropdown-wrapper">
+              <button
+                type="button"
+                id="btn-m-fin"
+                class="m-filter-btn w-full py-2 px-2 rounded-xl bg-white border border-slate-200/90 text-xs font-semibold text-slate-700 flex items-center justify-between shadow-2xs transition-all duration-200 hover:border-slate-300 active:scale-[0.97] cursor-pointer"
+              >
+                <span class="truncate" id="btn-m-fin-label">🎏 尾巴</span>
+                <ChevronDown class="w-3 h-3 text-slate-400 shrink-0 ml-0.5 transition-transform duration-300 ease-[var(--ease-out-expo)]" id="m-fin-chevron" />
+              </button>
+
+              <div
+                id="m-fin-popover"
+                class="popover-panel hidden absolute right-0 sm:left-0 top-full mt-1.5 w-44 max-h-60 overflow-y-auto rounded-xl bg-white/98 backdrop-blur-md border border-slate-200/90 shadow-xl p-1.5 z-50 space-y-0.5 divide-y divide-slate-50"
+              >
+                <button
+                  type="button"
+                  data-fin-val=""
+                  class="fin-opt fin-opt-active w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                >
+                  <span>🎏 全部尾鳍</span>
+                  <span class="text-[10px] text-slate-400">8种</span>
+                </button>
+                {FIN_VALUES.map((val) => {
+                  const count = allBreeds.filter((b) => b.data.finType === val).length;
+                  return (
+                    <button
+                      type="button"
+                      data-fin-val={val}
+                      class="fin-opt fin-opt-idle w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                    >
+                      <span>{FIN_LABELS[val]}</span>
+                      <span class="text-[10px] font-mono px-1 rounded bg-slate-100 text-slate-500">
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 4. 培育难度 */}
+            <div class="relative" id="m-diff-dropdown-wrapper">
+              <button
+                type="button"
+                id="btn-m-diff"
+                class="m-filter-btn w-full py-2 px-2 rounded-xl bg-white border border-slate-200/90 text-xs font-semibold text-slate-700 flex items-center justify-between shadow-2xs transition-all duration-200 hover:border-slate-300 active:scale-[0.97] cursor-pointer"
+              >
+                <span class="truncate" id="btn-m-diff-label">📈 难度</span>
+                <ChevronDown class="w-3 h-3 text-slate-400 shrink-0 ml-0.5 transition-transform duration-300 ease-[var(--ease-out-expo)]" id="m-diff-chevron" />
+              </button>
+
+              <div
+                id="m-diff-popover"
+                class="popover-panel hidden absolute right-0 top-full mt-1.5 w-36 rounded-xl bg-white/98 backdrop-blur-md border border-slate-200/90 shadow-xl p-1.5 z-50 space-y-0.5 divide-y divide-slate-50"
+              >
+                <button
+                  type="button"
+                  data-diff-val=""
+                  class="diff-opt diff-opt-active w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                >
+                  <span>全部难度</span>
+                </button>
+                {DIFFICULTY_VALUES.map((val) => (
+                  <button
+                    type="button"
+                    data-diff-val={val}
+                    class="diff-opt diff-opt-idle w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-all duration-150 cursor-pointer"
+                  >
+                    <span>{DIFFICULTY_CONFIG[val].label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 移动端重置按钮（当有激活条件时浮现） */}
+          <div id="m-reset-bar" class="hidden items-center justify-between pt-2 px-1 text-xs">
+            <span class="text-slate-500 font-medium flex items-center gap-1 text-[11px]">
+              <span>符合筛选：</span>
+              <strong id="m-visible-count" class="text-aqua-700 font-bold tabular-nums">{allBreeds.length}</strong>
+              <span>种</span>
+            </span>
+            <button
+              type="button"
+              id="btn-m-reset"
+              class="text-rose-600 hover:text-rose-700 font-semibold text-[11px] flex items-center gap-1 py-0.5 px-2 rounded-md bg-rose-50/80 transition-all duration-200 active:scale-95 cursor-pointer"
+            >
+              <RotateCcw class="w-2.5 h-2.5" />
+              <span>清空所有筛选</span>
+            </button>
           </div>
         </div>
-      )}
-    </nav>
 
-    <!-- 品种卡片网格 -->
-    <div class={`breed-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${filteredBreeds.length === 0 ? 'hidden' : ''}`}>
-      {filteredBreeds.map((breed) => (
-        <article
-          data-color={breed.data.color}
-          data-fin={breed.data.finType}
-          data-difficulty={breed.data.difficulty}
-          style={`--card-glow: ${COLOR_GLOWS[breed.data.color]};`}
-          class="breed-card breed-card-aura group bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col shadow-card hover:-translate-y-1.5 hover:border-aqua-400/70"
-        >
-          <a href={`/breed/${breed.id}/`} class="flex flex-col flex-1">
-            <div class="relative aspect-[4/3] overflow-hidden">
-              <BreedImage
-                alt={breed.data.title}
-                image={getCoverSrc(breed)}
-                gradientFrom={COLOR_GRADIENTS[breed.data.color]}
-              />
-              {/* 静态底部渐变蒙层：水中深度感 */}
-              <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-abyss-950/35 to-transparent"></div>
-              {/* hover 滑入"查看详情"提示条 */}
-              <div
-                class="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-gradient-to-t from-abyss-950/90 to-abyss-900/40 backdrop-blur-[2px] px-4 py-2.5 text-sm font-medium text-white"
-                aria-hidden="true"
+        {/* 品种卡片响应式网格：2-4 列高密度画廊模式 */}
+        <section id="breed-grid" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4.5">
+          {allBreeds.map((breed, index) => {
+            const cover = getCover(breed);
+            const grad = COLOR_GRADIENTS[breed.data.color] || '#35a4ff';
+            const glow = COLOR_GLOWS[breed.data.color] || 'rgba(53, 164, 255, 0.2)';
+            const diff = DIFFICULTY_CONFIG[breed.data.difficulty];
+
+            return (
+              <article
+                data-family={breed.data.family}
+                data-color={breed.data.color}
+                data-fin={breed.data.finType}
+                data-difficulty={breed.data.difficulty}
+                style={`--card-glow: ${glow}; --card-idx: ${index};`}
+                class="breed-card gallery-card group relative bg-slate-900 rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs aspect-[4/3] flex flex-col justify-end"
               >
-                查看详情 <span aria-hidden="true">→</span>
-              </div>
-            </div>
-            <div class="p-6 flex flex-col gap-3 flex-1">
-              <h2 class="text-lg font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
-                {breed.data.title}
-              </h2>
-              {breed.data.enName && (
-                <p class="text-xs text-slate-400 font-serif italic mt-0.5">{breed.data.enName}</p>
-              )}
-              <p class="text-xs font-medium text-aqua-600">{breed.data.family}</p>
-              {breed.data.subtitle && (
-                <p class="text-sm text-slate-600 line-clamp-2">{breed.data.subtitle}</p>
-              )}
-              <div class="mt-auto pt-3 flex items-center justify-between gap-2">
-                <span
-                  class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${DIFFICULTY_BADGES[breed.data.difficulty].className}`}
-                >
-                  {DIFFICULTY_BADGES[breed.data.difficulty].label}
-                </span>
-                <span class="inline-flex items-center gap-1.5 text-xs text-slate-400">
-                  <span
-                    class="w-2 h-2 rounded-full"
-                    style={`background: ${COLOR_GRADIENTS[breed.data.color]}`}
-                    aria-hidden="true"
-                  ></span>
-                  {COLOR_LABELS[breed.data.color]}
-                </span>
-              </div>
-            </div>
-          </a>
-        </article>
-      ))}
-    </div>
+                <a href={`/breed/${breed.id}/`} class="absolute inset-0 z-0 flex flex-col justify-end">
+                  {/* 背景全景鱼照 */}
+                  <div class="absolute inset-0 w-full h-full overflow-hidden bg-slate-100">
+                    <div class="w-full h-full transform transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-105">
+                      <BreedImage
+                        alt={breed.data.title}
+                        image={cover}
+                        gradientFrom={grad}
+                        width={480}
+                        height={360}
+                        quality={80}
+                      />
+                    </div>
+                  </div>
 
-    <div class={`filter-empty text-center py-20 bg-white rounded-2xl border border-slate-200 ${filteredBreeds.length === 0 ? '' : 'hidden'}`}>
-      <svg viewBox="0 0 24 24" class="mx-auto w-14 h-14 text-slate-300" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
-        <circle cx="9" cy="12" r="0.6" fill="currentColor" />
-      </svg>
-      <p class="mt-4 text-lg font-semibold font-serif text-slate-900">没有匹配的品种</p>
-      <p class="mt-2 text-sm text-slate-500">换个筛选条件，或查看全部品种</p>
-      <a
-        href="/breeds/"
-        class="inline-block mt-6 px-5 py-2.5 rounded-full bg-aqua-600 text-white text-sm font-medium hover:bg-aqua-700 transition-colors"
-      >
-        查看全部品种
-      </a>
+                  {/* ───────────────────────────────────────── */}
+                  {/* 1. 常态展示：底部半透明渐变条（仅显名称+色标）*/}
+                  {/* ───────────────────────────────────────── */}
+                  <div class="relative z-10 w-full p-2 sm:p-3 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent flex items-end justify-between gap-1 transition-all duration-300 ease-[var(--ease-out-expo)] group-hover:opacity-0 group-hover:translate-y-2">
+                    <div class="min-w-0">
+                      <h2 class="text-xs sm:text-sm font-bold text-white leading-tight truncate drop-shadow-sm">
+                        {breed.data.title}
+                      </h2>
+                      {breed.data.enName && (
+                        <p class="text-[9px] sm:text-[10px] text-slate-300 font-serif italic truncate mt-0.5 opacity-90">
+                          {breed.data.enName}
+                        </p>
+                      )}
+                    </div>
+
+                    <div class="flex items-center gap-1 shrink-0">
+                      <span
+                        class="w-2 h-2 rounded-full ring-1 ring-white/30 shadow-xs"
+                        style={`background: ${grad}`}
+                        aria-hidden="true"
+                      ></span>
+                      <span class="text-[9px] sm:text-[10px] text-slate-300 hidden sm:inline">{breed.data.family}</span>
+                    </div>
+                  </div>
+
+                  {/* ───────────────────────────────────────── */}
+                  {/* 2. 悬停/触控展开：全屏毛玻璃详细档案卡层   */}
+                  {/* ───────────────────────────────────────── */}
+                  <div class="absolute inset-0 z-20 bg-slate-950/88 backdrop-blur-[4px] p-2.5 sm:p-3.5 text-white flex flex-col justify-between opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-[var(--ease-out-expo)] pointer-events-none">
+                    {/* 顶栏徽章 */}
+                    <div>
+                      <div class="flex items-center justify-between gap-1 mb-1">
+                        <span class="text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.2 rounded bg-white/15 text-aqua-200 border border-white/20">
+                          {breed.data.family}
+                        </span>
+                        <span class={`text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.2 rounded border ${diff.bgClass} ${diff.textClass}`}>
+                          {diff.label}
+                        </span>
+                      </div>
+
+                      {/* 标题 */}
+                      <h2 class="text-xs sm:text-base font-bold text-white leading-snug mt-1">
+                        {breed.data.title}
+                      </h2>
+                      {breed.data.enName && (
+                        <p class="text-[9px] sm:text-[10px] text-slate-400 font-serif italic truncate">
+                          {breed.data.enName}
+                        </p>
+                      )}
+
+                      {/* 简介文案 */}
+                      {breed.data.subtitle && (
+                        <p class="mt-1 sm:mt-1.5 text-[10px] sm:text-[11px] text-slate-300 line-clamp-2 leading-relaxed opacity-90">
+                          {breed.data.subtitle}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* 底部属性与引导 */}
+                    <div class="pt-1.5 sm:pt-2 border-t border-white/15 flex items-center justify-between text-[9px] sm:text-[10px]">
+                      <div class="flex items-center gap-1">
+                        <span
+                          class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ring-1 ring-white/30"
+                          style={`background: ${grad}`}
+                        ></span>
+                        <span class="text-slate-300">{FIN_LABELS[breed.data.finType]}</span>
+                      </div>
+
+                      <span class="text-aqua-300 font-semibold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform duration-200">
+                        <span>详情</span>
+                        <ArrowRight class="w-2.5 h-2.5" />
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            );
+          })}
+        </section>
+
+        {/* 空状态提示 */}
+        <div id="no-results" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200/90 shadow-2xs my-4 space-y-3">
+          <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 grid place-items-center mx-auto text-xl font-bold">
+            ?
+          </div>
+          <h3 class="text-base font-bold text-slate-800">未找到符合当前组合条件的品种</h3>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">
+            您可以尝试在上方减少筛选条件，或点击下方按钮重置全部筛选。
+          </p>
+          <button
+            type="button"
+            id="btn-empty-reset"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-all duration-200 active:scale-95 cursor-pointer mt-2"
+          >
+            <RotateCcw class="w-3.5 h-3.5" />
+            <span>清空所有筛选条件</span>
+          </button>
+        </div>
+      </main>
     </div>
-  </section>
+  </div>
 </BaseLayout>
 
-<script>
-  import { navigate } from 'astro:transitions/client';
-
-  // 静态部署下 Astro.url 不含查询参数，服务端预过滤只在 SSR 时生效。
-  // 此脚本在每次页面加载（含 View Transitions 导航后）按 URL 参数在客户端
-  // 完成：激活胶囊高亮、卡片过滤、计数/空态更新，以及"再次点击取消筛选"。
-  const ACTIVE_CLASSES = ['bg-aqua-600', 'text-white', 'border-aqua-600', 'shadow-sm'];
-  const INACTIVE_CLASSES = ['bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-aqua-400', 'hover:text-aqua-700'];
-  const g = globalThis as typeof globalThis & { __guppyFilterReady?: boolean };
-
-  function applyFilters() {
-    const params = new URLSearchParams(window.location.search);
-    const hasAny = Boolean(params.get('color') || params.get('fin') || params.get('difficulty'));
-
-    // 激活胶囊高亮
-    document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((link) => {
-      const key = link.dataset.filter;
-      const value = link.dataset.value;
-      if (!key || !value) return;
-      const active = params.get(key) === value;
-      link.classList.remove(...(active ? INACTIVE_CLASSES : ACTIVE_CLASSES));
-      link.classList.add(...(active ? ACTIVE_CLASSES : INACTIVE_CLASSES));
-      if (active) link.setAttribute('aria-current', 'true');
-      else link.removeAttribute('aria-current');
-    });
-
-    // 按 color/fin/difficulty 过滤卡片
-    let visible = 0;
-    document.querySelectorAll<HTMLElement>('.breed-card').forEach((card) => {
-      const match =
-        (!params.get('color') || card.dataset.color === params.get('color')) &&
-        (!params.get('fin') || card.dataset.fin === params.get('fin')) &&
-        (!params.get('difficulty') || card.dataset.difficulty === params.get('difficulty'));
-      card.classList.toggle('hidden', !match);
-      if (match) visible++;
-    });
-
-    // 计数 / 已筛选徽章 / 空态 / 已选条件摘要
-    const count = document.querySelector<HTMLElement>('.breed-count');
-    if (count) count.textContent = String(visible);
-    document.querySelector('.filter-badge')?.classList.toggle('hidden', !hasAny);
-    document.querySelector('.breed-grid')?.classList.toggle('hidden', visible === 0);
-    document.querySelector('.filter-empty')?.classList.toggle('hidden', visible > 0);
-    // 已选摘要：同时更新页头（带 · 前缀）与筛选面板摘要条
-    const activeLabels = Array.from(document.querySelectorAll('[data-filter][aria-current="true"]'))
-      .map((el) => el.textContent?.trim() ?? '')
-      .filter(Boolean);
-    const labelText = activeLabels.join(' · ');
-    document.querySelectorAll<HTMLElement>('.filter-labels').forEach((el) => {
-      el.textContent = labelText;
-    });
-    const headerLabel = document.querySelector<HTMLElement>('.filter-labels-header');
-    if (headerLabel) headerLabel.textContent = labelText ? ` · ${labelText}` : '';
+<style>
+  /* 画廊卡片悬浮外发光与质感 */
+  .gallery-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease;
+  }
+  .gallery-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(92, 195, 255, 0.6);
+    box-shadow: 0 12px 30px -10px var(--card-glow), 0 4px 12px -2px rgba(13, 34, 64, 0.08);
   }
 
-  function bindFilterToggles() {
-    const current = new URLSearchParams(window.location.search);
-    document.querySelectorAll<HTMLAnchorElement>('[data-filter]').forEach((link) => {
-      const key = link.dataset.filter;
-      const value = link.dataset.value;
-      if (key && value && current.get(key) === value) {
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          const url = new URL(window.location.href);
-          url.searchParams.delete(key);
-          void navigate(url.pathname + url.search);
-        });
+  /* 弹出菜单动画 */
+  .popover-panel:not(.hidden) {
+    animation: popover-spring 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top center;
+  }
+  @keyframes popover-spring {
+    0% {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.96);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* 筛选即时卡片交错淡入动画 */
+  .card-fade-appear {
+    animation: card-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes card-in {
+    0% {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* 颜色胶囊状态 */
+  .color-pill-active {
+    background-color: #176ae1;
+    color: #ffffff;
+    border-color: #176ae1;
+    font-weight: 700;
+    box-shadow: 0 2px 8px 0 rgb(23 106 225 / 0.35);
+  }
+  .color-pill-idle {
+    background-color: #f8fafc;
+    color: #475569;
+    border-color: #e2e8f0;
+  }
+  .color-pill-idle:hover {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+
+  /* 下拉弹层列表项状态 */
+  .fam-opt-active, .fin-opt-active, .diff-opt-active {
+    background-color: #eff6ff;
+    color: #176ae1;
+    font-weight: 700;
+  }
+  .fam-opt-idle, .fin-opt-idle, .diff-opt-idle {
+    color: #334155;
+  }
+  .fam-opt-idle:hover, .fin-opt-idle:hover, .diff-opt-idle:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+  }
+
+  /* 难度分段选择器状态 */
+  .diff-seg-active {
+    background-color: #ffffff;
+    color: #0f172a;
+    font-weight: 700;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08);
+  }
+  .diff-seg-idle {
+    color: #64748b;
+  }
+  .diff-seg-idle:hover {
+    color: #0f172a;
+  }
+
+  /* 移动端按钮激活高亮态 */
+  .m-filter-btn-active {
+    background-color: #eff6ff !important;
+    border-color: #176ae1 !important;
+    color: #176ae1 !important;
+    font-weight: 700 !important;
+  }
+</style>
+
+<script>
+  // ─────────────────────────────────────────────
+  // 客户端 0 毫秒即时多维筛选与高定交互同步（全端双模）
+  // ─────────────────────────────────────────────
+  function setupInstantFilter() {
+    const filterState = {
+      family: '',
+      color: '',
+      fin: '',
+      difficulty: '',
+    };
+
+    const COLOR_LABELS_MAP: Record<string, string> = {
+      red: '红色系', blue: '蓝色系', green: '绿色系', yellow: '黄色系', purple: '紫色系',
+      white: '白色系', black: '黑色系', snake: '蛇纹系', multi: '多彩系',
+    };
+
+    const FIN_LABELS_MAP: Record<string, string> = {
+      delta: '三角尾', fan: '扇尾', sword: '剑尾', crown: '皇冠尾',
+      ribbon: '缎带尾', round: '圆尾', flag: '旗尾', veil: '纱尾',
+    };
+
+    const DIFF_LABELS_MAP: Record<string, string> = {
+      beginner: '入门级',
+      intermediate: '进阶级',
+      advanced: '大师级',
+    };
+
+    // 从当前 URL 参数初始化
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('family')) filterState.family = urlParams.get('family') || '';
+    if (urlParams.has('color')) filterState.color = urlParams.get('color') || '';
+    if (urlParams.has('fin')) filterState.fin = urlParams.get('fin') || '';
+    if (urlParams.has('difficulty')) filterState.difficulty = urlParams.get('difficulty') || '';
+
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.breed-card'));
+    const countEl = document.getElementById('visible-count');
+    const mCountEl = document.getElementById('m-visible-count');
+    const resetBtn = document.getElementById('btn-reset-filters');
+    const mResetBar = document.getElementById('m-reset-bar');
+    const mResetBtn = document.getElementById('btn-m-reset');
+    const emptyResetBtn = document.getElementById('btn-empty-reset');
+    const noResultsEl = document.getElementById('no-results');
+    const gridEl = document.getElementById('breed-grid');
+
+    // 电脑端家族下拉
+    const btnFamilyTrigger = document.getElementById('btn-family-trigger');
+    const familyPopover = document.getElementById('family-popover');
+    const familyChevron = document.getElementById('family-chevron');
+    const btnFamilyLabel = document.getElementById('btn-family-label');
+    const selectedFamilyBadge = document.getElementById('selected-family-badge');
+
+    // 电脑端鳍型下拉
+    const btnFinTrigger = document.getElementById('btn-fin-trigger');
+    const finPopover = document.getElementById('fin-popover');
+    const finChevron = document.getElementById('fin-chevron');
+    const btnFinLabel = document.getElementById('btn-fin-label');
+    const selectedFinBadge = document.getElementById('selected-fin-badge');
+
+    // 电脑端颜色名称
+    const activeColorName = document.getElementById('active-color-name');
+
+    // 移动端下拉触发按钮与浮层
+    const btnMFamily = document.getElementById('btn-m-family');
+    const mFamilyPopover = document.getElementById('m-family-popover');
+    const mFamilyChevron = document.getElementById('m-family-chevron');
+    const btnMFamilyLabel = document.getElementById('btn-m-family-label');
+
+    const btnMColor = document.getElementById('btn-m-color');
+    const mColorPopover = document.getElementById('m-color-popover');
+    const mColorChevron = document.getElementById('m-color-chevron');
+    const btnMColorLabel = document.getElementById('btn-m-color-label');
+
+    const btnMFin = document.getElementById('btn-m-fin');
+    const mFinPopover = document.getElementById('m-fin-popover');
+    const mFinChevron = document.getElementById('m-fin-chevron');
+    const btnMFinLabel = document.getElementById('btn-m-fin-label');
+
+    const btnMDiff = document.getElementById('btn-m-diff');
+    const mDiffPopover = document.getElementById('m-diff-popover');
+    const mDiffChevron = document.getElementById('m-diff-chevron');
+    const btnMDiffLabel = document.getElementById('btn-m-diff-label');
+
+    // 切换浮层显隐
+    function toggleDropdown(popover: HTMLElement | null, chevron: HTMLElement | null, show?: boolean) {
+      if (!popover || !chevron) return;
+      const isCurrentlyHidden = popover.classList.contains('hidden');
+      const shouldOpen = show !== undefined ? show : isCurrentlyHidden;
+
+      if (shouldOpen) {
+        popover.classList.remove('hidden');
+        chevron.classList.add('rotate-180');
+      } else {
+        popover.classList.add('hidden');
+        chevron.classList.remove('rotate-180');
+      }
+    }
+
+    // 关闭全部下拉
+    function closeAllDropdowns() {
+      toggleDropdown(familyPopover, familyChevron, false);
+      toggleDropdown(finPopover, finChevron, false);
+      toggleDropdown(mFamilyPopover, mFamilyChevron, false);
+      toggleDropdown(mColorPopover, mColorChevron, false);
+      toggleDropdown(mFinPopover, mFinChevron, false);
+      toggleDropdown(mDiffPopover, mDiffChevron, false);
+    }
+
+    // 绑定电脑端下拉触发器
+    if (btnFamilyTrigger) {
+      btnFamilyTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !familyPopover?.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) toggleDropdown(familyPopover, familyChevron, true);
+      });
+    }
+    if (btnFinTrigger) {
+      btnFinTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !finPopover?.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) toggleDropdown(finPopover, finChevron, true);
+      });
+    }
+
+    // 绑定移动端 4 维下拉触发器
+    if (btnMFamily) {
+      btnMFamily.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !mFamilyPopover?.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) toggleDropdown(mFamilyPopover, mFamilyChevron, true);
+      });
+    }
+    if (btnMColor) {
+      btnMColor.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !mColorPopover?.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) toggleDropdown(mColorPopover, mColorChevron, true);
+      });
+    }
+    if (btnMFin) {
+      btnMFin.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !mFinPopover?.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) toggleDropdown(mFinPopover, mFinChevron, true);
+      });
+    }
+    if (btnMDiff) {
+      btnMDiff.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !mDiffPopover?.classList.contains('hidden');
+        closeAllDropdowns();
+        if (!isOpen) toggleDropdown(mDiffPopover, mDiffChevron, true);
+      });
+    }
+
+    // 点击外部区域自动关闭
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (
+        !target.closest('#family-dropdown-wrapper') &&
+        !target.closest('#fin-dropdown-wrapper') &&
+        !target.closest('#mobile-filter-bar')
+      ) {
+        closeAllDropdowns();
       }
     });
+
+    function applyFilter(isInitial = false) {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const fam = card.dataset.family || '';
+        const col = card.dataset.color || '';
+        const fin = card.dataset.fin || '';
+        const diff = card.dataset.difficulty || '';
+
+        const matchFam = !filterState.family || fam === filterState.family;
+        const matchCol = !filterState.color || col === filterState.color;
+        const matchFin = !filterState.fin || fin === filterState.fin;
+        const matchDiff = !filterState.difficulty || diff === filterState.difficulty;
+
+        if (matchFam && matchCol && matchFin && matchDiff) {
+          card.style.display = 'flex';
+          if (!isInitial) {
+            card.classList.remove('card-fade-appear');
+            void card.offsetWidth; // 触发 reflow
+            card.style.animationDelay = `${Math.min(visibleCount * 25, 200)}ms`;
+            card.classList.add('card-fade-appear');
+          }
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+          card.classList.remove('card-fade-appear');
+        }
+      });
+
+      // 更新数量与空状态
+      if (countEl) countEl.textContent = String(visibleCount);
+      if (mCountEl) mCountEl.textContent = String(visibleCount);
+
+      if (noResultsEl && gridEl) {
+        if (visibleCount === 0) {
+          noResultsEl.classList.remove('hidden');
+          gridEl.classList.add('hidden');
+        } else {
+          noResultsEl.classList.add('hidden');
+          gridEl.classList.remove('hidden');
+        }
+      }
+
+      // 更新重置按钮可见性
+      const hasAnyFilter = Boolean(filterState.family || filterState.color || filterState.fin || filterState.difficulty);
+      if (resetBtn) {
+        if (hasAnyFilter) {
+          resetBtn.classList.remove('hidden');
+          resetBtn.classList.add('inline-flex');
+        } else {
+          resetBtn.classList.add('hidden');
+          resetBtn.classList.remove('inline-flex');
+        }
+      }
+      if (mResetBar) {
+        if (hasAnyFilter) {
+          mResetBar.classList.remove('hidden');
+          mResetBar.classList.add('flex');
+        } else {
+          mResetBar.classList.add('hidden');
+          mResetBar.classList.remove('flex');
+        }
+      }
+
+      // ─────────────────────────────────────────
+      // 1. 同步家族大类（电脑端 + 移动端）
+      // ─────────────────────────────────────────
+      if (btnFamilyLabel && selectedFamilyBadge) {
+        if (filterState.family) {
+          btnFamilyLabel.textContent = `🧬 ${filterState.family}`;
+          selectedFamilyBadge.textContent = filterState.family;
+          selectedFamilyBadge.classList.add('text-aqua-700', 'font-bold');
+        } else {
+          btnFamilyLabel.textContent = '🧬 全部品系家族';
+          selectedFamilyBadge.textContent = '全部';
+          selectedFamilyBadge.classList.remove('text-aqua-700', 'font-bold');
+        }
+      }
+      if (btnMFamily && btnMFamilyLabel) {
+        if (filterState.family) {
+          btnMFamilyLabel.textContent = filterState.family.replace('系', '');
+          btnMFamily.classList.add('m-filter-btn-active');
+        } else {
+          btnMFamilyLabel.textContent = '🧬 品种';
+          btnMFamily.classList.remove('m-filter-btn-active');
+        }
+      }
+      document.querySelectorAll<HTMLButtonElement>('.fam-opt').forEach((btn) => {
+        const val = btn.dataset.famVal || '';
+        if (val === filterState.family) {
+          btn.classList.add('fam-opt-active');
+          btn.classList.remove('fam-opt-idle');
+        } else {
+          btn.classList.remove('fam-opt-active');
+          btn.classList.add('fam-opt-idle');
+        }
+      });
+
+      // ─────────────────────────────────────────
+      // 2. 同步色彩大类（电脑端 + 移动端）
+      // ─────────────────────────────────────────
+      if (btnMColor && btnMColorLabel) {
+        if (filterState.color) {
+          btnMColorLabel.textContent = (COLOR_LABELS_MAP[filterState.color] || filterState.color).replace('系', '');
+          btnMColor.classList.add('m-filter-btn-active');
+        } else {
+          btnMColorLabel.textContent = '🎨 色系';
+          btnMColor.classList.remove('m-filter-btn-active');
+        }
+      }
+      if (activeColorName) {
+        activeColorName.textContent = filterState.color ? COLOR_LABELS_MAP[filterState.color] || filterState.color : '全部';
+      }
+      document.querySelectorAll<HTMLButtonElement>('.color-pill').forEach((pill) => {
+        const val = pill.dataset.colorVal || '';
+        if (val === filterState.color) {
+          pill.classList.add('color-pill-active');
+          pill.classList.remove('color-pill-idle');
+        } else {
+          pill.classList.remove('color-pill-active');
+          pill.classList.add('color-pill-idle');
+        }
+      });
+
+      // ─────────────────────────────────────────
+      // 3. 同步尾鳍大类（电脑端 + 移动端）
+      // ─────────────────────────────────────────
+      if (btnFinLabel && selectedFinBadge) {
+        if (filterState.fin) {
+          const finName = FIN_LABELS_MAP[filterState.fin] || filterState.fin;
+          btnFinLabel.textContent = `🎏 ${finName}`;
+          selectedFinBadge.textContent = finName;
+          selectedFinBadge.classList.add('text-aqua-700', 'font-bold');
+        } else {
+          btnFinLabel.textContent = '🎏 全部尾鳍类型';
+          selectedFinBadge.textContent = '全部';
+          selectedFinBadge.classList.remove('text-aqua-700', 'font-bold');
+        }
+      }
+      if (btnMFin && btnMFinLabel) {
+        if (filterState.fin) {
+          btnMFinLabel.textContent = (FIN_LABELS_MAP[filterState.fin] || filterState.fin).replace('尾', '');
+          btnMFin.classList.add('m-filter-btn-active');
+        } else {
+          btnMFinLabel.textContent = '🎏 尾巴';
+          btnMFin.classList.remove('m-filter-btn-active');
+        }
+      }
+      document.querySelectorAll<HTMLButtonElement>('.fin-opt').forEach((btn) => {
+        const val = btn.dataset.finVal || '';
+        if (val === filterState.fin) {
+          btn.classList.add('fin-opt-active');
+          btn.classList.remove('fin-opt-idle');
+        } else {
+          btn.classList.remove('fin-opt-active');
+          btn.classList.add('fin-opt-idle');
+        }
+      });
+
+      // ─────────────────────────────────────────
+      // 4. 同步难度大类（电脑端 + 移动端）
+      // ─────────────────────────────────────────
+      if (btnMDiff && btnMDiffLabel) {
+        if (filterState.difficulty) {
+          btnMDiffLabel.textContent = (DIFF_LABELS_MAP[filterState.difficulty] || filterState.difficulty).replace('级', '');
+          btnMDiff.classList.add('m-filter-btn-active');
+        } else {
+          btnMDiffLabel.textContent = '📈 难度';
+          btnMDiff.classList.remove('m-filter-btn-active');
+        }
+      }
+      document.querySelectorAll<HTMLButtonElement>('.diff-seg').forEach((btn) => {
+        const val = btn.dataset.diffVal || '';
+        if (val === filterState.difficulty) {
+          btn.classList.add('diff-seg-active');
+          btn.classList.remove('diff-seg-idle');
+        } else {
+          btn.classList.remove('diff-seg-active');
+          btn.classList.add('diff-seg-idle');
+        }
+      });
+      document.querySelectorAll<HTMLButtonElement>('.diff-opt').forEach((btn) => {
+        const val = btn.dataset.diffVal || '';
+        if (val === filterState.difficulty) {
+          btn.classList.add('diff-opt-active');
+          btn.classList.remove('diff-opt-idle');
+        } else {
+          btn.classList.remove('diff-opt-active');
+          btn.classList.add('diff-opt-idle');
+        }
+      });
+
+      // 同步 URL 参数（严格保留 Astro ClientRouter 内部 history.state，避免破坏浏览器前进后退路由栈）
+      if (!isInitial) {
+        const newUrl = new URL(window.location.href);
+        ['family', 'color', 'fin', 'difficulty'].forEach((key) => {
+          const k = key as keyof typeof filterState;
+          if (filterState[k]) {
+            newUrl.searchParams.set(k, filterState[k]);
+          } else {
+            newUrl.searchParams.delete(k);
+          }
+        });
+        if (newUrl.search !== window.location.search) {
+          window.history.replaceState(window.history.state, '', newUrl.toString());
+        }
+      }
+    }
+
+    // 绑定家族点击
+    document.querySelectorAll<HTMLButtonElement>('.fam-opt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filterState.family = btn.dataset.famVal || '';
+        closeAllDropdowns();
+        applyFilter();
+      });
+    });
+
+    // 绑定颜色点击
+    document.querySelectorAll<HTMLButtonElement>('.color-pill').forEach((pill) => {
+      pill.addEventListener('click', () => {
+        filterState.color = pill.dataset.colorVal || '';
+        closeAllDropdowns();
+        applyFilter();
+      });
+    });
+
+    // 绑定鳍型点击
+    document.querySelectorAll<HTMLButtonElement>('.fin-opt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filterState.fin = btn.dataset.finVal || '';
+        closeAllDropdowns();
+        applyFilter();
+      });
+    });
+
+    // 绑定难度点击
+    document.querySelectorAll<HTMLButtonElement>('.diff-seg').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filterState.difficulty = btn.dataset.diffVal || '';
+        applyFilter();
+      });
+    });
+    document.querySelectorAll<HTMLButtonElement>('.diff-opt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        filterState.difficulty = btn.dataset.diffVal || '';
+        closeAllDropdowns();
+        applyFilter();
+      });
+    });
+
+    // 绑定重置
+    const handleReset = () => {
+      filterState.family = '';
+      filterState.color = '';
+      filterState.fin = '';
+      filterState.difficulty = '';
+      closeAllDropdowns();
+      applyFilter();
+    };
+
+    if (resetBtn) resetBtn.addEventListener('click', handleReset);
+    if (mResetBtn) mResetBtn.addEventListener('click', handleReset);
+    if (emptyResetBtn) emptyResetBtn.addEventListener('click', handleReset);
+
+    // 首次载入应用
+    applyFilter(true);
   }
 
-  function init() {
-    applyFilters();
-    bindFilterToggles();
-  }
-
-  // 防止 View Transitions 导航后脚本重复执行叠加 document 监听器
-  if (!g.__guppyFilterReady) {
-    g.__guppyFilterReady = true;
-    document.addEventListener('astro:page-load', init);
-  }
-  init();
+  // 兼容 View Transitions 路由切换
+  document.addEventListener('astro:page-load', () => {
+    if (document.getElementById('breed-grid')) {
+      setupInstantFilter();
+    }
+  });
 </script>

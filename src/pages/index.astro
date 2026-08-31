@@ -2,125 +2,111 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BreedImage, { COLOR_GRADIENTS, COLOR_GLOWS } from '../components/BreedImage.astro';
 import { getCollection } from 'astro:content';
+import {
+  Compass,
+  Heart,
+  Stethoscope,
+  ArrowRight,
+  Sparkles,
+  Layers,
+  ChevronRight,
+  Droplets,
+  ShieldAlert,
+} from 'lucide-astro';
 
 const breeds = (await getCollection('breeds')).sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
-const featured = breeds.slice(0, 6);
+
+const featured = breeds.slice(0, 8); // 8 个精选高光画廊
 
 const guides = await getCollection('guides');
 const breeding = await getCollection('breeding');
 const disease = await getCollection('disease');
 
-const sections = [
-  {
-    href: '/guide/',
-    title: '饲养指南',
-    desc: '开缸养水、水质管理、喂食混养，从零养好孔雀鱼',
-    count: guides.length,
-    icon: 'M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z',
-  },
-  {
-    href: '/breeding/',
-    title: '繁殖技术',
-    desc: '孕期管理、小鱼护理、品系提纯选育',
-    count: breeding.length,
-    icon: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z',
-  },
-  {
-    href: '/disease/',
-    title: '疾病防治',
-    desc: '常见病速查、用药指南、检疫预防',
-    count: disease.length,
-    icon: 'M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5zM9.5 10.5v3M8 12h3',
-  },
-];
-
-// 统计行：全部由 getCollection 动态计算
-const statItems = [
-  { value: breeds.length, label: '品种档案' },
-  { value: guides.length + breeding.length + disease.length, label: '知识文章' },
-  { value: sections.length, label: '内容栏目' },
-];
-
-// 品种卡片复用映射（与 breeds/index 保持一致）
-const COLOR_LABELS: Record<string, string> = {
-  red: '红色', blue: '蓝色', green: '绿色', yellow: '黄色', purple: '紫色',
-  white: '白色', black: '黑色', snake: '蛇纹', multi: '多彩',
+const FIN_LABELS: Record<string, string> = {
+  delta: '三角尾', fan: '扇尾', sword: '剑尾', crown: '皇冠尾',
+  ribbon: '缎带尾', round: '圆尾', flag: '旗尾', veil: '纱尾',
 };
-const DIFFICULTY_BADGES: Record<string, { label: string; className: string }> = {
-  beginner: { label: '入门', className: 'bg-aqua-100 text-aqua-700' },
-  intermediate: { label: '进阶', className: 'bg-amber-100 text-amber-700' },
-  advanced: { label: '高手', className: 'bg-coral-100 text-coral-700' },
+const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgClass: string }> = {
+  beginner: { label: '入门级', textClass: 'text-emerald-300 border-emerald-500/40', bgClass: 'bg-emerald-500/20' },
+  intermediate: { label: '进阶级', textClass: 'text-amber-300 border-amber-500/40', bgClass: 'bg-amber-500/20' },
+  advanced: { label: '大师级', textClass: 'text-rose-300 border-rose-500/40', bgClass: 'bg-rose-500/20' },
 };
 ---
 
 <BaseLayout>
-  {/* Hero：深藏蓝深海渐变 */}
-  <section class="relative overflow-hidden bg-gradient-to-b from-abyss-950 via-abyss-900 to-abyss-800 text-white">
-    {/* 水生动效层：气泡 + 3D 立体游动孔雀鱼 */}
+  {/* ───────────────────────────────────────────── */}
+  {/* 1. 殿堂级水生 Hero：纯净深海 + 3D 生物光影       */}
+  {/* ───────────────────────────────────────────── */}
+  <section class="relative overflow-hidden bg-gradient-to-b from-abyss-950 via-[#071328] to-[#0a1e3d] text-white">
+    {/* 水生动效层：深海折射光斑 + 拟真气泡 + 3D 自由巡游孔雀鱼 */}
     <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden select-none" style="perspective: 1200px; transform-style: preserve-3d;">
-      <!-- 气泡 -->
-      <span class="absolute bottom-4 left-[6%] h-2.5 w-2.5 rounded-full bg-white/15 border border-white/25 animate-guppy-rise" style="animation-delay: 0.5s; animation-duration: 8s"></span>
-      <span class="absolute bottom-10 left-[18%] h-4 w-4 rounded-full bg-white/10 border border-white/20 animate-guppy-rise" style="animation-delay: 2.2s; animation-duration: 11s"></span>
-      <span class="absolute bottom-6 left-[34%] h-2 w-2 rounded-full bg-aqua-300/25 border border-aqua-200/30 animate-guppy-rise" style="animation-delay: 3.4s; animation-duration: 9.5s"></span>
-      <span class="absolute bottom-8 left-[55%] h-2.5 w-2.5 rounded-full bg-white/10 border border-white/20 animate-guppy-rise" style="animation-delay: 5.4s; animation-duration: 9s"></span>
-      <span class="absolute bottom-14 right-[40%] h-3.5 w-3.5 rounded-full bg-aqua-200/15 border border-aqua-100/25 animate-guppy-rise" style="animation-delay: 2.8s; animation-duration: 10.5s"></span>
-      <span class="absolute bottom-12 right-[22%] h-3 w-3 rounded-full bg-white/15 border border-white/25 animate-guppy-rise" style="animation-delay: 1.2s; animation-duration: 10s"></span>
-      <span class="absolute bottom-5 right-[8%] h-5 w-5 rounded-full bg-coral-400/15 border border-coral-300/25 animate-guppy-rise" style="animation-delay: 4s; animation-duration: 12s"></span>
+      {/* 顶部中央天青光晕 */}
+      <div class="absolute -top-36 left-1/2 -translate-x-1/2 w-[48rem] h-[26rem] bg-aqua-500/15 rounded-full blur-[100px]"></div>
+      {/* 右侧微光 */}
+      <div class="absolute top-1/3 -right-24 w-96 h-96 bg-indigo-500/12 rounded-full blur-[90px]"></div>
 
-      <!-- 游动孔雀鱼 1（主景：水蓝大扇尾，中上层鱼缸内自主巡游） -->
+      <!-- 拟真水下物理微气泡（带正弦左右漂移浮力） -->
+      <span class="bubble-drift absolute bottom-4 left-[8%] h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-white/20 border border-white/30 backdrop-blur-[1px]" style="animation-delay: 0.2s; animation-duration: 9s"></span>
+      <span class="bubble-drift absolute bottom-10 left-[22%] h-3 sm:h-4 w-3 sm:w-4 rounded-full bg-white/12 border border-white/25 backdrop-blur-[1px]" style="animation-delay: 2.1s; animation-duration: 11.5s"></span>
+      <span class="bubble-drift absolute bottom-6 left-[38%] h-1.5 sm:h-2 w-1.5 sm:w-2 rounded-full bg-aqua-300/30 border border-aqua-200/40" style="animation-delay: 3.8s; animation-duration: 8.5s"></span>
+      <span class="bubble-drift absolute bottom-8 left-[58%] h-2 sm:h-2.5 w-2 sm:w-2.5 rounded-full bg-white/15 border border-white/20" style="animation-delay: 5.1s; animation-duration: 10s"></span>
+      <span class="bubble-drift absolute bottom-14 right-[32%] h-2.5 sm:h-3.5 w-2.5 sm:w-3.5 rounded-full bg-aqua-200/20 border border-aqua-100/30 backdrop-blur-[1px]" style="animation-delay: 2.7s; animation-duration: 12s"></span>
+      <span class="bubble-drift absolute bottom-12 right-[15%] h-2.5 sm:h-3 w-2.5 sm:w-3 rounded-full bg-white/20 border border-white/30" style="animation-delay: 1.4s; animation-duration: 9.5s"></span>
+      <span class="bubble-drift absolute bottom-5 right-[5%] h-3.5 sm:h-5 w-3.5 sm:w-5 rounded-full bg-coral-400/20 border border-coral-300/30 backdrop-blur-[1px]" style="animation-delay: 4.3s; animation-duration: 13s"></span>
+
+      <!-- 游动孔雀鱼 1（主景：水蓝大扇尾） -->
       <div
-        class="absolute top-[22%] left-[15%] w-18 sm:w-22 text-aqua-300 animate-tank-fish-1 filter drop-shadow-[0_4px_16px_rgba(53,164,255,0.45)]"
+        class="absolute top-[12%] sm:top-[16%] left-[4%] sm:left-[10%] w-16 sm:w-28 text-aqua-300 animate-tank-fish-1 filter drop-shadow-[0_6px_20px_rgba(53,164,255,0.5)]"
       >
         <svg viewBox="0 0 120 60" class="w-full h-auto overflow-visible" fill="none">
-          <!-- 飘逸大尾鳍（起点严密锚定在尾柄 (36, 30)，多维水波摆动） -->
           <g class="animate-fish-tail" style="transform-origin: 36px 30px;">
             <path
-              d="M36 30 C20 12, 6 4, 2 12 C-2 20, 0 38, 4 46 C8 54, 20 48, 36 30 Z"
+              d="M36 30 C18 10, 4 3, 0 10 C-4 18, -1 38, 3 46 C8 54, 20 48, 36 30 Z"
               fill="url(#guppy-tail-grad-1)"
               opacity="0.95"
             />
-            <!-- 尾鳍丝绸流纹（全部从 (36,30) 辐射展开） -->
-            <path d="M36 30 Q20 18 5 16" stroke="rgba(255,255,255,0.6)" stroke-width="0.8" fill="none" />
-            <path d="M36 30 Q18 30 3 30" stroke="rgba(255,255,255,0.45)" stroke-width="0.8" fill="none" />
-            <path d="M36 30 Q20 42 6 44" stroke="rgba(255,255,255,0.6)" stroke-width="0.8" fill="none" />
+            <path d="M36 30 Q18 16 3 14" stroke="rgba(255,255,255,0.7)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q16 23 0 23" stroke="rgba(255,255,255,0.5)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q16 30 0 30" stroke="rgba(255,255,255,0.4)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q16 37 0 37" stroke="rgba(255,255,255,0.5)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q18 44 4 46" stroke="rgba(255,255,255,0.7)" stroke-width="0.75" fill="none" />
           </g>
-          <!-- 鱼身主体（纺锤形，尾柄后端精准闭合于 (36, 30)） -->
           <path
-            d="M36 30 C38 23, 58 18, 80 22 C92 24, 100 28, 100 28 C100 28, 92 32, 80 36 C58 40, 38 37, 36 30 Z"
+            d="M36 30 C38 22, 58 17, 80 21 C92 23, 100 27.5, 100 27.5 C100 27.5, 92 32, 80 36.5 C58 40.5, 38 37.5, 36 30 Z"
             fill="url(#guppy-body-grad-1)"
           />
-          <!-- 背鳍（紧贴鱼背） -->
-          <path d="M52 19 C56 10, 68 8, 72 19 Z" fill="rgba(92,195,255,0.75)" />
-          <!-- 腹部胸鳍（生长点紧扣鱼肋 (66, 33)，轻柔慢划） -->
+          <path d="M50 18 C55 8, 68 6, 73 19 Z" fill="rgba(92,195,255,0.8)" />
           <path
-            d="M66 33 C62 39, 55 43, 51 41 C49 39, 54 33, 66 33 Z"
-            fill="rgba(255,255,255,0.7)"
+            d="M66 33 C61 39, 54 44, 50 41.5 C48 39, 53 33, 66 33 Z"
+            fill="rgba(255,255,255,0.75)"
             class="animate-fish-pectoral"
             style="transform-origin: 66px 33px;"
           />
-          <!-- 眼睛与高光 -->
-          <circle cx="88" cy="27" r="1.8" fill="#081830" />
-          <circle cx="88.5" cy="26.5" r="0.6" fill="#ffffff" />
+          <circle cx="88" cy="26.5" r="2.2" fill="#051020" />
+          <circle cx="88" cy="26.5" r="1.6" fill="#0c2340" />
+          <circle cx="88.6" cy="25.9" r="0.7" fill="#ffffff" />
           <defs>
-            <linearGradient id="guppy-tail-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#35a4ff" stop-opacity="0.95" />
-              <stop offset="60%" stop-color="#90daff" stop-opacity="0.85" />
-              <stop offset="100%" stop-color="#ff7f6e" stop-opacity="0.65" />
+            <linearGradient id="guppy-tail-grad-1" x1="100%" y1="50%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.98" />
+              <stop offset="50%" stop-color="#818cf8" stop-opacity="0.9" />
+              <stop offset="85%" stop-color="#f43f5e" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.6" />
             </linearGradient>
             <linearGradient id="guppy-body-grad-1" x1="0%" y1="50%" x2="100%" y2="50%">
-              <stop offset="0%" stop-color="#1f84f5" />
-              <stop offset="70%" stop-color="#bde8ff" />
+              <stop offset="0%" stop-color="#0284c7" />
+              <stop offset="60%" stop-color="#7dd3fc" />
+              <stop offset="90%" stop-color="#e0f2fe" />
               <stop offset="100%" stop-color="#ffffff" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
-      <!-- 游动孔雀鱼 2（中景：珊瑚红大扇尾，中下层鱼缸内自主巡游） -->
+      <!-- 游动孔雀鱼 2（中景：火红金黄大扇尾） -->
       <div
-        class="absolute top-[48%] left-[62%] w-16 sm:w-18 text-coral-400 animate-tank-fish-2 filter drop-shadow-[0_4px_14px_rgba(245,86,67,0.38)]"
+        class="absolute top-[54%] sm:top-[50%] right-[4%] sm:right-[10%] w-14 sm:w-22 text-coral-400 animate-tank-fish-2 filter drop-shadow-[0_6px_18px_rgba(244,63,94,0.45)]"
       >
         <svg viewBox="0 0 120 60" class="w-full h-auto overflow-visible" fill="none">
           <g class="animate-fish-tail" style="transform-origin: 36px 30px;">
@@ -129,266 +115,504 @@ const DIFFICULTY_BADGES: Record<string, { label: string; className: string }> = 
               fill="url(#guppy-tail-grad-2)"
               opacity="0.95"
             />
-            <path d="M36 30 Q18 16 4 14" stroke="rgba(255,255,255,0.55)" stroke-width="0.8" fill="none" />
-            <path d="M36 30 Q18 30 2 30" stroke="rgba(255,255,255,0.4)" stroke-width="0.8" fill="none" />
-            <path d="M36 30 Q18 44 5 46" stroke="rgba(255,255,255,0.55)" stroke-width="0.8" fill="none" />
+            <path d="M36 30 Q18 16 4 14" stroke="rgba(255,255,255,0.6)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q16 30 1 30" stroke="rgba(255,255,255,0.4)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q18 44 5 46" stroke="rgba(255,255,255,0.6)" stroke-width="0.75" fill="none" />
           </g>
           <path
-            d="M36 30 C38 23, 58 18, 80 22 C92 24, 100 28, 100 28 C100 28, 92 32, 80 36 C58 40, 38 37, 36 30 Z"
+            d="M36 30 C38 22, 58 17, 80 21 C92 23, 100 27.5, 100 27.5 C100 27.5, 92 32, 80 36.5 C58 40.5, 38 37.5, 36 30 Z"
             fill="url(#guppy-body-grad-2)"
           />
-          <path d="M50 19 C54 10, 66 8, 70 19 Z" fill="rgba(255,166,153,0.75)" />
+          <path d="M48 18 C53 9, 66 7, 70 19 Z" fill="rgba(251,146,60,0.8)" />
           <path
-            d="M66 33 C62 39, 55 43, 51 41 C49 39, 54 33, 66 33 Z"
-            fill="rgba(255,255,255,0.7)"
+            d="M66 33 C61 39, 54 44, 50 41.5 C48 39, 53 33, 66 33 Z"
+            fill="rgba(255,255,255,0.75)"
             class="animate-fish-pectoral"
             style="transform-origin: 66px 33px;"
           />
-          <circle cx="88" cy="27" r="1.7" fill="#081830" />
-          <circle cx="88.5" cy="26.5" r="0.5" fill="#ffffff" />
+          <circle cx="88" cy="26.5" r="2.0" fill="#051020" />
+          <circle cx="88.5" cy="26.0" r="0.6" fill="#ffffff" />
           <defs>
-            <linearGradient id="guppy-tail-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#f55643" stop-opacity="0.95" />
-              <stop offset="60%" stop-color="#fbbf24" stop-opacity="0.85" />
-              <stop offset="100%" stop-color="#ffa699" stop-opacity="0.65" />
+            <linearGradient id="guppy-tail-grad-2" x1="100%" y1="50%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.98" />
+              <stop offset="50%" stop-color="#fb923c" stop-opacity="0.9" />
+              <stop offset="85%" stop-color="#facc15" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.6" />
             </linearGradient>
             <linearGradient id="guppy-body-grad-2" x1="0%" y1="50%" x2="100%" y2="50%">
-              <stop offset="0%" stop-color="#e03a28" />
-              <stop offset="70%" stop-color="#ffd5cf" />
+              <stop offset="0%" stop-color="#e11d48" />
+              <stop offset="60%" stop-color="#fda4af" />
+              <stop offset="90%" stop-color="#ffe4e6" />
               <stop offset="100%" stop-color="#ffffff" />
             </linearGradient>
           </defs>
         </svg>
       </div>
 
-      <!-- 游动孔雀鱼 3（远景深水小鱼：深水区中央小范围巡弋） -->
+      <!-- 游动孔雀鱼 3（远景小鱼） -->
       <div
-        class="absolute top-[62%] left-[40%] w-12 sm:w-14 text-aqua-200 animate-tank-fish-3 filter blur-[0.4px] opacity-60"
+        class="hidden sm:block absolute top-[68%] left-[42%] w-12 sm:w-15 text-aqua-200 animate-tank-fish-3 filter blur-[0.6px] opacity-55"
       >
         <svg viewBox="0 0 120 60" class="w-full h-auto overflow-visible" fill="none">
           <g class="animate-fish-tail" style="transform-origin: 36px 30px;">
             <path
               d="M36 30 C20 14, 8 8, 4 16 C1 24, 2 34, 5 40 C9 46, 20 42, 36 30 Z"
-              fill="rgba(92,195,255,0.65)"
+              fill="rgba(56,189,248,0.7)"
             />
           </g>
           <path
             d="M36 30 C38 23, 58 18, 80 22 C92 24, 100 28, 100 28 C100 28, 92 32, 80 36 C58 40, 38 37, 36 30 Z"
-            fill="rgba(255,255,255,0.75)"
-          />
-          <path
-            d="M66 33 C62 39, 55 43, 51 41 C49 39, 54 33, 66 33 Z"
-            fill="rgba(255,255,255,0.55)"
-            class="animate-fish-pectoral"
-            style="transform-origin: 66px 33px;"
+            fill="rgba(255,255,255,0.8)"
           />
           <circle cx="88" cy="27" r="1.5" fill="#081830" />
         </svg>
       </div>
     </div>
-    {/* 学名衬线斜体水印 */}
-    <span
-      aria-hidden="true"
-      class="pointer-events-none absolute -right-4 top-8 hidden select-none font-serif italic text-5xl sm:text-7xl text-white/[0.06] tracking-wide -rotate-6 sm:block"
-    >
-      Poecilia reticulata
-    </span>
-    <div class="relative max-w-6xl mx-auto px-4 py-20 sm:py-28 lg:py-36 text-center">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-aqua-100 text-xs sm:text-sm font-medium mb-6 backdrop-blur-sm whitespace-nowrap max-w-full overflow-hidden animate-fade-up" style="animation-delay: 0ms">
-        <span>Poecilia reticulata</span>
-        <span class="text-white/40">·</span>
-        <span>花鳉科</span>
-        <span class="text-white/40">·</span>
-        <span>卵胎生</span>
+
+    {/* 主体内容：居中大气 Apple 风格排版 + 纯粹四大功能胶囊 */}
+    <div class="relative z-10 max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-12 sm:pt-28 pb-16 sm:pb-28 text-center">
+      
+      <!-- 顶部高定徽章 -->
+      <div class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white/[0.08] backdrop-blur-xl border border-white/20 text-[10px] sm:text-xs font-medium text-aqua-200 shadow-lg shadow-black/20 mb-4 sm:mb-8 animate-fade-up">
+        <Sparkles class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-aqua-300 animate-pulse shrink-0" />
+        <span class="tracking-[0.15em] sm:tracking-[0.22em] uppercase font-mono text-[9px] sm:text-[11px]">POECILIA RETICULATA</span>
+        <span class="text-white/30">|</span>
+        <span class="tracking-wide">纯系孔雀鱼知识库</span>
       </div>
-      <h1 class="text-4xl sm:text-6xl font-bold tracking-tight animate-fade-up" style="animation-delay: 80ms">
-        孔雀鱼知识百科
+
+      <!-- 主标题：大气纯正 Typography -->
+      <h1 class="text-2xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.2] sm:leading-[1.12] drop-shadow-[0_2px_24px_rgba(56,189,248,0.25)] animate-fade-up">
+        走进纯系孔雀鱼的<br />
+        <span class="bg-gradient-to-r from-aqua-300 via-sky-200 to-indigo-300 bg-clip-text text-transparent">
+          绚丽微观世界
+        </span>
       </h1>
-      <p class="mt-6 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed animate-fade-up" style="animation-delay: 160ms">
-        <span class="text-white/95 font-medium">品种图鉴 · 饲养指南 · 繁殖技术 · 疾病防治</span>
-        <span class="block mt-1 sm:inline sm:mt-0 text-aqua-200/75 sm:before:content-['·_']">面向爱好者的孔雀鱼中文百科</span>
-      </p>
-      {/* 统计数据行 */}
-      <dl class="mt-10 flex flex-wrap justify-center gap-x-12 gap-y-5 animate-fade-up" style="animation-delay: 240ms">
-        {statItems.map((stat) => (
-          <div class="text-center">
-            <div aria-hidden="true" class="mx-auto mb-3 h-px w-10 bg-gradient-to-r from-transparent via-aqua-300 to-transparent"></div>
-            <dd class="text-3xl font-bold text-aqua-100 tabular-nums">{stat.value}</dd>
-            <dt class="mt-1 text-xs tracking-[0.2em] text-aqua-200/70">{stat.label}</dt>
-          </div>
-        ))}
-      </dl>
-      <div class="mt-10 flex flex-wrap justify-center gap-4 animate-fade-up" style="animation-delay: 320ms">
+
+      <!-- 四大核心功能高定毛玻璃胶囊（移动端 2x2 对称紧凑网格，桌面端水平排列） -->
+      <div class="mt-6 sm:mt-12 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-4 text-xs sm:text-sm animate-fade-up max-w-sm sm:max-w-none mx-auto">
         <a
           href="/breeds/"
-          class="btn-press px-8 py-3.5 rounded-full bg-coral-500 text-white font-semibold hover:bg-coral-400 shadow-lg shadow-coral-500/25 hover:shadow-coral-500/40 transition-all ease-[var(--ease-spring)] hover:-translate-y-0.5 active:scale-95"
+          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-aqua-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-aqua-500/20"
         >
-          浏览品种图鉴
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-aqua-500/20 border border-aqua-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+              <Layers class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-aqua-300" />
+            </span>
+            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">24 品种图鉴</span>
+          </div>
+          <ChevronRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/40 group-hover:text-aqua-300 group-hover:translate-x-0.5 transition-all shrink-0" />
         </a>
+
         <a
           href="/guide/"
-          class="btn-press px-8 py-3.5 rounded-full bg-white/10 text-white font-semibold border border-white/20 hover:bg-white/15 backdrop-blur-sm transition-all ease-[var(--ease-spring)] active:scale-95 active:bg-white/20"
+          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-sky-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-sky-500/20"
         >
-          新手入门指南
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-sky-500/20 border border-sky-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+              <Compass class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-sky-300" />
+            </span>
+            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">新手饲养指南</span>
+          </div>
+          <ChevronRight class="w-3.5 h-3.5 text-white/40 group-hover:text-sky-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </a>
+
+        <a
+          href="/breeding/"
+          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-rose-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-rose-500/20"
+        >
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-500/20 border border-rose-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+              <Heart class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-300" />
+            </span>
+            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">28天繁育指南</span>
+          </div>
+          <ChevronRight class="w-3.5 h-3.5 text-white/40 group-hover:text-rose-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </a>
+
+        <a
+          href="/disease/"
+          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-emerald-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-emerald-500/20"
+        >
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-500/20 border border-emerald-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+              <Stethoscope class="w-3.5 h-3.5 text-emerald-300" />
+            </span>
+            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">鱼病对症速查</span>
+          </div>
+          <ChevronRight class="w-3.5 h-3.5 text-white/40 group-hover:text-emerald-300 group-hover:translate-x-0.5 transition-all shrink-0" />
         </a>
       </div>
     </div>
-    {/* 波浪过渡到浅色内容区（颜色匹配下方背景，-mb-px 消除亚像素渲染黑线） */}
-    <div aria-hidden="true" class="relative -mb-px h-10 w-full overflow-hidden leading-none text-[#eef4fb]">
-      <svg viewBox="0 0 1440 40" preserveAspectRatio="none" class="block h-full w-full">
-        <path fill="currentColor" d="M0 40V26c240 22 480-20 720 0s480 22 720 0v14z" />
+
+    {/* ───────────────────────────────────────────── */}
+    {/* 物理级多层正弦流动波浪 (Triple Fluid Waves)     */}
+    {/* ───────────────────────────────────────────── */}
+    <div aria-hidden="true" class="wave-container relative -mb-px w-full overflow-hidden leading-none h-12 sm:h-20 select-none">
+      {/* 1. 深水涌浪（后景） */}
+      <svg
+        class="wave-deep absolute bottom-0 left-0 w-[200%] h-full pointer-events-none"
+        viewBox="0 0 2880 80"
+        preserveAspectRatio="none"
+        fill="none"
+      >
+        <path
+          d="M0 40 C400 15, 800 65, 1200 40 C1600 15, 2000 65, 2400 40 C2800 15, 2880 65, 2880 40 L2880 80 L0 80 Z"
+          fill="#eef4fb"
+          opacity="0.2"
+        />
+      </svg>
+
+      {/* 2. 中层过渡浪 */}
+      <svg
+        class="wave-mid absolute bottom-0 left-0 w-[200%] h-full pointer-events-none"
+        viewBox="0 0 2880 80"
+        preserveAspectRatio="none"
+        fill="none"
+      >
+        <path
+          d="M0 50 C360 25, 720 70, 1080 50 C1440 25, 1800 70, 2160 50 C2520 25, 2880 70, 2880 50 L2880 80 L0 80 Z"
+          fill="#eef4fb"
+          opacity="0.45"
+        />
+      </svg>
+
+      {/* 3. 前景主浪 */}
+      <svg
+        class="wave-front absolute bottom-0 left-0 w-[200%] h-full pointer-events-none"
+        viewBox="0 0 2880 80"
+        preserveAspectRatio="none"
+        fill="none"
+      >
+        <path
+          d="M0 55 C360 75, 720 30, 1080 55 C1440 75, 1800 30, 2160 55 C2520 75, 2880 30, 2880 55 L2880 80 L0 80 Z"
+          fill="#eef4fb"
+        />
       </svg>
     </div>
   </section>
 
-  <!-- 栏目导航 -->
-  <section class="max-w-6xl mx-auto px-4 py-[var(--spacing-section)]">
-    <div class="grid sm:grid-cols-3 gap-6">
-      {sections.map((s, i) => (
-        <a
-          href={s.href}
-          class="group relative bg-white rounded-2xl border border-slate-200 shadow-card hover:shadow-card-hover hover:-translate-y-1.5 transition-all duration-300 overflow-hidden flex"
-        >
-          {/* 左侧竖排编号徽章 */}
-          <div
-            aria-hidden="true"
-            class="shrink-0 w-10 bg-abyss-900 flex items-center justify-center transition-colors duration-300 group-hover:bg-coral-500"
-          >
-            <span class="font-serif text-white/40 group-hover:text-white/80 transition-colors duration-300 text-lg" style="writing-mode: vertical-rl">
-              {String(i + 1).padStart(2, '0')}
-            </span>
-          </div>
-          <div class="p-6 flex-1">
-            <div
-              class="w-12 h-12 rounded-xl bg-aqua-50 border border-aqua-200 text-aqua-600 grid place-items-center"
-              aria-hidden="true"
-            >
-              <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d={s.icon} />
-              </svg>
-            </div>
-            <h2 class="mt-5 text-xl font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
-              {s.title}
-            </h2>
-            <p class="mt-2 text-sm text-slate-600 leading-relaxed">{s.desc}</p>
-            <p class="mt-4 text-xs text-slate-400">{s.count} 篇文章</p>
-          </div>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- 热门品种 -->
+  {/* ───────────────────────────────────────────── */}
+  {/* 2. 热门精选品种画廊 (Digital Art Gallery)     */}
+  {/* ───────────────────────────────────────────── */}
   {featured.length > 0 && (
-    <section class="max-w-6xl mx-auto px-4 pb-[var(--spacing-section)]">
-      <div class="flex items-end justify-between mb-8">
+    <section class="max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-8 sm:pt-14 pb-10 sm:pb-16">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-3 mb-4 sm:mb-8 pb-3 sm:pb-4 border-b border-slate-200/80">
         <div>
-          <p class="eyebrow mb-2">品种图鉴</p>
-          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900">精选品种</h2>
+          <nav aria-label="分类说明" class="text-[11px] sm:text-xs text-slate-400 mb-0.5 sm:mb-1 flex items-center gap-1.5">
+            <span class="text-aqua-700 font-semibold uppercase tracking-wider">Gallery</span>
+            <span class="text-slate-300">/</span>
+            <span class="text-slate-600 font-medium">热门推荐</span>
+          </nav>
+          <h2 class="text-lg sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900">
+            精选经典纯系品种
+          </h2>
+          <p class="mt-0.5 sm:mt-1 text-xs sm:text-sm text-slate-500">
+            收录国际主流品系代表作，悬停/触控即刻查阅档案
+          </p>
         </div>
-        <a href="/breeds/" class="text-sm text-aqua-600 hover:text-aqua-700 font-medium">
-          查看全部 {breeds.length} 个品种 →
+
+        <a
+          href="/breeds/"
+          class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-aqua-700 hover:text-aqua-800 transition-colors shrink-0 pt-1 sm:pt-0"
+        >
+          <span>查看全部 {breeds.length} 个品种</span>
+          <ArrowRight class="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-200" />
         </a>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {featured.map((breed) => (
-          <article
-            style={`--card-glow: ${COLOR_GLOWS[breed.data.color]};`}
-            class="breed-card-aura group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:-translate-y-1.5 hover:border-aqua-300 transition-all duration-300 flex flex-col"
-          >
-            <a href={`/breed/${breed.id}/`} class="block flex-1 flex flex-col">
-              <div class="relative aspect-[4/3] overflow-hidden">
-                <div class="h-full transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.05]">
-                  <BreedImage
-                    alt={breed.data.title}
-                    image={breed.data.image?.src}
-                    gradientFrom={COLOR_GRADIENTS[breed.data.color]}
-                  />
+
+      {/* 4 列高密度画廊卡片网格（移动端两列，电脑端四列） */}
+      <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4.5">
+        {featured.map((breed) => {
+          const cover = breed.data.image;
+          const grad = COLOR_GRADIENTS[breed.data.color] || '#35a4ff';
+          const glow = COLOR_GLOWS[breed.data.color] || 'rgba(53, 164, 255, 0.2)';
+          const diff = DIFFICULTY_CONFIG[breed.data.difficulty];
+
+          return (
+            <article
+              style={`--card-glow: ${glow};`}
+              class="gallery-card group relative bg-slate-900 rounded-xl sm:rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs aspect-[4/3] flex flex-col justify-end"
+            >
+              <a href={`/breed/${breed.id}/`} class="absolute inset-0 z-0 flex flex-col justify-end">
+                {/* 背景鱼照 */}
+                <div class="absolute inset-0 w-full h-full overflow-hidden bg-slate-100">
+                  <div class="w-full h-full transform transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-105">
+                    <BreedImage
+                      alt={breed.data.title}
+                      image={cover}
+                      gradientFrom={grad}
+                      width={480}
+                      height={360}
+                      quality={80}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div class="p-6 flex flex-col gap-3 flex-1">
-                <h3 class="text-lg font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
-                  {breed.data.title}
-                </h3>
-                {breed.data.enName && (
-                  <p class="text-xs text-slate-400 font-serif italic mt-0.5">{breed.data.enName}</p>
-                )}
-                <p class="text-xs font-medium text-aqua-600">{breed.data.family}</p>
-                {breed.data.subtitle && (
-                  <p class="text-sm text-slate-600 line-clamp-2">{breed.data.subtitle}</p>
-                )}
-                <div class="mt-auto pt-3 flex items-center justify-between gap-2">
-                  <span
-                    class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${DIFFICULTY_BADGES[breed.data.difficulty].className}`}
-                  >
-                    {DIFFICULTY_BADGES[breed.data.difficulty].label}
-                  </span>
-                  <span class="inline-flex items-center gap-1.5 text-xs text-slate-400">
+
+                {/* 1. 常态展示：底部半透明渐变条 */}
+                <div class="relative z-10 w-full p-2 sm:p-3 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent flex items-end justify-between gap-1 transition-all duration-300 ease-[var(--ease-out-expo)] group-hover:opacity-0 group-hover:translate-y-2">
+                  <div class="min-w-0">
+                    <h3 class="text-[11px] sm:text-sm font-bold text-white leading-tight truncate drop-shadow-sm">
+                      {breed.data.title}
+                    </h3>
+                    {breed.data.enName && (
+                      <p class="text-[8px] sm:text-[10px] text-slate-300 font-serif italic truncate mt-0.5 opacity-90">
+                        {breed.data.enName}
+                      </p>
+                    )}
+                  </div>
+
+                  <div class="flex items-center gap-1 shrink-0">
                     <span
-                      class="w-2 h-2 rounded-full"
-                      style={`background: ${COLOR_GRADIENTS[breed.data.color]}`}
+                      class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ring-1 ring-white/30 shadow-xs"
+                      style={`background: ${grad}`}
                       aria-hidden="true"
                     ></span>
-                    {COLOR_LABELS[breed.data.color]}
-                  </span>
+                    <span class="text-[9px] sm:text-[10px] text-slate-300 hidden sm:inline">{breed.data.family}</span>
+                  </div>
                 </div>
-              </div>
-            </a>
-          </article>
-        ))}
+
+                {/* 2. 悬停/触控展开：全屏毛玻璃详细档案卡层 */}
+                <div class="absolute inset-0 z-20 bg-slate-950/88 backdrop-blur-[4px] p-2.5 sm:p-3.5 text-white flex flex-col justify-between opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-[var(--ease-out-expo)] pointer-events-none">
+                  <div>
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                      <span class="text-[8px] sm:text-[10px] font-semibold px-1 sm:px-1.5 py-0.2 rounded bg-white/15 text-aqua-200 border border-white/20">
+                        {breed.data.family}
+                      </span>
+                      <span class={`text-[8px] sm:text-[10px] font-semibold px-1 sm:px-1.5 py-0.2 rounded border ${diff.bgClass} ${diff.textClass}`}>
+                        {diff.label}
+                      </span>
+                    </div>
+
+                    <h3 class="text-xs sm:text-base font-bold text-white leading-snug mt-0.5 sm:mt-1">
+                      {breed.data.title}
+                    </h3>
+                    {breed.data.enName && (
+                      <p class="text-[8px] sm:text-[10px] text-slate-400 font-serif italic truncate">
+                        {breed.data.enName}
+                      </p>
+                    )}
+
+                    {breed.data.subtitle && (
+                      <p class="mt-1 sm:mt-1.5 text-[9px] sm:text-[11px] text-slate-300 line-clamp-2 leading-relaxed opacity-90">
+                        {breed.data.subtitle}
+                      </p>
+                    )}
+                  </div>
+
+                  <div class="pt-1.5 sm:pt-2 border-t border-white/15 flex items-center justify-between text-[9px] sm:text-[10px]">
+                    <div class="flex items-center gap-1">
+                      <span
+                        class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ring-1 ring-white/30"
+                        style={`background: ${grad}`}
+                      ></span>
+                      <span class="text-slate-300">{FIN_LABELS[breed.data.finType]}</span>
+                    </div>
+
+                    <span class="text-aqua-300 font-semibold flex items-center gap-0.5">
+                      <span>详情</span>
+                      <ArrowRight class="w-2.5 h-2.5" />
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          );
+        })}
       </div>
     </section>
   )}
 
-  <!-- 关于 -->
-  <section class="bg-gradient-to-b from-abyss-900 to-abyss-950 text-slate-300">
-    <div class="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-10">
+  {/* ───────────────────────────────────────────── */}
+  {/* 3. 实战水族速查看板 (Aquarist Practical Hub)   */}
+  {/* ───────────────────────────────────────────── */}
+  <section class="max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 pb-12 sm:pb-20">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-6">
+      
+      {/* 工具卡片 1：水质精密物理标尺 */}
+      <a
+        href="/guide/02-water-quality/"
+        class="group bg-white rounded-2xl border border-slate-200/90 p-4.5 sm:p-5 shadow-2xs hover:shadow-card hover:border-sky-400 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+      >
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="w-9 h-9 rounded-xl bg-sky-50 text-sky-700 border border-sky-200/80 grid place-items-center">
+              <Droplets class="w-4.5 h-4.5" />
+            </span>
+            <span class="text-[11px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200/60">
+              实验室标尺
+            </span>
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 group-hover:text-sky-700 transition-colors">
+            水质环境与物理刻度标尺
+          </h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            恒温 24~26℃、pH 7.0~7.5 弱碱稳水与氨氮 0.00 安全红线，以精密物理标尺直观比对各指标安全阈值。
+          </p>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs text-sky-700 font-semibold">
+          <span>查阅水质标尺手册</span>
+          <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </a>
+
+      {/* 工具卡片 2：母鱼待产与繁殖选育 */}
+      <a
+        href="/breeding/"
+        class="group bg-white rounded-2xl border border-slate-200/90 p-4.5 sm:p-5 shadow-2xs hover:shadow-card hover:border-rose-400 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+      >
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="w-9 h-9 rounded-xl bg-rose-50 text-rose-700 border border-rose-200/80 grid place-items-center">
+              <Heart class="w-4.5 h-4.5" />
+            </span>
+            <span class="text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200/60">
+              28天周期
+            </span>
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 group-hover:text-rose-700 transition-colors">
+            孕期待产与 60 天育苗选拔
+          </h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            母鱼 90° 直角方肚临产指征、刚孵化鲜活丰年虾开口技巧，以及 30 天公母严格分缸防早配退化。
+          </p>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs text-rose-700 font-semibold">
+          <span>查阅繁殖提纯指南</span>
+          <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </a>
+
+      {/* 工具卡片 3：鱼病对症排查与急救 */}
+      <a
+        href="/disease/"
+        class="group bg-white rounded-2xl border border-slate-200/90 p-4.5 sm:p-5 shadow-2xs hover:shadow-card hover:border-emerald-400 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+      >
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 grid place-items-center">
+              <ShieldAlert class="w-4.5 h-4.5" />
+            </span>
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+              黄金急救
+            </span>
+          </div>
+
+          <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
+            常见病排查与鱼缸用药计算
+          </h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            白点病、烂尾烂鳍、腹水炸鳞对症排查，水体容积一键测算与 0.3% 粗盐亚甲基蓝安全用量推荐。
+          </p>
+        </div>
+
+        <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs text-emerald-700 font-semibold">
+          <span>进入急救与用药计算器</span>
+          <ArrowRight class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  {/* ───────────────────────────────────────────── */}
+  {/* 4. 关于百科与文献致谢 (Editorial Footer Note)  */}
+  {/* ───────────────────────────────────────────── */}
+  <section class="bg-gradient-to-b from-abyss-900 to-abyss-950 text-slate-300 py-10 sm:py-16 border-t border-abyss-800">
+    <div class="max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
       <div>
-        <h2 class="text-2xl font-bold text-white">关于孔雀鱼</h2>
-        <p class="mt-4 leading-relaxed text-slate-400">
-          孔雀鱼（学名 <em class="font-serif italic text-aqua-200">Poecilia reticulata</em>，孔雀花鳉）原产于南美洲及加勒比地区，
-          是花鳉科的代表鱼种。它因色彩绚丽、繁殖力强、饲养容易而风靡全球，
-          至今已培育出礼服、马赛克、草尾、蛇纹、莫斯科等 17 大品系。
+        <h2 class="text-lg sm:text-2xl font-bold text-white tracking-tight">关于孔雀鱼百科</h2>
+        <p class="mt-2.5 sm:mt-3.5 leading-relaxed text-xs sm:text-sm text-slate-400">
+          孔雀鱼（学名 <em class="font-serif italic text-aqua-200">Poecilia reticulata</em>）原产于南美洲及加勒比海域，是花鳉科最具代表性的卵胎生热带观赏鱼。因其基因可塑性极高、繁殖周期短（约 28 天）且色彩绚丽，被誉为“遗传学活体教科书”。
         </p>
-        <blockquote class="mt-6 border-l-4 border-coral-400 pl-4 font-serif italic text-lg text-aqua-100/90 leading-relaxed">
-          "色彩绚丽、繁殖力强、饲养容易——让它成为走进水族世界最好的敲门鱼。"
+        <blockquote class="mt-4 sm:mt-5 border-l-3 border-coral-400 pl-3.5 font-serif italic text-xs sm:text-base text-aqua-100/90 leading-relaxed bg-white/5 p-2.5 sm:p-3 rounded-r-xl">
+          “色彩绚丽、繁殖力强、饲养容易——让它成为走进水族世界最好的敲门鱼。”
         </blockquote>
       </div>
+
       <div>
-        <h2 class="text-2xl font-bold text-white">本站内容</h2>
-        <ul class="mt-5 space-y-3">
-          <li class="flex gap-3 items-start">
-            <span aria-hidden="true" class="mt-2 w-2 h-2 rounded-full bg-coral-400 shrink-0"></span>
-            <span class="leading-relaxed text-slate-400">品种图鉴：17 大品系代表品种，支持颜色、鳍型、难度组合筛选。</span>
-          </li>
-          <li class="flex gap-3 items-start">
-            <span aria-hidden="true" class="mt-2 w-2 h-2 rounded-full bg-coral-400 shrink-0"></span>
-            <span class="leading-relaxed text-slate-400">知识栏目：饲养指南、繁殖技术、疾病防治，覆盖养鱼全流程。</span>
-          </li>
-          <li class="flex gap-3 items-start">
-            <span aria-hidden="true" class="mt-2 w-2 h-2 rounded-full bg-coral-400 shrink-0"></span>
-            <span class="leading-relaxed text-slate-400">内容整理自公开资料、水族论坛与专业文献，仅供学习交流，图片由 AI 生成逐步补充。</span>
-          </li>
-        </ul>
-        {/* 数据亮点条：与 Hero stats 样式呼应 */}
-        <div class="mt-8 pt-6 border-t border-abyss-800/80 flex flex-wrap gap-x-8 gap-y-4">
-          <div class="text-center">
-            <div aria-hidden="true" class="mx-auto mb-2 h-px w-8 bg-gradient-to-r from-transparent via-aqua-400 to-transparent"></div>
-            <p class="text-2xl font-bold text-aqua-300 tabular-nums">{breeds.length}</p>
-            <p class="mt-0.5 text-[0.7rem] tracking-[0.2em] text-slate-500 uppercase">品系档案</p>
+        <h2 class="text-lg sm:text-2xl font-bold text-white tracking-tight">全站数字统计</h2>
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 mt-3 sm:mt-4">
+          <div class="p-2.5 sm:p-3.5 rounded-xl bg-white/5 border border-white/10 text-center">
+            <p class="text-xl sm:text-3xl font-extrabold text-aqua-300 tabular-nums">{breeds.length}</p>
+            <p class="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-slate-400 font-medium">纯系品种档案</p>
           </div>
-          <div class="text-center">
-            <div aria-hidden="true" class="mx-auto mb-2 h-px w-8 bg-gradient-to-r from-transparent via-aqua-400 to-transparent"></div>
-            <p class="text-2xl font-bold text-aqua-300 tabular-nums">{guides.length + breeding.length + disease.length}</p>
-            <p class="mt-0.5 text-[0.7rem] tracking-[0.2em] text-slate-500 uppercase">知识文章</p>
+          <div class="p-2.5 sm:p-3.5 rounded-xl bg-white/5 border border-white/10 text-center">
+            <p class="text-xl sm:text-3xl font-extrabold text-aqua-300 tabular-nums">{guides.length + breeding.length}</p>
+            <p class="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-slate-400 font-medium">实战饲育指南</p>
           </div>
-          <div class="text-center">
-            <div aria-hidden="true" class="mx-auto mb-2 h-px w-8 bg-gradient-to-r from-transparent via-aqua-400 to-transparent"></div>
-            <p class="text-2xl font-bold text-aqua-300 tabular-nums">{disease.length}</p>
-            <p class="mt-0.5 text-[0.7rem] tracking-[0.2em] text-slate-500 uppercase">疾病速查</p>
+          <div class="p-2.5 sm:p-3.5 rounded-xl bg-white/5 border border-white/10 text-center">
+            <p class="text-xl sm:text-3xl font-extrabold text-coral-400 tabular-nums">{disease.length}</p>
+            <p class="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-slate-400 font-medium">常见病症速查</p>
           </div>
         </div>
+
+        <p class="mt-4 sm:mt-5 text-[10px] sm:text-[11px] text-slate-500 leading-relaxed">
+          整理自公开水族遗传学资料、国内外裁判标准与实操文献。仅供水族爱好者交流学习使用。
+        </p>
       </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  /* 拟真水下物理微气泡（上升 + 左右正弦漂移） */
+  .bubble-drift {
+    animation: guppy-drift-rise linear infinite;
+  }
+  @keyframes guppy-drift-rise {
+    0% {
+      transform: translateY(0) translateX(0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.8;
+      transform: translateY(-20px) translateX(6px);
+    }
+    50% {
+      transform: translateY(-80px) translateX(-8px);
+    }
+    80% {
+      opacity: 0.6;
+      transform: translateY(-160px) translateX(6px);
+    }
+    100% {
+      transform: translateY(-240px) translateX(-4px);
+      opacity: 0;
+    }
+  }
+
+  /* 物理三层正弦流动波浪 */
+  .wave-deep {
+    animation: wave-flow 22s linear infinite;
+  }
+  .wave-mid {
+    animation: wave-flow 14s linear infinite reverse;
+  }
+  .wave-front {
+    animation: wave-flow 8s linear infinite;
+  }
+  @keyframes wave-flow {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* 画廊卡片悬浮外发光与质感 */
+  .gallery-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease;
+  }
+  .gallery-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(92, 195, 255, 0.6);
+    box-shadow: 0 12px 30px -10px var(--card-glow), 0 4px 12px -2px rgba(13, 34, 64, 0.08);
+  }
+</style>

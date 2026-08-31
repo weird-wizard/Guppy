@@ -1,19 +1,36 @@
 ---
-// 品种图片组件：图片未生成时优雅降级为渐变占位。
-// 手机端采用 16:10 宽景比例（max-h 220px），桌面端 4:3 比例，确保移动端图文首屏完美呈现。
+// 品种图片组件：基于 Astro Assets 自动生成经过 WebP 压缩与尺寸裁剪的高性能缩略图。
+// 避免加载数兆字节的原始未压缩大图，极大提升图鉴首屏加载与浏览流畅度。
+
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 
 interface Props {
   alt: string;
   /** 渐变起始色，默认取品种主色 */
   gradientFrom?: string;
-  image?: string;
+  image?: ImageMetadata | string;
+  width?: number;
+  height?: number;
+  quality?: number | 'low' | 'mid' | 'high' | 'max';
   /** 首屏关键图：eager 加载 + 高优先级（用于详情页主图） */
   priority?: boolean;
   /** View Transitions 共享元素形变名称 */
   transitionName?: string;
+  class?: string;
 }
 
-const { alt, gradientFrom = '#5cc3ff', image, priority = false, transitionName } = Astro.props;
+const {
+  alt,
+  gradientFrom = '#5cc3ff',
+  image,
+  width = 480,
+  height = 360,
+  quality = 82,
+  priority = false,
+  transitionName,
+  class: className = ''
+} = Astro.props;
 
 // 颜色枚举 → 渐变主色映射（与 content.config.ts 的 color 字段对应）
 export const COLOR_GRADIENTS: Record<string, string> = {
@@ -25,7 +42,7 @@ export const COLOR_GRADIENTS: Record<string, string> = {
   white: '#e2e8f0',
   black: '#1e293b',
   snake: '#f59e0b',
-  multi: '#a855f7',
+  multi: 'linear-gradient(135deg, #f43f5e 0%, #fb923c 20%, #facc15 40%, #10b981 60%, #38bdf8 80%, #8b5cf6 100%)',
 };
 
 // 颜色枚举 → 卡片悬浮专属溢彩光晕颜色（半透明）
@@ -38,27 +55,47 @@ export const COLOR_GLOWS: Record<string, string> = {
   white: 'rgba(226, 232, 240, 0.35)',
   black: 'rgba(30, 41, 59, 0.3)',
   snake: 'rgba(245, 158, 11, 0.28)',
-  multi: 'rgba(168, 85, 247, 0.28)',
+  multi: 'rgba(139, 92, 246, 0.28)',
 };
+
+const isImageMetadata = typeof image === 'object' && image !== null && 'src' in image;
 ---
 
 {image ? (
-  <div class="relative w-full overflow-hidden rounded-xl aspect-[16/10] sm:aspect-[4/3] max-h-[220px] sm:max-h-[440px] bg-slate-100 flex items-center justify-center">
-    <img
-      src={image}
-      alt={alt}
-      width={800}
-      height={600}
-      draggable="false"
-      class="w-full h-full object-cover transition-transform duration-700 ease-[var(--ease-out-expo)] select-none pointer-events-none"
-      loading={priority ? 'eager' : 'lazy'}
-      fetchpriority={priority ? 'high' : undefined}
-      style={transitionName ? `view-transition-name: ${transitionName};` : undefined}
-    />
+  <div class:list={["relative w-full h-full overflow-hidden bg-slate-100 flex items-center justify-center", className]}>
+    {isImageMetadata ? (
+      <Image
+        src={image as ImageMetadata}
+        alt={alt}
+        width={width}
+        height={height}
+        format="webp"
+        quality={quality}
+        draggable="false"
+        class="w-full h-full object-cover transition-transform duration-700 ease-[var(--ease-out-expo)] select-none pointer-events-none"
+        loading={priority ? 'eager' : 'lazy'}
+        decoding={priority ? 'sync' : 'async'}
+        fetchpriority={priority ? 'high' : undefined}
+        style={transitionName ? `view-transition-name: ${transitionName};` : undefined}
+      />
+    ) : (
+      <img
+        src={typeof image === 'string' ? image : (image as any).src}
+        alt={alt}
+        width={width}
+        height={height}
+        draggable="false"
+        class="w-full h-full object-cover transition-transform duration-700 ease-[var(--ease-out-expo)] select-none pointer-events-none"
+        loading={priority ? 'eager' : 'lazy'}
+        decoding={priority ? 'sync' : 'async'}
+        fetchpriority={priority ? 'high' : undefined}
+        style={transitionName ? `view-transition-name: ${transitionName};` : undefined}
+      />
+    )}
   </div>
 ) : (
   <div
-    class="breed-img-placeholder aspect-[16/10] sm:aspect-[4/3] max-h-[220px] sm:max-h-[440px]"
+    class="breed-img-placeholder aspect-[4/3] w-full h-full"
     style={`--ph-grad: linear-gradient(135deg, ${gradientFrom} 0%, color-mix(in srgb, ${gradientFrom} 35%, #0d2240 65%) 100%); ${transitionName ? `view-transition-name: ${transitionName};` : ''}`}
     role="img"
     aria-label={`${alt}（占位图）`}

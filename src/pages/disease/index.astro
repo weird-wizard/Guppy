@@ -73,31 +73,14 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
   <!-- ─────────────────────────────────────────────── -->
   <!-- 移动端优先与全端自适应的高质感数字工作台           -->
   <!-- ─────────────────────────────────────────────── -->
-  <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-9">
-    <!-- 纯粹克制的顶部标题区 -->
-    <header class="mb-5 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 sm:gap-2">
-      <div>
-        <nav aria-label="面包屑" class="text-[11px] text-slate-400 mb-1 flex items-center gap-1.5">
-          <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
-          <span class="text-slate-300">/</span>
-          <span class="text-slate-600 font-medium">疾病防治</span>
-        </nav>
-        <h1 class="text-lg sm:text-2xl font-bold tracking-tight text-slate-900">
-          疾病防治与应急指南
-        </h1>
-      </div>
-      <p class="text-xs text-slate-500">
-        对症速查 · 急救处置 · 水体用药安全计算
-      </p>
-    </header>
-
+  <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-8">
     <!-- 响应式布局：移动端 2x2 快捷网格 / 桌面端左侧贴附导航 -->
     <div class="lg:flex lg:gap-8 items-start">
       <!-- ───────────────────────────────────────────── -->
       <!-- 导航栏：移动端 2x2 网格，桌面端垂直侧栏          -->
       <!-- ───────────────────────────────────────────── -->
-      <aside class="lg:w-52 lg:shrink-0 mb-5 lg:mb-0 lg:sticky lg:top-20">
-        <nav aria-label="疾病防治功能导航" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-1 gap-1.5">
+      <aside class="lg:w-52 lg:shrink-0 mb-5 lg:mb-0 lg:sticky lg:top-20 z-20">
+        <nav aria-label="疾病防治功能导航" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-1 gap-1.5 bg-white p-1.5 rounded-2xl border border-slate-200/90 shadow-card">
           <button
             type="button"
             data-tab="triage"
@@ -155,6 +138,22 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
       <!-- 右侧主内容展示区                                 -->
       <!-- ───────────────────────────────────────────── -->
       <main class="flex-1 min-w-0">
+        <!-- 纯粹克制的顶部标题区：严格与工作台左侧对齐 -->
+        <header class="mb-5 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 sm:gap-2">
+          <div>
+            <nav aria-label="面包屑" class="text-[11px] text-slate-400 mb-1 flex items-center gap-1.5">
+              <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+              <span class="text-slate-300">/</span>
+              <span class="text-slate-600 font-medium">疾病防治</span>
+            </nav>
+            <h1 class="text-lg sm:text-2xl font-bold tracking-tight text-slate-900">
+              疾病防治与应急指南
+            </h1>
+          </div>
+          <p class="text-xs text-slate-500">
+            对症速查 · 急救处置 · 水体用药安全计算
+          </p>
+        </header>
         <!-- TAB 1: 对症排查 (Triage) -->
         <div id="tab-panel-triage" class="tab-panel space-y-4 sm:space-y-5">
           <!-- 部位筛选：支持移动端横向丝滑滑动的胶囊栏 -->
@@ -731,6 +730,21 @@ const PATHOGEN_TYPE_LABELS: Record<string, string> = {
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Tab 面板平滑淡入滑移过渡 */
+  .tab-panel:not(.hidden) {
+    animation: tab-enter 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes tab-enter {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
 
