@@ -117,115 +117,185 @@ body {
 
 /* ─── 视野外无缝掉头自主巡游（在屏幕外完成转身，屏幕内始终保持优美侧身姿态） ─── */
 
-/* 1 号主鱼（蓝色大扇尾）：
-   0% 在 15vw，向右中上层游弋 -> 42% 游出右侧 (108vw) -> 在右侧外掉头朝左 -> 48%~92% 从右向左斜向下潜穿行 -> 92% 游出左侧 (-14vw) -> 在左侧外掉头朝右 -> 98% 回到 15vw */
+/* 1 号主鱼（蓝色大扇尾，初始位置 left: 10vw）：
+   0% 向右中上层游弋 -> 42% 完全游出屏幕右侧 (+108vw) -> 在右侧外静默掉头 -> 48%~90% 朝左穿行游出左侧 (-25vw) -> 在左侧外静默掉头 -> 100% 回到初始点 */
 @keyframes guppy-seamless-cruise-1 {
   0% {
     transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
   }
-  16% {
-    transform: translate3d(24vw, -25px, 0px) scaleX(1) rotate(-8deg);
+  20% {
+    transform: translate3d(30vw, -25px, 0px) scaleX(1) rotate(-6deg);
   }
-  32% {
-    transform: translate3d(58vw, -36px, 0px) scaleX(1) rotate(-3deg);
+  38% {
+    transform: translate3d(70vw, -35px, 0px) scaleX(1) rotate(-2deg);
   }
-  /* 42%: 完全游出屏幕右侧边缘 */
-  42% {
-    transform: translate3d(92vw, -28px, 0px) scaleX(1) rotate(2deg);
+  /* 完全游出屏幕右侧 (10vw + 105vw = 115vw) */
+  45% {
+    transform: translate3d(105vw, -20px, 0px) scaleX(1) rotate(2deg);
   }
-  /* 43%~46%: 在屏幕外看不见的地方掉头朝左并调整水深 */
-  44% {
-    transform: translate3d(96vw, -10px, 0px) scaleX(-1) rotate(6deg);
+  /* 在屏幕右侧视线外静默掉头并换层 */
+  47% {
+    transform: translate3d(108vw, 10px, 0px) scaleX(-1) rotate(4deg);
   }
-  /* 48%: 以朝左姿态从右侧屏幕外优雅游入 */
-  50% {
-    transform: translate3d(85vw, 15px, 0px) scaleX(-1) rotate(8deg);
-  }
-  65% {
-    transform: translate3d(52vw, 32px, 0px) scaleX(-1) rotate(4deg);
+  /* 朝左从右侧屏幕外优雅游入视野 */
+  62% {
+    transform: translate3d(60vw, 28px, 0px) scaleX(-1) rotate(5deg);
   }
   78% {
-    transform: translate3d(22vw, 26px, 0px) scaleX(-1) rotate(-2deg);
+    transform: translate3d(20vw, 32px, 0px) scaleX(-1) rotate(-1deg);
   }
-  /* 90%: 完全游出屏幕左侧边缘 */
-  90% {
-    transform: translate3d(-18vw, 15px, 0px) scaleX(-1) rotate(-5deg);
+  /* 完全游出屏幕左侧 (10vw - 25vw = -15vw) */
+  92% {
+    transform: translate3d(-25vw, 15px, 0px) scaleX(-1) rotate(-4deg);
   }
-  /* 92%~95%: 在屏幕左侧外掉头朝右并调整高度 */
-  93% {
-    transform: translate3d(-20vw, 4px, 0px) scaleX(1) rotate(-4deg);
+  /* 在屏幕左侧视线外静默掉头 */
+  94% {
+    transform: translate3d(-28vw, 4px, 0px) scaleX(1) rotate(-2deg);
   }
-  /* 98%: 回到初始 15vw 视野内 */
   100% {
     transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
   }
 }
 
-/* 2 号鱼（珊瑚红大扇尾）：
-   0% 在 65vw，向左中下层游弋 -> 38% 游出左侧 (-14vw) -> 在左侧外掉头朝右 -> 44%~88% 从左向右斜向上浮穿行 -> 88% 游出右侧 (110vw) -> 在右侧外掉头朝左 -> 96% 回到 65vw */
+/* 2 号鱼（珊瑚红大扇尾，初始位置 right: 10vw，即 left: 90vw）：
+   0% 向左中下层游弋 -> 42% 完全游出左侧 (-105vw，绝对坐标 -15vw) -> 在左侧外静默掉头 -> 50%~90% 朝右游出右侧 (+25vw，绝对坐标 115vw) -> 在右侧外静默掉头 -> 100% 回到初始点 */
 @keyframes guppy-seamless-cruise-2 {
   0% {
     transform: translate3d(0vw, 0px, 0px) scaleX(-1) rotate(0deg);
   }
-  15% {
-    transform: translate3d(-22vw, 18px, 0px) scaleX(-1) rotate(6deg);
+  20% {
+    transform: translate3d(-35vw, 20px, 0px) scaleX(-1) rotate(4deg);
   }
-  28% {
-    transform: translate3d(-48vw, 24px, 0px) scaleX(-1) rotate(1deg);
+  36% {
+    transform: translate3d(-70vw, 15px, 0px) scaleX(-1) rotate(1deg);
   }
-  /* 38%: 完全游出屏幕左侧边缘 */
-  38% {
-    transform: translate3d(-72vw, 12px, 0px) scaleX(-1) rotate(-4deg);
+  /* 完全游出屏幕左侧 (90vw - 105vw = -15vw) */
+  45% {
+    transform: translate3d(-105vw, 0px, 0px) scaleX(-1) rotate(-3deg);
   }
-  /* 40%~43%: 在屏幕左侧外掉头朝右并调整水深 */
-  41% {
-    transform: translate3d(-75vw, -6px, 0px) scaleX(1) rotate(-6deg);
+  /* 在屏幕左侧视线外静默掉头并调整高度 */
+  47% {
+    transform: translate3d(-108vw, -20px, 0px) scaleX(1) rotate(-6deg);
   }
-  /* 46%: 以朝右姿态从左侧屏幕外游入 */
-  48% {
-    transform: translate3d(-58vw, -22px, 0px) scaleX(1) rotate(-8deg);
-  }
-  64% {
-    transform: translate3d(-24vw, -30px, 0px) scaleX(1) rotate(-3deg);
+  /* 朝右从左侧屏幕外游入视野 */
+  62% {
+    transform: translate3d(-60vw, -30px, 0px) scaleX(1) rotate(-4deg);
   }
   78% {
-    transform: translate3d(12vw, -18px, 0px) scaleX(1) rotate(4deg);
+    transform: translate3d(-20vw, -20px, 0px) scaleX(1) rotate(3deg);
   }
-  /* 88%: 完全游出屏幕右侧边缘 */
-  88% {
-    transform: translate3d(42vw, -6px, 0px) scaleX(1) rotate(6deg);
-  }
-  /* 90%~94%: 在屏幕右侧外掉头朝左 */
+  /* 完全游出屏幕右侧 (90vw + 25vw = 115vw) */
   92% {
-    transform: translate3d(45vw, 0px, 0px) scaleX(-1) rotate(2deg);
+    transform: translate3d(25vw, -5px, 0px) scaleX(1) rotate(5deg);
+  }
+  /* 在屏幕右侧视线外静默掉头 */
+  94% {
+    transform: translate3d(28vw, 0px, 0px) scaleX(-1) rotate(2deg);
   }
   100% {
     transform: translate3d(0vw, 0px, 0px) scaleX(-1) rotate(0deg);
   }
 }
 
-/* 3 号远景深水小鱼 */
+/* 3 号远景深水小鱼（初始位置 left: 42vw）：
+   所有掉头均在左侧 -60vw（坐标 -18vw）与右侧 +75vw（坐标 117vw）外发生 */
 @keyframes guppy-seamless-cruise-3 {
   0% {
     transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
   }
-  20% {
-    transform: translate3d(24vw, -20px, 0px) scaleX(1) rotate(-6deg);
+  24% {
+    transform: translate3d(40vw, -18px, 0px) scaleX(1) rotate(-5deg);
   }
-  40% {
-    transform: translate3d(65vw, 10px, 0px) scaleX(1) rotate(4deg);
+  /* 游出右侧 (42vw + 75vw = 117vw) */
+  44% {
+    transform: translate3d(75vw, 10px, 0px) scaleX(1) rotate(3deg);
   }
-  43% {
-    transform: translate3d(70vw, 12px, 0px) scaleX(-1) rotate(2deg);
+  /* 在右侧外静默掉头 */
+  46% {
+    transform: translate3d(78vw, 12px, 0px) scaleX(-1) rotate(2deg);
   }
-  65% {
-    transform: translate3d(30vw, 24px, 0px) scaleX(-1) rotate(6deg);
+  68% {
+    transform: translate3d(15vw, 24px, 0px) scaleX(-1) rotate(5deg);
   }
-  88% {
-    transform: translate3d(-48vw, 8px, 0px) scaleX(-1) rotate(-3deg);
+  /* 游出左侧 (42vw - 60vw = -18vw) */
+  90% {
+    transform: translate3d(-60vw, 10px, 0px) scaleX(-1) rotate(-3deg);
   }
+  /* 在左侧外静默掉头 */
   92% {
-    transform: translate3d(-52vw, 4px, 0px) scaleX(1) rotate(-4deg);
+    transform: translate3d(-63vw, 4px, 0px) scaleX(1) rotate(-2deg);
+  }
+  100% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
+  }
+}
+
+/* 4 号中水层翡翠绿扇尾孔雀鱼（初始位置 right: 15vw，即 left: 85vw）：
+   所有掉头均在左侧 -105vw（坐标 -20vw）与右侧 +30vw（坐标 115vw）外发生 */
+@keyframes guppy-seamless-cruise-4 {
+  0% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(-1) rotate(0deg);
+  }
+  22% {
+    transform: translate3d(-40vw, -15px, 0px) scaleX(-1) rotate(-3deg);
+  }
+  38% {
+    transform: translate3d(-75vw, 10px, 0px) scaleX(-1) rotate(2deg);
+  }
+  /* 游出左侧 (85vw - 105vw = -20vw) */
+  46% {
+    transform: translate3d(-105vw, 15px, 0px) scaleX(-1) rotate(-4deg);
+  }
+  /* 在左侧外静默掉头 */
+  48% {
+    transform: translate3d(-108vw, -10px, 0px) scaleX(1) rotate(3deg);
+  }
+  68% {
+    transform: translate3d(-40vw, -18px, 0px) scaleX(1) rotate(4deg);
+  }
+  /* 游出右侧 (85vw + 30vw = 115vw) */
+  90% {
+    transform: translate3d(30vw, 5px, 0px) scaleX(1) rotate(-2deg);
+  }
+  /* 在右侧外静默掉头 */
+  92% {
+    transform: translate3d(33vw, 0px, 0px) scaleX(-1) rotate(1deg);
+  }
+  100% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(-1) rotate(0deg);
+  }
+}
+
+/* 5 号深水区白金双剑尾（初始位置 left: 26vw）：
+   所有掉头均在右侧 +90vw（坐标 116vw）与左侧 -45vw（坐标 -19vw）外发生 */
+@keyframes guppy-seamless-cruise-5 {
+  0% {
+    transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
+  }
+  22% {
+    transform: translate3d(35vw, 15px, 0px) scaleX(1) rotate(3deg);
+  }
+  38% {
+    transform: translate3d(65vw, -8px, 0px) scaleX(1) rotate(-2deg);
+  }
+  /* 游出右侧 (26vw + 90vw = 116vw) */
+  46% {
+    transform: translate3d(90vw, 5px, 0px) scaleX(1) rotate(4deg);
+  }
+  /* 在右侧外静默掉头 */
+  48% {
+    transform: translate3d(93vw, -5px, 0px) scaleX(-1) rotate(2deg);
+  }
+  68% {
+    transform: translate3d(30vw, 18px, 0px) scaleX(-1) rotate(-4deg);
+  }
+  /* 游出左侧 (26vw - 45vw = -19vw) */
+  90% {
+    transform: translate3d(-45vw, -5px, 0px) scaleX(-1) rotate(2deg);
+  }
+  /* 在左侧外静默掉头 */
+  92% {
+    transform: translate3d(-48vw, 0px, 0px) scaleX(1) rotate(-1deg);
   }
   100% {
     transform: translate3d(0vw, 0px, 0px) scaleX(1) rotate(0deg);
@@ -270,6 +340,16 @@ body {
 
 .animate-tank-fish-3 {
   animation: guppy-seamless-cruise-3 46s cubic-bezier(0.35, 0.05, 0.25, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-tank-fish-4 {
+  animation: guppy-seamless-cruise-4 42s cubic-bezier(0.35, 0.05, 0.25, 0.95) infinite;
+  will-change: transform;
+}
+
+.animate-tank-fish-5 {
+  animation: guppy-seamless-cruise-5 50s cubic-bezier(0.35, 0.05, 0.25, 0.95) infinite;
   will-change: transform;
 }
 

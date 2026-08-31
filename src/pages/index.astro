@@ -37,9 +37,9 @@ const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgCl
 
 <BaseLayout>
   {/* ───────────────────────────────────────────── */}
-  {/* 1. 殿堂级水生 Hero：纯净深海 + 3D 生物光影       */}
+  {/* 1. 殿堂级水生 Hero：移动端大半屏深海 + 3D 灵动巡游 */}
   {/* ───────────────────────────────────────────── */}
-  <section class="relative overflow-hidden bg-gradient-to-b from-abyss-950 via-[#071328] to-[#0a1e3d] text-white">
+  <section class="relative overflow-hidden bg-gradient-to-b from-abyss-950 via-[#071328] to-[#0a1e3d] text-white min-h-[72vh] sm:min-h-0 flex flex-col justify-between">
     {/* 水生动效层：深海折射光斑 + 拟真气泡 + 3D 自由巡游孔雀鱼 */}
     <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden select-none" style="perspective: 1200px; transform-style: preserve-3d;">
       {/* 顶部中央天青光晕 */}
@@ -56,9 +56,9 @@ const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgCl
       <span class="bubble-drift absolute bottom-12 right-[15%] h-2.5 sm:h-3 w-2.5 sm:w-3 rounded-full bg-white/20 border border-white/30" style="animation-delay: 1.4s; animation-duration: 9.5s"></span>
       <span class="bubble-drift absolute bottom-5 right-[5%] h-3.5 sm:h-5 w-3.5 sm:w-5 rounded-full bg-coral-400/20 border border-coral-300/30 backdrop-blur-[1px]" style="animation-delay: 4.3s; animation-duration: 13s"></span>
 
-      <!-- 游动孔雀鱼 1（主景：水蓝大扇尾） -->
+      <!-- 游动孔雀鱼 1（主景：水蓝大扇尾，上水层优雅巡航） -->
       <div
-        class="absolute top-[12%] sm:top-[16%] left-[4%] sm:left-[10%] w-16 sm:w-28 text-aqua-300 animate-tank-fish-1 filter drop-shadow-[0_6px_20px_rgba(53,164,255,0.5)]"
+        class="absolute top-[10%] sm:top-[16%] left-[3%] sm:left-[10%] w-16 sm:w-28 text-aqua-300 animate-tank-fish-1 filter drop-shadow-[0_6px_20px_rgba(53,164,255,0.5)]"
       >
         <svg viewBox="0 0 120 60" class="w-full h-auto overflow-visible" fill="none">
           <g class="animate-fish-tail" style="transform-origin: 36px 30px;">
@@ -104,9 +104,9 @@ const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgCl
         </svg>
       </div>
 
-      <!-- 游动孔雀鱼 2（中景：火红金黄大扇尾） -->
+      <!-- 游动孔雀鱼 2（中景：火红金黄大扇尾，下水层优雅巡航） -->
       <div
-        class="absolute top-[54%] sm:top-[50%] right-[4%] sm:right-[10%] w-14 sm:w-22 text-coral-400 animate-tank-fish-2 filter drop-shadow-[0_6px_18px_rgba(244,63,94,0.45)]"
+        class="absolute top-[64%] sm:top-[50%] right-[3%] sm:right-[10%] w-15 sm:w-22 text-coral-400 animate-tank-fish-2 filter drop-shadow-[0_6px_18px_rgba(244,63,94,0.45)]"
       >
         <svg viewBox="0 0 120 60" class="w-full h-auto overflow-visible" fill="none">
           <g class="animate-fish-tail" style="transform-origin: 36px 30px;">
@@ -149,7 +149,7 @@ const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgCl
         </svg>
       </div>
 
-      <!-- 游动孔雀鱼 3（远景小鱼） -->
+      <!-- 游动孔雀鱼 3（中远景水蓝小鱼） -->
       <div
         class="hidden sm:block absolute top-[68%] left-[42%] w-12 sm:w-15 text-aqua-200 animate-tank-fish-3 filter blur-[0.6px] opacity-55"
       >
@@ -167,10 +167,125 @@ const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgCl
           <circle cx="88" cy="27" r="1.5" fill="#081830" />
         </svg>
       </div>
+
+      <!-- 游动孔雀鱼 4（中水层：翡翠莫斯科绿大扇尾） -->
+      <div
+        class="absolute top-[36%] sm:top-[38%] right-[8%] sm:right-[15%] w-14 sm:w-20 text-emerald-400 animate-tank-fish-4 filter drop-shadow-[0_4px_14px_rgba(16,185,129,0.35)] opacity-90"
+      >
+        <svg viewBox="0 0 120 60" class="w-full h-auto overflow-visible" fill="none">
+          <g class="animate-fish-tail" style="transform-origin: 36px 30px;">
+            <path
+              d="M36 30 C18 10, 4 4, 1 12 C-3 20, -1 36, 4 44 C9 52, 20 46, 36 30 Z"
+              fill="url(#guppy-tail-grad-4)"
+              opacity="0.95"
+            />
+            <path d="M36 30 Q18 16 4 14" stroke="rgba(255,255,255,0.6)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q16 30 1 30" stroke="rgba(255,255,255,0.4)" stroke-width="0.75" fill="none" />
+            <path d="M36 30 Q18 44 5 46" stroke="rgba(255,255,255,0.6)" stroke-width="0.75" fill="none" />
+          </g>
+          <path
+            d="M36 30 C38 22, 58 17, 80 21 C92 23, 100 27.5, 100 27.5 C100 27.5, 92 32, 80 36.5 C58 40.5, 38 37.5, 36 30 Z"
+            fill="url(#guppy-body-grad-4)"
+          />
+          <path d="M48 18 C53 9, 66 7, 70 19 Z" fill="rgba(52,211,153,0.8)" />
+          <path
+            d="M66 33 C61 39, 54 44, 50 41.5 C48 39, 53 33, 66 33 Z"
+            fill="rgba(255,255,255,0.75)"
+            class="animate-fish-pectoral"
+            style="transform-origin: 66px 33px;"
+          />
+          <circle cx="88" cy="26.5" r="2.0" fill="#051020" />
+          <circle cx="88.5" cy="26.0" r="0.6" fill="#ffffff" />
+          <defs>
+            <linearGradient id="guppy-tail-grad-4" x1="100%" y1="50%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#10b981" stop-opacity="0.98" />
+              <stop offset="55%" stop-color="#34d399" stop-opacity="0.9" />
+              <stop offset="85%" stop-color="#a7f3d0" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0.6" />
+            </linearGradient>
+            <linearGradient id="guppy-body-grad-4" x1="0%" y1="50%" x2="100%" y2="50%">
+              <stop offset="0%" stop-color="#047857" />
+              <stop offset="60%" stop-color="#6ee7b7" />
+              <stop offset="90%" stop-color="#ecfdf5" />
+              <stop offset="100%" stop-color="#ffffff" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <!-- 游动孔雀鱼 5（深水底层：经典日本蓝/白金双剑尾高精解剖结构） -->
+      <div
+        class="absolute top-[78%] sm:top-[74%] left-[10%] sm:left-[26%] w-15 sm:w-22 text-slate-100 animate-tank-fish-5 filter drop-shadow-[0_4px_16px_rgba(56,189,248,0.4)] opacity-90"
+      >
+        <svg viewBox="0 0 130 60" class="w-full h-auto overflow-visible" fill="none">
+          <!-- 高精双剑尾鳍（中央圆弧透明鳍膜 + 上下双极修长剑芒） -->
+          <g class="animate-fish-tail" style="transform-origin: 42px 30px;">
+            {/* 1. 中央透明圆形主尾膜 */}
+            <path
+              d="M42 30 C34 22, 22 22, 18 30 C22 38, 34 38, 42 30 Z"
+              fill="rgba(224, 242, 254, 0.45)"
+              stroke="rgba(255, 255, 255, 0.5)"
+              stroke-width="0.5"
+            />
+            {/* 2. 上剑芒（自尾柄向后上方修长延伸并锐利收尖） */}
+            <path
+              d="M42 27 C30 18, 12 8, -6 3 C2 12, 18 20, 30 24 C36 26, 42 27, 42 27 Z"
+              fill="url(#guppy-sword-top)"
+            />
+            <path d="M42 27 Q14 10 -6 3" stroke="rgba(255,255,255,0.95)" stroke-width="0.75" fill="none" />
+            <path d="M30 24 Q10 14 -6 3" stroke="rgba(56,189,248,0.8)" stroke-width="0.5" fill="none" />
+
+            {/* 3. 下剑芒（自尾柄向后下方修长延伸并锐利收尖） */}
+            <path
+              d="M42 33 C30 42, 12 52, -6 57 C2 48, 18 40, 30 36 C36 34, 42 33, 42 33 Z"
+              fill="url(#guppy-sword-bottom)"
+            />
+            <path d="M42 33 Q14 50 -6 57" stroke="rgba(255,255,255,0.95)" stroke-width="0.75" fill="none" />
+            <path d="M30 36 Q10 46 -6 57" stroke="rgba(56,189,248,0.8)" stroke-width="0.5" fill="none" />
+          </g>
+
+          {/* 鱼身主体（流线型双剑身姿） */}
+          <path
+            d="M42 30 C44 22, 64 17, 86 21 C98 23, 106 27.5, 106 27.5 C106 27.5, 98 32, 86 36.5 C64 40.5, 44 37.5, 42 30 Z"
+            fill="url(#guppy-body-grad-5)"
+          />
+          {/* 背鳍（修长平行剑型背鳍） */}
+          <path d="M56 18 C61 7, 76 5, 82 19 Z" fill="rgba(125,211,252,0.85)" />
+          {/* 胸鳍 */}
+          <path
+            d="M72 33 C67 39, 60 44, 56 41.5 C54 39, 59 33, 72 33 Z"
+            fill="rgba(255,255,255,0.8)"
+            class="animate-fish-pectoral"
+            style="transform-origin: 72px 33px;"
+          />
+          <circle cx="94" cy="26.5" r="2.0" fill="#051020" />
+          <circle cx="94.5" cy="26.0" r="0.6" fill="#ffffff" />
+          <defs>
+            <linearGradient id="guppy-sword-top" x1="100%" y1="100%" x2="0%" y2="0%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="40%" stop-color="#f59e0b" />
+              <stop offset="85%" stop-color="#fef08a" />
+              <stop offset="100%" stop-color="#ffffff" />
+            </linearGradient>
+            <linearGradient id="guppy-sword-bottom" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="40%" stop-color="#f59e0b" />
+              <stop offset="85%" stop-color="#fef08a" />
+              <stop offset="100%" stop-color="#ffffff" />
+            </linearGradient>
+            <linearGradient id="guppy-body-grad-5" x1="0%" y1="50%" x2="100%" y2="50%">
+              <stop offset="0%" stop-color="#0284c7" />
+              <stop offset="50%" stop-color="#7dd3fc" />
+              <stop offset="85%" stop-color="#f0f9ff" />
+              <stop offset="100%" stop-color="#ffffff" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
     </div>
 
     {/* 主体内容：居中大气 Apple 风格排版 + 纯粹四大功能胶囊 */}
-    <div class="relative z-10 max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-12 sm:pt-28 pb-16 sm:pb-28 text-center">
+    <div class="relative z-10 max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-14 sm:pt-28 pb-12 sm:pb-28 text-center my-auto">
       
       <!-- 顶部高定徽章 -->
       <div class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-white/[0.08] backdrop-blur-xl border border-white/20 text-[10px] sm:text-xs font-medium text-aqua-200 shadow-lg shadow-black/20 mb-4 sm:mb-8 animate-fade-up">
@@ -180,66 +295,61 @@ const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; bgCl
         <span class="tracking-wide">纯系孔雀鱼知识库</span>
       </div>
 
-      <!-- 主标题：大气纯正 Typography -->
-      <h1 class="text-2xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.2] sm:leading-[1.12] drop-shadow-[0_2px_24px_rgba(56,189,248,0.25)] animate-fade-up">
-        走进纯系孔雀鱼的<br />
-        <span class="bg-gradient-to-r from-aqua-300 via-sky-200 to-indigo-300 bg-clip-text text-transparent">
+      <!-- 主标题：严谨锁定两行水平不折字，移动端尺寸精准调校 -->
+      <h1 class="text-[26px] xs:text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight sm:leading-[1.12] animate-fade-up">
+        <span class="block whitespace-nowrap">走进纯系孔雀鱼的</span>
+        <span
+          class="block whitespace-nowrap bg-gradient-to-r from-aqua-300 via-sky-200 to-indigo-300 bg-clip-text text-transparent mt-1 sm:mt-2"
+          style="-webkit-background-clip: text; -webkit-text-fill-color: transparent;"
+        >
           绚丽微观世界
         </span>
       </h1>
 
-      <!-- 四大核心功能高定毛玻璃胶囊（移动端 2x2 对称紧凑网格，桌面端水平排列） -->
-      <div class="mt-6 sm:mt-12 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center sm:gap-4 text-xs sm:text-sm animate-fade-up max-w-sm sm:max-w-none mx-auto">
+      <!-- 四大核心功能高定毛玻璃胶囊（精炼小巧尺寸，电脑端单行舒展居中） -->
+      <div class="mt-6 sm:mt-10 flex flex-wrap items-center justify-center gap-2 sm:gap-3.5 text-xs sm:text-sm animate-fade-up max-w-none mx-auto">
         <a
           href="/breeds/"
-          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-aqua-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-aqua-500/20"
+          class="hero-pill group px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-aqua-400/80 text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 sm:gap-2 shadow-md shadow-black/20 hover:shadow-aqua-500/20"
         >
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-aqua-500/20 border border-aqua-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
-              <Layers class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-aqua-300" />
-            </span>
-            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">24 品种图鉴</span>
-          </div>
-          <ChevronRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/40 group-hover:text-aqua-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+          <span class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 rounded-full bg-aqua-500/20 border border-aqua-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+            <Layers class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-aqua-300" />
+          </span>
+          <span class="font-medium tracking-wide text-[12px] sm:text-xs">24 品种图鉴</span>
+          <ChevronRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/40 group-hover:text-aqua-300 group-hover:translate-x-0.5 transition-all" />
         </a>
 
         <a
           href="/guide/"
-          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-sky-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-sky-500/20"
+          class="hero-pill group px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-sky-400/80 text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 sm:gap-2 shadow-md shadow-black/20 hover:shadow-sky-500/20"
         >
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-sky-500/20 border border-sky-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
-              <Compass class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-sky-300" />
-            </span>
-            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">新手饲养指南</span>
-          </div>
-          <ChevronRight class="w-3.5 h-3.5 text-white/40 group-hover:text-sky-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+          <span class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 rounded-full bg-sky-500/20 border border-sky-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+            <Compass class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-sky-300" />
+          </span>
+          <span class="font-medium tracking-wide text-[12px] sm:text-xs">新手饲养指南</span>
+          <ChevronRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/40 group-hover:text-sky-300 group-hover:translate-x-0.5 transition-all" />
         </a>
 
         <a
           href="/breeding/"
-          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-rose-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-rose-500/20"
+          class="hero-pill group px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-rose-400/80 text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 sm:gap-2 shadow-md shadow-black/20 hover:shadow-rose-500/20"
         >
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-500/20 border border-rose-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
-              <Heart class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-300" />
-            </span>
-            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">28天繁育指南</span>
-          </div>
-          <ChevronRight class="w-3.5 h-3.5 text-white/40 group-hover:text-rose-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+          <span class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 rounded-full bg-rose-500/20 border border-rose-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+            <Heart class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-rose-300" />
+          </span>
+          <span class="font-medium tracking-wide text-[12px] sm:text-xs">28天繁育指南</span>
+          <ChevronRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/40 group-hover:text-rose-300 group-hover:translate-x-0.5 transition-all" />
         </a>
 
         <a
           href="/disease/"
-          class="hero-pill group px-3 py-2.5 sm:px-4.5 sm:py-2.5 rounded-2xl sm:rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-emerald-400/80 text-white transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center justify-between sm:justify-start gap-2 shadow-lg shadow-black/25 hover:shadow-emerald-500/20"
+          class="hero-pill group px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.18] backdrop-blur-xl border border-white/[0.18] hover:border-emerald-400/80 text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 sm:gap-2 shadow-md shadow-black/20 hover:shadow-emerald-500/20"
         >
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-emerald-500/20 border border-emerald-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
-              <Stethoscope class="w-3.5 h-3.5 text-emerald-300" />
-            </span>
-            <span class="font-semibold tracking-wide text-[11px] sm:text-xs truncate">鱼病对症速查</span>
-          </div>
-          <ChevronRight class="w-3.5 h-3.5 text-white/40 group-hover:text-emerald-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+          <span class="w-4.5 h-4.5 sm:w-5.5 sm:h-5.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 grid place-items-center shrink-0 group-hover:scale-110 transition-transform">
+            <Stethoscope class="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-emerald-300" />
+          </span>
+          <span class="font-medium tracking-wide text-[12px] sm:text-xs">鱼病对症速查</span>
+          <ChevronRight class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white/40 group-hover:text-emerald-300 group-hover:translate-x-0.5 transition-all" />
         </a>
       </div>
     </div>
