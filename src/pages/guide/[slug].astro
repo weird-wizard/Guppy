@@ -1,70 +1,201 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
-import { ArrowLeft, Clock } from '@lucide/astro';
+import { ArrowLeft, ArrowRight, Clock, List, Compass } from 'lucide-astro';
 
 export async function getStaticPaths() {
-  const guides = await getCollection('guides');
-  return guides.map((guide) => ({
+  const allGuides = (await getCollection('guides')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+  return allGuides.map((guide, index) => ({
     params: { slug: guide.id },
-    props: { guide },
+    props: {
+      guide,
+      prevGuide: index > 0 ? allGuides[index - 1] : null,
+      nextGuide: index < allGuides.length - 1 ? allGuides[index + 1] : null,
+    },
   }));
 }
 
-const { guide } = Astro.props;
-const { Content } = await render(guide);
+const { guide, prevGuide, nextGuide } = Astro.props;
+const { Content, headings } = await render(guide);
+
+// 提取本篇二级章节作为目录
+const toc = headings.filter((h) => h.depth === 2);
 ---
 
 <BaseLayout title={`${guide.data.title} - 孔雀鱼百科`} description={guide.data.subtitle ?? guide.data.title}>
-  <div class="max-w-3xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-9">
-    <header class="mb-6 sm:mb-8">
-      <nav aria-label="面包屑" class="text-[11px] sm:text-xs text-slate-400 mb-2.5 flex items-center gap-1.5 flex-wrap">
-        <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
-        <span class="text-slate-300">/</span>
-        <a href="/guide/" class="hover:text-slate-900 transition-colors">饲养指南</a>
-        <span class="text-slate-300">/</span>
-        <span class="text-slate-600 font-medium truncate max-w-[200px] sm:max-w-none">{guide.data.title}</span>
-      </nav>
+  <div class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-9">
+    <!-- 响应式双栏布局：左侧贴附导航 + 主体文章居中 -->
+    <div class="lg:flex lg:gap-10 items-start">
+      <!-- ───────────────────────────────────────────── -->
+      <!-- 左侧贴附目录导航 (Sticky TOC on Left)          -->
+      <!-- ───────────────────────────────────────────── -->
+      {toc.length > 0 && (
+        <aside class="hidden lg:block lg:w-56 lg:shrink-0 lg:sticky lg:top-20 space-y-3">
+          <!-- 返回列表链接 -->
+          <a
+            href="/guide/"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors w-full"
+          >
+            <ArrowLeft class="w-3.5 h-3.5" />
+            <span>返回饲养指南首页</span>
+          </a>
 
-      <span class="inline-flex items-center text-xs px-2.5 py-0.5 rounded-full bg-aqua-50 text-aqua-800 border border-aqua-200/80 font-medium mb-2">
-        饲养指南
-      </span>
+          <!-- 本篇章节导航面板 -->
+          <div class="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-2.5">
+            <div class="text-[11px] font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <List class="w-3.5 h-3.5 text-aqua-700" />
+              <span>本篇章节导航</span>
+            </div>
+            <nav class="space-y-1 text-xs">
+              {toc.map((item) => (
+                <a
+                  href={`#${item.slug}`}
+                  class="block py-1 px-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors leading-snug truncate"
+                  title={item.text}
+                >
+                  {item.text}
+                </a>
+              ))}
+            </nav>
 
-      <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight leading-tight">
-        {guide.data.title}
-      </h1>
-
-      {guide.data.subtitle && (
-        <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
-          {guide.data.subtitle}
-        </p>
+            <a
+              href="/guide/"
+              class="pt-2.5 border-t border-slate-100 block text-[11px] font-semibold text-aqua-800 hover:text-aqua-900 transition-colors"
+            >
+              浏览全部 6 大进阶指南 →
+            </a>
+          </div>
+        </aside>
       )}
 
-      <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-        <span class="inline-flex items-center gap-1">
-          <Clock class="w-3 h-3" />
-          <span>更新于 {guide.data.pubDate.toLocaleDateString('zh-CN')}</span>
-        </span>
-        <div class="flex flex-wrap items-center gap-1">
-          {guide.data.tags?.map((tag) => (
-            <span class="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-medium">#{tag}</span>
-          ))}
-        </div>
-      </div>
-    </header>
+      <!-- ───────────────────────────────────────────── -->
+      <!-- 中间主体内容区（在屏幕主体空间居中展开）          -->
+      <!-- ───────────────────────────────────────────── -->
+      <main class="flex-1 max-w-3xl mx-auto min-w-0">
+        <header class="mb-5 sm:mb-8">
+          <nav aria-label="面包屑" class="text-[11px] sm:text-xs text-slate-400 mb-2.5 flex items-center gap-1.5 flex-wrap">
+            <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+            <span class="text-slate-300">/</span>
+            <a href="/guide/" class="hover:text-slate-900 transition-colors">饲养指南</a>
+            <span class="text-slate-300">/</span>
+            <span class="text-slate-600 font-medium truncate max-w-[200px] sm:max-w-none">{guide.data.title}</span>
+          </nav>
 
-    <article class="prose-guppy max-w-none">
-      <Content />
-    </article>
+          <span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-aqua-50 text-aqua-700 border border-aqua-200/80 font-medium mb-2">
+            <Compass class="w-3 h-3" />
+            <span>饲养进阶指南</span>
+          </span>
 
-    <footer class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200">
-      <a
-        href="/guide/"
-        class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-colors"
-      >
-        <ArrowLeft class="w-3.5 h-3.5" />
-        <span>返回饲养指南列表</span>
-      </a>
-    </footer>
+          <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight leading-tight">
+            {guide.data.title}
+          </h1>
+
+          {guide.data.subtitle && (
+            <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {guide.data.subtitle}
+            </p>
+          )}
+
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+            <span class="inline-flex items-center gap-1">
+              <Clock class="w-3 h-3" />
+              <span>更新日期：{guide.data.pubDate.toLocaleDateString('zh-CN')}</span>
+            </span>
+            <div class="flex flex-wrap items-center gap-1">
+              {guide.data.tags?.map((tag) => (
+                <span class="px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500 font-medium">#{tag}</span>
+              ))}
+            </div>
+          </div>
+        </header>
+
+        <!-- 移动端可折叠目录速览 -->
+        {toc.length > 0 && (
+          <details class="lg:hidden mb-5 p-3 rounded-xl bg-slate-50/90 border border-slate-200/80 text-xs">
+            <summary class="font-bold text-slate-800 cursor-pointer flex items-center justify-between select-none">
+              <span class="inline-flex items-center gap-1.5">
+                <List class="w-3.5 h-3.5 text-aqua-700" />
+                <span>章节快速导航 ({toc.length})</span>
+              </span>
+              <span class="text-slate-400 font-normal">展开 ↓</span>
+            </summary>
+            <nav class="mt-2.5 pt-2 border-t border-slate-200/60 space-y-1">
+              {toc.map((item) => (
+                <a
+                  href={`#${item.slug}`}
+                  class="block py-1 px-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-colors"
+                >
+                  {item.text}
+                </a>
+              ))}
+            </nav>
+          </details>
+        )}
+
+        <!-- 正文内容区 -->
+        <article class="prose-guppy max-w-none">
+          <Content />
+        </article>
+
+        <!-- 底部上一篇 / 下一篇章节连贯导航 -->
+        <footer class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {prevGuide ? (
+            <a
+              href={`/guide/${prevGuide.id}/`}
+              class="group flex flex-col p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white hover:border-aqua-400 hover:shadow-2xs transition-all"
+            >
+              <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                <ArrowLeft class="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+                <span>上一篇</span>
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-800 group-hover:text-aqua-700 transition-colors truncate">
+                {prevGuide.data.title}
+              </span>
+            </a>
+          ) : (
+            <a
+              href="/guide/"
+              class="group flex flex-col p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300 transition-all"
+            >
+              <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                <ArrowLeft class="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+                <span>返回目录</span>
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors truncate">
+                饲养指南全览
+              </span>
+            </a>
+          )}
+
+          {nextGuide ? (
+            <a
+              href={`/guide/${nextGuide.id}/`}
+              class="group flex flex-col items-end text-right p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white hover:border-aqua-400 hover:shadow-2xs transition-all"
+            >
+              <span class="text-[11px] text-aqua-600 font-medium flex items-center gap-1">
+                <span>下一篇</span>
+                <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-800 group-hover:text-aqua-700 transition-colors truncate">
+                {nextGuide.data.title}
+              </span>
+            </a>
+          ) : (
+            <a
+              href="/breeding/"
+              class="group flex flex-col items-end text-right p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-900 text-white hover:bg-slate-800 hover:shadow-xs transition-all"
+            >
+              <span class="text-[11px] text-aqua-300 font-medium flex items-center gap-1">
+                <span>进入下一专栏</span>
+                <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-white truncate">
+                繁殖技术专科 →
+              </span>
+            </a>
+          )}
+        </footer>
+      </main>
+    </div>
   </div>
 </BaseLayout>

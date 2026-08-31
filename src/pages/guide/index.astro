@@ -1,87 +1,173 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import {
+  Compass,
+  Droplets,
+  Box,
+  Utensils,
+  Users,
+  Wrench,
+  ArrowRight,
+} from 'lucide-astro';
 
-const guides = (await getCollection('guides')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+const allGuides = (await getCollection('guides')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
 
-// 阶段定义映射
-const STAGE_LABELS = [
-  '第一阶段 · 筑基准备',
-  '第二阶段 · 水质平衡',
-  '第三阶段 · 生态造景',
-  '第四阶段 · 营养喂饲',
-  '第五阶段 · 社区混养',
-  '第六阶段 · 长期维护',
+// 6 个阶梯式饲养进阶步骤
+const STAGES = [
+  {
+    id: '01-beginner',
+    stepNum: '01',
+    stageLabel: '开缸与养水',
+    keyPoints: ['开缸清洁消毒', '硝化系统建立周期', '过温过水标准SOP', '新鱼检疫防团灭'],
+    icon: Compass,
+  },
+  {
+    id: '02-water-quality',
+    stepNum: '02',
+    stageLabel: '水质与环境',
+    keyPoints: ['恒温24-26℃控制', '弱碱pH7.0-7.5稳水', '氮循环毒素控制', '科学换水防震荡'],
+    icon: Droplets,
+  },
+  {
+    id: '03-tank-setup',
+    stepNum: '03',
+    stageLabel: '鱼缸与造景',
+    keyPoints: ['40cm+鱼缸选型', '水妖精与瀑布过滤', '防爆加热棒安装', '低光耐阴水草搭配'],
+    icon: Box,
+  },
+  {
+    id: '04-feeding',
+    stepNum: '04',
+    stageLabel: '营养与投喂',
+    keyPoints: ['全周期投喂计划', '鲜活丰年虾孵化', '人工饲料配比', '2-3分钟吃光法则'],
+    icon: Utensils,
+  },
+  {
+    id: '05-tankmates',
+    stepNum: '05',
+    stageLabel: '社区与混养',
+    keyPoints: ['混养三大黄金准则', '灯鱼鼠鱼黄金搭档', '虎皮斗鱼绝对禁忌', '被啄尾应急抢救'],
+    icon: Users,
+  },
+  {
+    id: '06-maintenance',
+    stepNum: '06',
+    stageLabel: '日常与维保',
+    keyPoints: ['日周月维护清单', '滤棉清洗三禁忌', '长期水质老败排查', '死鱼应急处理SOP'],
+    icon: Wrench,
+  },
 ];
+
+const roadmapItems = STAGES.map((stg) => {
+  const guide = allGuides.find((g) => g.id === stg.id);
+  return {
+    ...stg,
+    guide,
+  };
+});
 ---
 
-<BaseLayout title="饲养指南 - 孔雀鱼百科" description="孔雀鱼饲养指南：新手入门、水质管理、饲料喂养、鱼缸设置、混养搭配、日常维护">
-  {/* 深蓝页头带 */}
-  <section class="relative bg-gradient-to-b from-abyss-950 via-abyss-900 to-abyss-800 text-white">
-    <div class="max-w-6xl mx-auto px-4 pt-14 pb-14">
-      <p class="eyebrow mb-2">GUIDE · 进阶路线</p>
-      <h1 class="text-3xl sm:text-4xl font-bold">养好孔雀鱼的成长路线图</h1>
-      <p class="mt-3 text-aqua-100/80 max-w-2xl">从开缸养水到日常维护，遵循 6 步阶梯式成长路径，轻松打造健康繁盛的水族箱生态。</p>
-    </div>
-    {/* 波浪分隔 */}
-    <div aria-hidden="true" class="h-10 w-full overflow-hidden leading-none text-slate-50">
-      <svg viewBox="0 0 1440 40" preserveAspectRatio="none" class="block h-full w-full">
-        <path fill="currentColor" d="M0 40V26c240 22 480-20 720 0s480 22 720 0v14z" />
-      </svg>
-    </div>
-  </section>
+<BaseLayout
+  title="饲养指南 - 孔雀鱼百科"
+  description="孔雀鱼饲养全周期实操指南：从零开缸养水、水质管理、鱼缸造景、科学投喂、社区混养到日常维保的6步阶梯手册。"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-9">
+    <!-- 顶部标题区 -->
+    <header class="mb-7 sm:mb-9 pb-4 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+      <div>
+        <nav aria-label="面包屑" class="text-xs text-slate-400 mb-1.5 flex items-center gap-1.5">
+          <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+          <span class="text-slate-300">/</span>
+          <span class="text-slate-600 font-medium">饲养指南</span>
+        </nav>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+          孔雀鱼饲养阶梯指南
+        </h1>
+        <p class="mt-1 text-xs sm:text-sm text-slate-500">
+          从开缸养水到日常维保，循序渐进掌握养好孔雀鱼的核心方法
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium border border-slate-200 shrink-0">
+          共 6 篇核心实操手册
+        </span>
+      </div>
+    </header>
 
-  <section class="max-w-4xl mx-auto px-4 py-12">
-    <!-- 时间轴路线图容器 -->
-    <div class="relative pl-6 sm:pl-10 border-l-2 border-aqua-200/80 space-y-8 my-4">
-      {guides.map((guide, i) => (
-        <div class="relative group">
-          {/* 时间轴发光节点 */}
-          <div
-            aria-hidden="true"
-            class="absolute -left-[31px] sm:-left-[47px] top-6 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white border-2 border-aqua-500 shadow-md shadow-aqua-500/20 grid place-items-center text-aqua-700 font-bold text-xs sm:text-sm group-hover:scale-110 group-hover:bg-aqua-500 group-hover:text-white transition-all duration-300 ease-[var(--ease-spring)] z-10"
-          >
-            {String(i + 1).padStart(2, '0')}
-          </div>
+    <!-- ───────────────────────────────────────────── -->
+    <!-- 6 步成长路线图 (Timeline Cards) -->
+    <!-- ───────────────────────────────────────────── -->
+    <section class="relative">
+      <!-- 贯通背景中轴线 -->
+      <div
+        aria-hidden="true"
+        class="absolute left-4.5 sm:left-5.5 top-10 bottom-10 w-px -translate-x-1/2 bg-slate-200"
+      ></div>
 
-          <!-- 卡片本体 -->
-          <a
-            href={`/guide/${guide.id}/`}
-            class="block glass-card rounded-2xl border border-slate-200/90 shadow-card hover:shadow-card-hover hover:border-aqua-400 hover:-translate-y-1 transition-all duration-300 p-6 sm:p-7 relative overflow-hidden"
-          >
-            {/* 阶段眉题 */}
-            <div class="flex items-center justify-between gap-2 mb-2">
-              <span class="text-xs font-semibold tracking-wider text-aqua-600 uppercase bg-aqua-50/80 px-2.5 py-1 rounded-md border border-aqua-100/60">
-                {STAGE_LABELS[i] ?? `第 ${i + 1} 步`}
-              </span>
-              <span class="text-xs text-slate-400">
-                {guide.data.pubDate.toLocaleDateString('zh-CN')}
-              </span>
-            </div>
+      <div class="space-y-4 sm:space-y-6">
+        {roadmapItems.map((item) => {
+          const Icon = item.icon;
+          const g = item.guide;
+          if (!g) return null;
 
-            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 group-hover:text-aqua-700 transition-colors flex items-center justify-between">
-              <span>{guide.data.title}</span>
-              <span class="text-slate-300 group-hover:text-aqua-600 group-hover:translate-x-1 transition-all text-lg" aria-hidden="true">→</span>
-            </h2>
-
-            {guide.data.subtitle && (
-              <p class="mt-2.5 text-slate-600 text-sm sm:text-base leading-relaxed">
-                {guide.data.subtitle}
-              </p>
-            )}
-
-            {guide.data.tags && guide.data.tags.length > 0 && (
-              <div class="mt-4 pt-3 border-t border-slate-100/80 flex flex-wrap gap-2">
-                {guide.data.tags.map((tag) => (
-                  <span class="px-2.5 py-0.5 rounded-full bg-slate-100/80 text-slate-600 text-xs">
-                    #{tag}
-                  </span>
-                ))}
+          return (
+            <div class="relative flex items-center gap-3.5 sm:gap-5 group">
+              <!-- 左侧步骤序号圆标 -->
+              <div class="shrink-0 w-9 sm:w-11 flex justify-center z-10">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border-2 border-slate-300 group-hover:border-aqua-600 group-hover:text-aqua-600 text-slate-700 flex items-center justify-center font-mono font-bold text-xs sm:text-sm shadow-2xs shrink-0 ring-4 ring-slate-50 transition-all duration-200">
+                  {item.stepNum}
+                </div>
               </div>
-            )}
-          </a>
-        </div>
-      ))}
-    </div>
-  </section>
+
+              <!-- 右侧指南卡片 -->
+              <a
+                href={`/guide/${g.id}/`}
+                class="flex-1 bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-2xs hover:shadow-hover hover:border-slate-400 hover:-translate-y-0.5 active:bg-slate-50 transition-all duration-200"
+              >
+                <!-- 卡片顶栏 -->
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <span class="text-xs font-semibold text-aqua-700 flex items-center gap-1">
+                    <Icon class="w-3.5 h-3.5" />
+                    <span>步骤 {item.stepNum} · {item.stageLabel}</span>
+                  </span>
+                  <span class="text-[11px] text-slate-400">
+                    {g.data.pubDate.toLocaleDateString('zh-CN')}
+                  </span>
+                </div>
+
+                <!-- 标题与副标题 -->
+                <h2 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-aqua-700 transition-colors leading-snug">
+                  {g.data.title}
+                </h2>
+
+                {g.data.subtitle && (
+                  <p class="mt-1.5 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    {g.data.subtitle}
+                  </p>
+                )}
+
+                <!-- 核心要点列表 -->
+                <div class="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                  <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                    {item.keyPoints.map((point) => (
+                      <span class="inline-flex items-center gap-1">
+                        <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <span>{point}</span>
+                      </span>
+                    ))}
+                  </div>
+
+                  <span class="text-xs font-medium text-slate-500 group-hover:text-aqua-700 transition-colors inline-flex items-center gap-1 shrink-0 ml-auto">
+                    <span>阅读指南</span>
+                    <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
+                </div>
+              </a>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  </div>
 </BaseLayout>

@@ -1,0 +1,167 @@
+---
+import { Users, CheckCircle2, AlertTriangle, XCircle, ShieldCheck } from 'lucide-astro';
+
+interface MateItem {
+  category: 'gold' | 'caution' | 'danger';
+  name: string;
+  waterLayer: string; // 上层 / 中层 / 底层 / 全水层
+  compatibility: string;
+  pros: string;
+  risks?: string;
+  advice: string;
+}
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  items?: MateItem[];
+  footerNote?: string;
+}
+
+const {
+  title = '孔雀鱼社区混养相容性红黑榜矩阵',
+  subtitle = '遵循【体型相仿、性格温和、水质相通、水层互补】四大混养黄金法则',
+  items = [
+    {
+      category: 'gold',
+      name: '小型脂鲤类（红绿灯 / 宝莲灯 / 绿莲灯）',
+      waterLayer: '中下层水域',
+      compatibility: '🟢 黄金搭档 (100% 推荐)',
+      pros: '性格极度温和，群游观赏性极佳，不主动咬尾，完美填补中层水域空间。',
+      advice: '群养建议 6-10 尾以上起群，弱酸至中性水质均可良好共存。'
+    },
+    {
+      category: 'gold',
+      name: '底层温顺工具鱼（熊猫鼠 / 花椒鼠 / 咖啡鼠）',
+      waterLayer: '缸底基底层',
+      compatibility: '🟢 黄金搭档 (100% 推荐)',
+      pros: '全天候在缸底翻沙搜寻残饵，完全不与中上层的孔雀鱼抢食，性格呆萌友好。',
+      advice: '底砂建议选用细腻圆润的鼠沙或川砂，避免粗糙碎石磨损鼠鱼胡须。'
+    },
+    {
+      category: 'gold',
+      name: '除藻清洁帮手（小精灵鱼 / 蓝眼胡子 / 笠螺）',
+      waterLayer: '缸壁与水草叶面',
+      compatibility: '🟢 黄金搭档 (100% 推荐)',
+      pros: '专业刮食缸壁褐藻与绿藻，不伤害孔雀鱼幼苗，无任何领地攻击性。',
+      advice: '避免混养过大体型的清道夫（大帆/普通清道夫成年后会追吸孔雀鱼体表黏膜）。'
+    },
+    {
+      category: 'caution',
+      name: '大和藻虾 / 黑壳虾群',
+      waterLayer: '水草与缝隙',
+      compatibility: '🟡 谨慎混养 (需密集水草庇护)',
+      pros: '黑壳虾能极快清洁丝藻与残渣，其繁殖出的小虾苗更是孔雀鱼天然活饵。',
+      risks: '刚出生的小孔雀鱼幼苗易被饥饿的大和藻虾捕食；而成体孔雀鱼也会啄食黑壳虾幼苗。',
+      advice: '缸内必须密植莫斯、水兰等茂密水草，作为小虾与小鱼的天然隔离屏障。'
+    },
+    {
+      category: 'caution',
+      name: '斑马鱼 / 白云金丝鱼',
+      waterLayer: '上层水域',
+      compatibility: '🟡 谨慎混养 (易抢食)',
+      pros: '体质极其皮实耐活，水质适应度广。',
+      risks: '游速极快、抢食凶猛，且有极强的好奇啄尾天性，容易将大尾孔雀鱼啄咬破损。',
+      advice: '建议投喂时分散多点撒料，若发现孔雀鱼尾鳍有锯齿状破损需立即隔离分缸。'
+    },
+    {
+      category: 'danger',
+      name: '虎皮鱼 / 玫瑰鲫 / 曼龙鱼 / 斗鱼',
+      waterLayer: '全水层',
+      compatibility: '🔴 绝对禁忌 (严禁入缸)',
+      pros: '色彩艳丽但攻击性极强。',
+      risks: '天生的【碎尾剪刀手】！孔雀鱼飘逸华丽的丝状尾鳍在它们眼里是致命的靶子，数小时内即可将孔雀鱼咬成光秃秃的秃尾残废，致死率 100%。',
+      advice: '坚决严禁同缸饲养，切勿抱有侥幸心理！'
+    },
+    {
+      category: 'danger',
+      name: '短鲷 / 大型慈鲷 / 潜水艇 (肉食攻击鱼)',
+      waterLayer: '底层与全水层',
+      compatibility: '🔴 绝对禁忌 (天生掠食者)',
+      pros: '领地意识极强，会将孔雀鱼整条吞食或撕咬至死。',
+      advice: '孔雀鱼仅适合与小型温和素食/杂食鱼类共处。'
+    }
+  ],
+  footerNote = '混养安全第一准则：大尾礼服、大背等华丽品系孔雀鱼游速较慢，强烈建议优先单缸纯系饲养以保持顶级品相！'
+} = Astro.props;
+---
+
+<div class="my-6 sm:my-8 rounded-2xl border border-slate-200/90 bg-white shadow-card overflow-hidden">
+  {/* 顶部标题栏 */}
+  <div class="p-4 sm:p-5 bg-gradient-to-r from-emerald-50/80 via-white to-aqua-50/50 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div class="flex items-center gap-2.5">
+      <span class="w-8 h-8 rounded-lg bg-emerald-600 text-white grid place-items-center shadow-xs shrink-0">
+        <Users class="w-4.5 h-4.5" />
+      </span>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">
+          {title}
+        </h3>
+        {subtitle && (
+          <p class="text-xs text-slate-500 mt-0.5">{subtitle}</p>
+        )}
+      </div>
+    </div>
+    <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-200/60 self-start sm:self-auto shrink-0">
+      混养红黑榜对照
+    </span>
+  </div>
+
+  {/* 矩阵列表 */}
+  <div class="divide-y divide-slate-100">
+    {items.map((item) => {
+      const isGold = item.category === 'gold';
+      const isCaution = item.category === 'caution';
+      const isDanger = item.category === 'danger';
+
+      return (
+        <div class="p-4 sm:p-5 hover:bg-slate-50/50 transition-colors">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 mb-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-bold text-slate-900 text-sm sm:text-base">
+                {item.name}
+              </span>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                {item.waterLayer}
+              </span>
+            </div>
+
+            <span class:list={[
+              'text-xs font-bold px-2.5 py-0.5 rounded-full border self-start sm:self-auto shrink-0',
+              isGold && 'bg-emerald-50 text-emerald-800 border-emerald-200/90',
+              isCaution && 'bg-amber-50 text-amber-800 border-amber-200/90',
+              isDanger && 'bg-rose-50 text-rose-800 border-rose-200/90',
+            ]}>
+              {item.compatibility}
+            </span>
+          </div>
+
+          <div class="text-xs sm:text-sm space-y-1.5 text-slate-600 mt-2 leading-relaxed">
+            <p>
+              <strong class="text-slate-900 font-semibold">优势与特点：</strong>
+              {item.pros}
+            </p>
+            {item.risks && (
+              <p class="text-amber-800">
+                <strong class="text-amber-950 font-semibold">潜在风险：</strong>
+                {item.risks}
+              </p>
+            )}
+            <p class="text-slate-500 pt-1 border-t border-dashed border-slate-100">
+              <strong class="text-slate-700 font-medium">实操建议：</strong>
+              {item.advice}
+            </p>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  {/* 底部提示 */}
+  {footerNote && (
+    <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200/70 text-xs text-slate-600 flex items-start gap-2">
+      <ShieldCheck class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+      <span>{footerNote}</span>
+    </div>
+  )}
+</div>

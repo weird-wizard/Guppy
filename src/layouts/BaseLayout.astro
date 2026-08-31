@@ -216,19 +216,23 @@ const navItems = [
     <PagefindConfig transition:persist="pagefind-config" />
     <pagefind-modal transition:persist="pagefind-modal"></pagefind-modal>
     <script>
-      // 移动端汉堡菜单：点击外部自动关闭（兼容 View Transitions）
+      // 移动端汉堡菜单：点击外部或点击链接后自动关闭（兼容 View Transitions）
       function bindMenuDismiss() {
         const nav = document.querySelector('header > nav');
         if (!nav) return;
         document.addEventListener('click', (e) => {
           const details = nav.querySelector('details');
-          if (details?.open && !details.contains(e.target)) {
-            details.open = false;
+          if (details?.open) {
+            const target = e.target;
+            const isInsideMenuLink = target && target.closest && target.closest('details a');
+            if (isInsideMenuLink || !details.contains(target)) {
+              details.open = false;
+            }
           }
         });
       }
 
-      // 文章注水阅读进度条计算
+      // 文章注水阅读进度条与切页加载动效
       function initScrollProgress() {
         const progressBar = document.getElementById('reading-progress');
         if (!progressBar) return;
@@ -251,6 +255,15 @@ const navItems = [
         window.addEventListener('scroll', updateProgress, { passive: true });
         updateProgress();
       }
+
+      // 切页开始时立即给进度条注入 70% 流光反馈，提供即时响应
+      document.addEventListener('astro:before-preparation', () => {
+        const progressBar = document.getElementById('reading-progress');
+        if (progressBar) {
+          progressBar.style.transition = 'width 250ms ease-out';
+          progressBar.style.width = '70%';
+        }
+      });
 
       // 核心补丁：修复 @pagefind/component-ui 在二次 render 时将自身 dialog 误当做子节点导致输入框丢失（仅剩 mask）的缺陷
       function patchPagefindModal() {

@@ -1,0 +1,151 @@
+---
+import { Gauge, CheckCircle, AlertTriangle, AlertOctagon, Info } from 'lucide-astro';
+
+interface ParameterItem {
+  name: string;
+  ideal: string;
+  range: string;
+  danger: string;
+  status?: 'safe' | 'warning' | 'danger';
+  note: string;
+}
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  parameters?: ParameterItem[];
+  footerNote?: string;
+}
+
+const {
+  title = '孔雀鱼水质核心参数黄金基准表',
+  subtitle = '保持水质参数长期稳定是孔雀鱼不生病、高繁育率的绝对基石',
+  parameters = [
+    {
+      name: '饲养水温 (Temperature)',
+      ideal: '24℃ - 26℃',
+      range: '22℃ - 28℃',
+      danger: '<18℃ 或 >30℃',
+      status: 'safe',
+      note: '24小时内温差严禁超过2℃；低于18℃免疫力骤降，高于30℃加速母鱼塌腰早衰。'
+    },
+    {
+      name: '酸碱度 (pH)',
+      ideal: 'pH 7.0 - 7.5',
+      range: 'pH 6.8 - 7.8',
+      danger: '<6.5 或 >8.5',
+      status: 'safe',
+      note: '孔雀鱼为弱碱性鱼类，弱酸性老水会导致黏膜受损、尾鳍腐烂，可用珊瑚骨缓慢提升。'
+    },
+    {
+      name: '总硬度 (GH)',
+      ideal: '8 - 12 dGH',
+      range: '6 - 15 dGH',
+      danger: '<4 dGH (过软)',
+      status: 'safe',
+      note: '中等硬度水体有助于骨骼钙化与鱼鳍舒展，过软的纯净水需补充水族矿物质。'
+    },
+    {
+      name: '氨氮 (Ammonia NH3/NH4+)',
+      ideal: '0 mg/L',
+      range: '<0.02 mg/L',
+      danger: '≥0.25 mg/L (剧毒)',
+      status: 'danger',
+      note: '未成熟硝化系统的头号杀手，0.25 mg/L 即可灼伤鱼鳃诱发红斑，需立即换水抽底。'
+    },
+    {
+      name: '亚硝酸盐 (Nitrite NO2-)',
+      ideal: '0 mg/L',
+      range: '<0.1 mg/L',
+      danger: '≥0.2 mg/L (高危)',
+      status: 'warning',
+      note: '破坏血液携氧能力致鱼窒息浮头，是养水未达标阶段最常见的致死因素。'
+    },
+    {
+      name: '硝酸盐 (Nitrate NO3-)',
+      ideal: '<20 mg/L',
+      range: '<40 mg/L',
+      danger: '≥50 mg/L (老水毒素)',
+      status: 'warning',
+      note: '长期累积会抑制幼鱼生长并诱发腹水炸鳞，规律每周换水 1/4-1/3 是唯一有效排出手段。'
+    }
+  ],
+  footerNote = '水质管理核心铁律：【稳定性远胜于精确值】。小幅度温和调整，严禁使用化学猛药暴跌暴涨！'
+} = Astro.props;
+---
+
+<div class="my-6 sm:my-8 rounded-2xl border border-slate-200/90 bg-white shadow-card overflow-hidden">
+  {/* 顶部标题栏 */}
+  <div class="p-4 sm:p-5 bg-gradient-to-r from-aqua-50/80 via-white to-blue-50/40 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div class="flex items-center gap-2.5">
+      <span class="w-8 h-8 rounded-lg bg-aqua-600 text-white grid place-items-center shadow-xs shrink-0">
+        <Gauge class="w-4.5 h-4.5" />
+      </span>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">
+          {title}
+        </h3>
+        {subtitle && (
+          <p class="text-xs text-slate-500 mt-0.5">{subtitle}</p>
+        )}
+      </div>
+    </div>
+    <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-aqua-100/80 text-aqua-800 border border-aqua-200/60 self-start sm:self-auto shrink-0">
+      水质安全监测标准
+    </span>
+  </div>
+
+  {/* 参数矩阵列表 */}
+  <div class="divide-y divide-slate-100">
+    {parameters.map((param) => {
+      const isDangerous = param.status === 'danger';
+      const isWarning = param.status === 'warning';
+      
+      return (
+        <div class="p-4 sm:p-5 hover:bg-slate-50/60 transition-colors">
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 sm:gap-4 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-900 text-sm sm:text-[15px]">
+                {param.name}
+              </span>
+              {isDangerous && (
+                <span class="text-[10px] font-bold px-2 py-0.2 rounded bg-rose-100 text-rose-700 border border-rose-200">
+                  严防剧毒
+                </span>
+              )}
+              {isWarning && (
+                <span class="text-[10px] font-bold px-2 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-200">
+                  定期监控
+                </span>
+              )}
+            </div>
+            
+            <div class="flex items-center gap-2 text-xs font-mono">
+              <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200/80 font-bold">
+                🎯 最佳：{param.ideal}
+              </span>
+              <span class="text-slate-500 hidden sm:inline">
+                安全：{param.range}
+              </span>
+              <span class="text-rose-600 font-semibold hidden md:inline">
+                危险：{param.danger}
+              </span>
+            </div>
+          </div>
+
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pl-0 sm:pl-1">
+            {param.note}
+          </p>
+        </div>
+      );
+    })}
+  </div>
+
+  {/* 底部关键提示 */}
+  {footerNote && (
+    <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200/70 text-xs text-slate-600 flex items-start gap-2">
+      <Info class="w-4 h-4 text-aqua-600 shrink-0 mt-0.5" />
+      <span>{footerNote}</span>
+    </div>
+  )}
+</div>

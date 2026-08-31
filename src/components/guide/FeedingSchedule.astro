@@ -1,0 +1,181 @@
+---
+import { Utensils, Clock, CheckCircle2, Sparkles, AlertCircle } from 'lucide-astro';
+
+interface StagePlan {
+  stageName: string;
+  age: string;
+  frequency: string;
+  feedType: string;
+  portionRule: string;
+  keyNotice: string;
+}
+
+interface FeedReview {
+  feedName: string;
+  rating: string;
+  pros: string;
+  cons: string;
+  suitableStage: string;
+}
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  stages?: StagePlan[];
+  feedReviews?: FeedReview[];
+  goldenRule?: string;
+}
+
+const {
+  title = '孔雀鱼全生长周期科学投喂规划',
+  subtitle = '精准掌握各阶段营养需求，兼顾爆头增艳与长效水质稳定',
+  stages = [
+    {
+      stageName: '幼鱼开口期',
+      age: '0 - 14 天',
+      frequency: '每日 4 - 6 次 (少量多餐)',
+      feedType: '刚孵化鲜活丰年虾无节幼体 (首选) / 熟蛋黄水 (应急)',
+      portionRule: '幼鱼腹部呈半透明橙红色圆球状即为吃饱',
+      keyNotice: '出生前 48h 靠卵黄囊供能坚决停食；开喂后每晚抽底吸除残饵。'
+    },
+    {
+      stageName: '亚成快速生长期',
+      age: '2 - 8 周龄',
+      frequency: '每日 3 - 4 次',
+      feedType: '鲜活丰年虾 + 高蛋白微粉配合饲料 (粗蛋白 ≥45%) + 剪碎红虫',
+      portionRule: '每次投喂量以 2 - 3 分钟内彻底抢食完毕为准',
+      keyNotice: '骨骼与体型拉长黄金期，高动物蛋白搭配微量维生素防止驼背。'
+    },
+    {
+      stageName: '成鱼发色与维稳期',
+      age: '2 - 6 月龄+',
+      frequency: '每日 1 - 2 次',
+      feedType: '优质全价薄片 / 慢沉微颗粒 + 螺旋藻植物颗粒 + 每周 2 次冷冻丰年虾',
+      portionRule: '2 分钟内吃完，宁少勿多，腹部微平即可',
+      keyNotice: '成鱼代谢减缓，过量投喂极易诱发内脏脂肪肝与肠炎。'
+    },
+    {
+      stageName: '备孕母鱼营养强化',
+      age: '合缸前 10 天与孕期',
+      frequency: '每日 2 - 3 次',
+      feedType: '鲜活水蚤 / 丰年虾 / 洁净冻干红虫 + 钙质微量元素添加',
+      portionRule: '多餐少量，避免一次腹部吃得过胀挤压子宫',
+      keyNotice: '强化钙质与动物蛋白储备，有效规避产后塌腰与早产死卵。'
+    }
+  ],
+  feedReviews = [
+    {
+      feedName: '刚孵化鲜活丰年虾 (Baby Artemia)',
+      rating: '⭐⭐⭐⭐⭐ (极品饵料)',
+      pros: '无菌鲜活不停游动激发捕食欲，富含优质蛋白与虾青素，适口性 100%。',
+      cons: '需每日自孵，操作略耗时，投喂前需淡水冲洗去盐。',
+      suitableStage: '幼鱼开口与种鱼备孕第一神器'
+    },
+    {
+      feedName: '高蛋白优质配合薄片/微颗粒',
+      rating: '⭐⭐⭐⭐ (日常基石)',
+      pros: '营养配比均衡，添加螺旋藻与多维矿物质，投喂干净便捷，便于保存。',
+      cons: '适口性略低于活饵，劣质饲料易粉化浑水败坏水质。',
+      suitableStage: '亚成与成鱼全阶段日常主粮'
+    },
+    {
+      feedName: '红线虫 / 丝蚯蚓 (Tubifex)',
+      rating: '⭐⭐ (高危慎用)',
+      pros: '蛋白质极高，鱼极爱吃催长极快。',
+      cons: '生存在恶臭淤泥中，极易携带大量细菌与寄生虫卵，是孔雀鱼肠炎腹水头号诱因！',
+      suitableStage: '必须经多日流水排沙与二氧化氯彻底消毒方可微量喂食'
+    }
+  ],
+  goldenRule = '投喂黄金铁律：【2-3分钟吃光法则】。宁可少喂让鱼保持索食活力，严禁过量投喂残饵沉底发酵毁水！'
+} = Astro.props;
+---
+
+<div class="my-6 sm:my-8 rounded-2xl border border-slate-200/90 bg-white shadow-card overflow-hidden">
+  {/* 顶部标题 */}
+  <div class="p-4 sm:p-5 bg-gradient-to-r from-amber-50/80 via-white to-orange-50/40 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div class="flex items-center gap-2.5">
+      <span class="w-8 h-8 rounded-lg bg-amber-600 text-white grid place-items-center shadow-xs shrink-0">
+        <Utensils class="w-4.5 h-4.5" />
+      </span>
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">
+          {title}
+        </h3>
+        {subtitle && (
+          <p class="text-xs text-slate-500 mt-0.5">{subtitle}</p>
+        )}
+      </div>
+    </div>
+    <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-100/90 text-amber-800 border border-amber-200/60 self-start sm:self-auto shrink-0">
+      全阶段营养指南
+    </span>
+  </div>
+
+  {/* 生长周期投喂阶段表 */}
+  <div class="p-4 sm:p-5">
+    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+      <Clock class="w-3.5 h-3.5 text-amber-600" />
+      <span>各生长阶段投喂规划表</span>
+    </h4>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {stages.map((stg) => (
+        <div class="p-3.5 rounded-xl border border-slate-200/80 bg-slate-50/60 hover:bg-white hover:border-amber-300 hover:shadow-2xs transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <span class="font-bold text-slate-900 text-sm">
+                {stg.stageName}
+              </span>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-white text-slate-600 border border-slate-200">
+                {stg.age}
+              </span>
+            </div>
+            
+            <p class="text-xs text-amber-900 font-semibold mb-1">
+              投喂频次：{stg.frequency}
+            </p>
+            <p class="text-xs text-slate-600 mb-1.5 leading-relaxed">
+              <strong>首选饵料：</strong>{stg.feedType}
+            </p>
+          </div>
+
+          <div class="text-[11px] text-slate-500 pt-2 border-t border-slate-200/60 mt-2">
+            💡 {stg.keyNotice}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    {/* 常见饵料横评 */}
+    {feedReviews && feedReviews.length > 0 && (
+      <div class="mt-6 pt-5 border-t border-slate-100">
+        <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <Sparkles class="w-3.5 h-3.5 text-amber-600" />
+          <span>核心饵料类型优劣势横评</span>
+        </h4>
+
+        <div class="space-y-2.5">
+          {feedReviews.map((feed) => (
+            <div class="p-3 rounded-lg border border-slate-200/70 bg-white hover:bg-slate-50/40 text-xs sm:text-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                <span class="font-bold text-slate-900">{feed.feedName}</span>
+                <span class="text-xs font-semibold text-amber-700">{feed.rating}</span>
+              </div>
+              <p class="text-slate-600 text-xs leading-relaxed">
+                <span class="text-emerald-700 font-medium">优点：</span>{feed.pros} | <span class="text-rose-700 font-medium">注意：</span>{feed.cons}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* 黄金铁律底部栏 */}
+  {goldenRule && (
+    <div class="p-3.5 sm:p-4 bg-amber-50/70 border-t border-amber-200/60 text-xs text-amber-900 flex items-start gap-2">
+      <AlertCircle class="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+      <span>{goldenRule}</span>
+    </div>
+  )}
+</div>

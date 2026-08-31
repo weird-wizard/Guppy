@@ -7,6 +7,10 @@ import pagefind from 'astro-pagefind';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://guppy.qichiyoufeng.top',
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover',
+  },
   integrations: [mdx(), pagefind()],
   vite: {
     plugins: [tailwindcss()],

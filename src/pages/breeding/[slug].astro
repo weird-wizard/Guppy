@@ -1,17 +1,21 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
-import { ArrowLeft, Clock, List, Sparkles } from '@lucide/astro';
+import { ArrowLeft, ArrowRight, Clock, List, Sparkles } from '@lucide/astro';
 
 export async function getStaticPaths() {
-  const articles = await getCollection('breeding');
-  return articles.map((article) => ({
+  const allArticles = (await getCollection('breeding')).sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+  return allArticles.map((article, index) => ({
     params: { slug: article.id },
-    props: { article },
+    props: {
+      article,
+      prevArticle: index > 0 ? allArticles[index - 1] : null,
+      nextArticle: index < allArticles.length - 1 ? allArticles[index + 1] : null,
+    },
   }));
 }
 
-const { article } = Astro.props;
+const { article, prevArticle, nextArticle } = Astro.props;
 const { Content, headings } = await render(article);
 
 // 提取本篇二级章节作为目录
@@ -133,22 +137,63 @@ const toc = headings.filter((h) => h.depth === 2);
           <Content />
         </article>
 
-        <!-- 底部返回导航 -->
-        <footer class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <a
-            href="/breeding/"
-            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-colors"
-          >
-            <ArrowLeft class="w-3.5 h-3.5" />
-            <span>返回繁殖技术首页</span>
-          </a>
+        <!-- 底部上一篇 / 下一篇章节连贯导航 -->
+        <footer class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {prevArticle ? (
+            <a
+              href={`/breeding/${prevArticle.id}/`}
+              class="group flex flex-col p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white hover:border-rose-300 hover:shadow-2xs transition-all"
+            >
+              <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                <ArrowLeft class="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+                <span>上一篇</span>
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-800 group-hover:text-rose-700 transition-colors truncate">
+                {prevArticle.data.title}
+              </span>
+            </a>
+          ) : (
+            <a
+              href="/breeding/"
+              class="group flex flex-col p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300 transition-all"
+            >
+              <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                <ArrowLeft class="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+                <span>返回目录</span>
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors truncate">
+                繁殖技术全览
+              </span>
+            </a>
+          )}
 
-          <a
-            href="/breeds/"
-            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold shadow-xs transition-colors"
-          >
-            <span>挑选适合的纯系品种 →</span>
-          </a>
+          {nextArticle ? (
+            <a
+              href={`/breeding/${nextArticle.id}/`}
+              class="group flex flex-col items-end text-right p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white hover:border-rose-300 hover:shadow-2xs transition-all"
+            >
+              <span class="text-[11px] text-rose-600 font-medium flex items-center gap-1">
+                <span>下一篇</span>
+                <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-800 group-hover:text-rose-700 transition-colors truncate">
+                {nextArticle.data.title}
+              </span>
+            </a>
+          ) : (
+            <a
+              href="/disease/"
+              class="group flex flex-col items-end text-right p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-900 text-white hover:bg-slate-800 hover:shadow-xs transition-all"
+            >
+              <span class="text-[11px] text-rose-300 font-medium flex items-center gap-1">
+                <span>进入下一专栏</span>
+                <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-white truncate">
+                疾病防治专科 →
+              </span>
+            </a>
+          )}
         </footer>
       </main>
     </div>
