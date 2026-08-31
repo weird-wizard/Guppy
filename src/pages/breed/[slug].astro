@@ -1,203 +1,358 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import BreedImage, { COLOR_GRADIENTS } from '../../components/BreedImage.astro';
+import BreedImage, { COLOR_GRADIENTS, COLOR_GLOWS } from '../../components/BreedImage.astro';
 import { getCollection, render } from 'astro:content';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+  Dna,
+  Thermometer,
+  Award,
+  Layers,
+  Palette,
+  ExternalLink,
+  BookOpen,
+} from 'lucide-astro';
 
 export async function getStaticPaths() {
-  const breeds = await getCollection('breeds');
-  return breeds.map((breed) => {
+  const allBreeds = (await getCollection('breeds')).sort(
+    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+  );
+
+  return allBreeds.map((breed, index) => {
     // 相关品种：同品系的其他品种（最多 3 个）
-    const related = breeds
+    const related = allBreeds
       .filter((b) => b.id !== breed.id && b.data.family === breed.data.family)
       .slice(0, 3);
+
+    // 上一个与下一个品种
+    const prevBreed = index > 0 ? allBreeds[index - 1] : null;
+    const nextBreed = index < allBreeds.length - 1 ? allBreeds[index + 1] : null;
+
     return {
       params: { slug: breed.id },
-      props: { breed, related },
+      props: { breed, related, prevBreed, nextBreed, totalCount: allBreeds.length, currentIndex: index + 1 },
     };
   });
 }
 
-const { breed, related } = Astro.props;
+const { breed, related, prevBreed, nextBreed, totalCount, currentIndex } = Astro.props;
 const { Content } = await render(breed);
 
 const { title, enName, subtitle, color, finType, difficulty, family, genetics, size, temp, tags } =
   breed.data;
 const cover = breed.data.image?.src;
 
-// ─── 分类字段 → 中文文案/徽章映射（与 content.config.ts schema 枚举对应） ───
+// ─── 分类字段 → 中文文案/徽章映射 ───
 const COLOR_LABELS: Record<string, string> = {
-  red: '红色', blue: '蓝色', green: '绿色', yellow: '黄色', purple: '紫色',
-  white: '白色', black: '黑色', snake: '蛇纹', multi: '多彩',
+  red: '红色系', blue: '蓝色系', green: '绿色系', yellow: '黄色系', purple: '紫色系',
+  white: '白色系', black: '黑色系', snake: '蛇纹系', multi: '多彩系',
 };
 const FIN_LABELS: Record<string, string> = {
-  delta: '三角尾', fan: '扇尾', sword: '剑尾', crown: '皇冠尾',
-  ribbon: '缎带尾', round: '圆尾', flag: '旗尾', veil: '纱尾',
+  delta: '三角尾 (Delta)', fan: '扇尾 (Fan)', sword: '双剑尾 (Sword)', crown: '皇冠尾 (Crown)',
+  ribbon: '缎带尾 (Ribbon)', round: '圆尾 (Round)', flag: '旗尾 (Flag)', veil: '纱尾 (Veil)',
 };
-const DIFFICULTY_BADGES: Record<string, { label: string; className: string }> = {
-  beginner: { label: '入门', className: 'bg-aqua-100 text-aqua-700' },
-  intermediate: { label: '进阶', className: 'bg-amber-100 text-amber-700' },
-  advanced: { label: '高手', className: 'bg-coral-100 text-coral-700' },
+const DIFFICULTY_CONFIG: Record<string, { label: string; textClass: string; barClass: string; level: number }> = {
+  beginner: { label: '入门级 · 易上手', textClass: 'text-emerald-700 bg-emerald-50 border-emerald-200', barClass: 'bg-emerald-500', level: 1 },
+  intermediate: { label: '进阶级 · 需品相维护', textClass: 'text-amber-700 bg-amber-50 border-amber-200', barClass: 'bg-amber-500', level: 2 },
+  advanced: { label: '大师级 · 提纯要求高', textClass: 'text-rose-700 bg-rose-50 border-rose-200', barClass: 'bg-rose-500', level: 3 },
 };
 
-const CHIP_CLASS = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white border border-slate-200 text-xs text-slate-700 shadow-2xs transition-colors';
-const difficultyBadgeClass = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${DIFFICULTY_BADGES[difficulty].className}`;
+const diffConf = DIFFICULTY_CONFIG[difficulty];
+const primaryColor = COLOR_GRADIENTS[color] || '#35a4ff';
+const glowColor = COLOR_GLOWS[color] || 'rgba(53, 164, 255, 0.2)';
 ---
 
 <BaseLayout
-  title={`${title} · ${family} - 孔雀鱼品种图鉴`}
-  description={subtitle ?? `${title}（${enName ?? ''}），${family}孔雀鱼品种`}
+  title={`${title} (${enName ?? ''}) · ${family} - 孔雀鱼品种图鉴`}
+  description={subtitle ?? `${title}（${enName ?? ''}），属于${family}孔雀鱼纯系品种`}
 >
-  <section class="max-w-6xl mx-auto px-4 py-4 sm:py-12">
+  <div class="max-w-6xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-9">
     <!-- 面包屑与快捷返回导航 -->
-    <nav aria-label="面包屑" class="text-xs text-slate-400 mb-3 sm:mb-5 flex items-center gap-1.5 flex-wrap">
-      <a
-        href="/breeds/"
-        onclick="if (window.history.length > 1) { window.history.back(); return false; }"
-        class="inline-flex items-center gap-1 font-medium text-aqua-700 hover:text-aqua-800 transition-colors"
-      >
-        <span>← 返回图鉴</span>
-      </a>
-      <span class="text-slate-300">/</span>
-      <span class="text-slate-500">{family}</span>
-      <span class="text-slate-300">/</span>
-      <span class="text-slate-700 font-bold">{title}</span>
-    </nav>
+    <header class="mb-5 sm:mb-7 flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200/80">
+      <nav aria-label="面包屑" class="text-xs text-slate-400 flex items-center gap-1.5 flex-wrap">
+        <a href="/" class="hover:text-slate-900 transition-colors">首页</a>
+        <span class="text-slate-300">/</span>
+        <a href="/breeds/" class="hover:text-slate-900 transition-colors">品种图鉴</a>
+        <span class="text-slate-300">/</span>
+        <span class="text-slate-500 font-medium">{family}</span>
+        <span class="text-slate-300">/</span>
+        <span class="text-slate-800 font-bold">{title}</span>
+      </nav>
 
-    <div class="grid gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <!-- 主内容 -->
-      <div>
-        <!-- 品种主图（移动端最大高度 220px，宽景比例，绝不超屏） -->
-        <div class="rounded-xl sm:rounded-2xl overflow-hidden bg-white border border-slate-200/80 sm:border-aqua-100 p-1.5 sm:p-2.5 shadow-card">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+          图鉴收录 #{String(currentIndex).padStart(2, '0')} / {totalCount}
+        </span>
+      </div>
+    </header>
+
+    <!-- 响应式主网格布局：左侧图文内容 + 右侧 Sticky 参数档案卡 -->
+    <div class="grid gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_330px] items-start">
+      <!-- ───────────────────────────────────────────── -->
+      <!-- 左侧主体内容区                                -->
+      <!-- ───────────────────────────────────────────── -->
+      <main class="min-w-0">
+        <!-- 品种主图容器（融入主题色流光背景） -->
+        <div class="relative group rounded-2xl overflow-hidden bg-white border border-slate-200/90 shadow-card p-1.5 sm:p-2.5">
+          <div
+            class="absolute -inset-1 opacity-20 blur-xl transition-opacity duration-500 pointer-events-none"
+            style={`background: ${glowColor}`}
+          ></div>
+
           <BreedImage
             alt={title}
             image={cover}
-            gradientFrom={COLOR_GRADIENTS[color]}
+            gradientFrom={primaryColor}
             priority
           />
         </div>
 
-        <div class="mt-4 sm:mt-6">
-          <p class="text-xs sm:text-sm font-medium text-aqua-600 tracking-wider uppercase">{family}</p>
-          <h1 class="mt-0.5 sm:mt-1 text-xl sm:text-3xl font-bold text-slate-900">{title}</h1>
+        <!-- 标题与核心元信息 -->
+        <div class="mt-5 sm:mt-6">
+          <div class="flex flex-wrap items-center gap-2 mb-1.5">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-aqua-50 text-aqua-800 border border-aqua-200/80 uppercase tracking-wide">
+              {family}
+            </span>
+            <span class={`text-xs font-semibold px-2.5 py-0.5 rounded-md border ${diffConf.textClass}`}>
+              {diffConf.label}
+            </span>
+          </div>
+
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+            {title}
+          </h1>
+
           {enName && (
-            <p class="mt-1 text-slate-500 text-sm sm:text-base italic font-serif">
+            <p class="mt-1 text-slate-500 text-sm sm:text-base font-serif italic">
               {enName}
             </p>
           )}
-          {subtitle && <p class="mt-2 text-slate-600 text-xs sm:text-base leading-relaxed">{subtitle}</p>}
+
+          {subtitle && (
+            <p class="mt-2.5 text-slate-600 text-sm sm:text-base leading-relaxed bg-slate-50/80 p-3.5 rounded-xl border border-slate-100">
+              {subtitle}
+            </p>
+          )}
         </div>
 
-        <!-- 徽章行：颜色 / 鳍型 / 难度 / 体长 / 水温 -->
-        <div class="mt-3.5 sm:mt-5 flex flex-wrap items-center gap-1.5 sm:gap-2">
-          <span class={CHIP_CLASS}>
+        <!-- 核心属性快速药丸条 -->
+        <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-700 shadow-2xs">
             <span
-              class="w-2 h-2 rounded-full ring-1 ring-white shadow-2xs"
-              style={`background: ${COLOR_GRADIENTS[color]}`}
+              class="w-2.5 h-2.5 rounded-full shadow-2xs shrink-0"
+              style={`background: ${primaryColor}`}
               aria-hidden="true"
             ></span>
-            {COLOR_LABELS[color]}
-          </span>
-          <span class={CHIP_CLASS}>{FIN_LABELS[finType]}</span>
-          <span class={difficultyBadgeClass}>{DIFFICULTY_BADGES[difficulty].label}</span>
-          {size && <span class={CHIP_CLASS}>体长 {size}</span>}
-          {temp && <span class={CHIP_CLASS}>水温 {temp}</span>}
+            <span class="font-medium">{COLOR_LABELS[color]}</span>
+          </div>
+
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-700 shadow-2xs">
+            <Palette class="w-3.5 h-3.5 text-aqua-600" />
+            <span class="font-medium">{FIN_LABELS[finType]}</span>
+          </div>
+
+          {size && (
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-700 shadow-2xs">
+              <span class="font-medium">成鱼体长：{size}</span>
+            </div>
+          )}
+
+          {temp && (
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200/80 text-slate-700 shadow-2xs">
+              <Thermometer class="w-3.5 h-3.5 text-coral-500" />
+              <span class="font-medium">适温：{temp}</span>
+            </div>
+          )}
         </div>
 
-        <!-- MDX 正文 -->
-        <div class="prose-guppy mt-8 sm:mt-10 max-w-[68ch]">
+        <!-- MDX 正文排版 -->
+        <article class="prose-guppy mt-8 sm:mt-10 max-w-none pt-6 border-t border-slate-200/80">
           <Content />
-        </div>
-      </div>
+        </article>
 
-      <!-- 品种参数速查表（可视化升级） -->
-      <aside class="lg:sticky lg:top-24 h-fit">
-        <div class="glass-card rounded-2xl shadow-card overflow-hidden">
-          {/* 渐变顶部条 */}
-          <div aria-hidden="true" class="h-1.5 bg-gradient-to-r from-abyss-900 via-aqua-500 to-coral-400"></div>
-          <div class="p-6">
-            <h2 class="text-lg font-bold text-abyss-900 flex items-center gap-2">
-              <span aria-hidden="true" class="w-7 h-7 rounded-lg bg-aqua-50 text-aqua-600 grid place-items-center">
-                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M2.5 12c3-4.5 6.5-6.5 9.5-6.5 3.2 0 5.4 1.5 6.8 4.2l3.2-1.7v8l-3.2-1.7c-1.4 2.7-3.6 4.2-6.8 4.2-3 0-6.5-2-9.5-6.5z" />
-                  <circle cx="9" cy="12" r="0.6" fill="currentColor" />
-                </svg>
-              </span> 品种参数
+        <!-- 底部智能上一个 / 下一个品种连贯翻页 -->
+        <div class="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {prevBreed ? (
+            <a
+              href={`/breed/${prevBreed.id}/`}
+              class="group flex flex-col p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white hover:border-aqua-400 hover:shadow-2xs transition-all"
+            >
+              <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                <ArrowLeft class="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+                <span>上一个品种</span>
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-800 group-hover:text-aqua-700 transition-colors truncate">
+                {prevBreed.data.title}
+              </span>
+            </a>
+          ) : (
+            <a
+              href="/breeds/"
+              class="group flex flex-col p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300 transition-all"
+            >
+              <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                <ArrowLeft class="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
+                <span>返回图鉴</span>
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors truncate">
+                全系品种库
+              </span>
+            </a>
+          )}
+
+          {nextBreed ? (
+            <a
+              href={`/breed/${nextBreed.id}/`}
+              class="group flex flex-col items-end text-right p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white hover:border-aqua-400 hover:shadow-2xs transition-all"
+            >
+              <span class="text-[11px] text-aqua-600 font-medium flex items-center gap-1">
+                <span>下一个品种</span>
+                <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-slate-800 group-hover:text-aqua-700 transition-colors truncate">
+                {nextBreed.data.title}
+              </span>
+            </a>
+          ) : (
+            <a
+              href="/breeds/"
+              class="group flex flex-col items-end text-right p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-900 text-white hover:bg-slate-800 hover:shadow-xs transition-all"
+            >
+              <span class="text-[11px] text-aqua-300 font-medium flex items-center gap-1">
+                <span>图鉴总览</span>
+                <ArrowRight class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </span>
+              <span class="mt-1 text-xs sm:text-sm font-bold text-white truncate">
+                浏览全部 24 种纯系 →
+              </span>
+            </a>
+          )}
+        </div>
+      </main>
+
+      <!-- ───────────────────────────────────────────── -->
+      <!-- 右侧：品系核心档案卡 (Sticky Spec Card)        -->
+      <!-- ───────────────────────────────────────────── -->
+      <aside class="lg:sticky lg:top-20 space-y-4">
+        <div class="rounded-2xl border border-slate-200/90 bg-white shadow-card overflow-hidden">
+          {/* 顶部彩色渐变带 */}
+          <div
+            class="h-1.5 w-full"
+            style={`background: linear-gradient(90deg, ${primaryColor}, #0d2240)`}
+          ></div>
+
+          <div class="p-5">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+              <Award class="w-4 h-4 text-aqua-600" />
+              <span>品系核心档案</span>
             </h2>
 
-            <dl class="mt-5 space-y-4 text-sm">
-              <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <dt class="text-slate-500">品系</dt>
-                <dd class="text-slate-900 font-semibold px-2.5 py-0.5 rounded-md bg-abyss-50 text-abyss-800">{family}</dd>
+            <dl class="mt-4 space-y-3.5 text-xs sm:text-sm">
+              {/* 品系大类 */}
+              <div class="flex justify-between items-center pb-2.5 border-b border-slate-100">
+                <dt class="text-slate-500 flex items-center gap-1.5">
+                  <Layers class="w-3.5 h-3.5 text-slate-400" />
+                  <span>品系家族</span>
+                </dt>
+                <dd class="text-slate-900 font-bold px-2 py-0.5 rounded bg-slate-100">
+                  {family}
+                </dd>
               </div>
 
-              <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <dt class="text-slate-500">颜色 / 鳍型</dt>
+              {/* 颜色与鳍型 */}
+              <div class="flex justify-between items-center pb-2.5 border-b border-slate-100">
+                <dt class="text-slate-500">色系 / 尾型</dt>
                 <dd class="text-slate-800 font-medium flex items-center gap-1.5">
                   <span
                     class="w-2.5 h-2.5 rounded-full"
-                    style={`background: ${COLOR_GRADIENTS[color]}`}
+                    style={`background: ${primaryColor}`}
                     aria-hidden="true"
                   ></span>
                   <span>{COLOR_LABELS[color]} · {FIN_LABELS[finType]}</span>
                 </dd>
               </div>
 
-              <!-- 饲养难度可视化槽 -->
-              <div class="pb-3 border-b border-slate-100">
+              {/* 饲养与培育难度 */}
+              <div class="pb-2.5 border-b border-slate-100">
                 <div class="flex justify-between items-center mb-1.5">
-                  <dt class="text-slate-500">饲养难度</dt>
-                  <dd class="font-semibold text-xs">
-                    <span class={`px-2 py-0.5 rounded-full ${DIFFICULTY_BADGES[difficulty].className}`}>
-                      {DIFFICULTY_BADGES[difficulty].label}
+                  <dt class="text-slate-500">培育选育难度</dt>
+                  <dd class="font-bold text-xs">
+                    <span class={`px-2 py-0.5 rounded-md ${diffConf.textClass}`}>
+                      {diffConf.label}
                     </span>
                   </dd>
                 </div>
                 <div class="grid grid-cols-3 gap-1.5 mt-2" aria-hidden="true">
-                  <div class={`h-1.5 rounded-full ${difficulty === 'beginner' ? 'bg-aqua-500' : difficulty === 'intermediate' ? 'bg-amber-400' : 'bg-coral-500'}`}></div>
-                  <div class={`h-1.5 rounded-full ${difficulty === 'intermediate' ? 'bg-amber-400' : difficulty === 'advanced' ? 'bg-coral-500' : 'bg-slate-200'}`}></div>
-                  <div class={`h-1.5 rounded-full ${difficulty === 'advanced' ? 'bg-coral-500' : 'bg-slate-200'}`}></div>
+                  <div class={`h-1.5 rounded-full ${diffConf.level >= 1 ? diffConf.barClass : 'bg-slate-200'}`}></div>
+                  <div class={`h-1.5 rounded-full ${diffConf.level >= 2 ? diffConf.barClass : 'bg-slate-200'}`}></div>
+                  <div class={`h-1.5 rounded-full ${diffConf.level >= 3 ? diffConf.barClass : 'bg-slate-200'}`}></div>
                 </div>
               </div>
 
-              <!-- 水温可视化温度刻度 -->
+              {/* 适宜水温刻度仪 */}
               {temp && (
-                <div class="pb-3 border-b border-slate-100">
+                <div class="pb-2.5 border-b border-slate-100">
                   <div class="flex justify-between items-center mb-1.5">
-                    <dt class="text-slate-500">适宜水温</dt>
-                    <dd class="text-slate-800 font-semibold tabular-nums">{temp}</dd>
+                    <dt class="text-slate-500">适宜水温区间</dt>
+                    <dd class="text-slate-800 font-bold tabular-nums">{temp}</dd>
                   </div>
-                  <div class="relative h-2 bg-slate-100 rounded-full overflow-hidden mt-2" aria-hidden="true">
+                  <div class="relative h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1.5" aria-hidden="true">
                     <div class="absolute left-[20%] right-[20%] top-0 bottom-0 bg-gradient-to-r from-aqua-400 via-emerald-400 to-amber-400 rounded-full"></div>
                   </div>
                   <div class="flex justify-between text-[10px] text-slate-400 mt-1" aria-hidden="true">
                     <span>18°C</span>
-                    <span class="text-aqua-600 font-medium">舒适区 22-26°C</span>
+                    <span class="text-aqua-700 font-medium">黄金恒温 24-26°C</span>
                     <span>30°C</span>
                   </div>
                 </div>
               )}
 
-              {size && (
-                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                  <dt class="text-slate-500">成年成鱼体长</dt>
-                  <dd class="text-slate-800 font-medium tabular-nums">{size}</dd>
-                </div>
-              )}
-
+              {/* 遗传模式 */}
               {genetics && (
-                <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                  <dt class="text-slate-500">遗传特性</dt>
-                  <dd class="text-slate-800 font-medium text-right text-xs max-w-[170px] leading-tight">{genetics}</dd>
+                <div class="pb-2.5 border-b border-slate-100">
+                  <dt class="text-slate-500 mb-1 flex items-center gap-1">
+                    <Dna class="w-3.5 h-3.5 text-aqua-600" />
+                    <span>遗传模式与染色体</span>
+                  </dt>
+                  <dd class="text-slate-800 font-medium text-xs leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    {genetics}
+                  </dd>
                 </div>
               )}
             </dl>
 
-            {tags.length > 0 && (
-              <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-1.5">
+            {/* 快捷跳转专科入口 */}
+            <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+              <a
+                href="/breeding/04-line-breeding/"
+                class="flex items-center justify-between p-2.5 rounded-xl bg-aqua-50/70 hover:bg-aqua-100/80 text-aqua-900 text-xs font-semibold transition-colors"
+              >
+                <span class="flex items-center gap-1.5">
+                  <BookOpen class="w-3.5 h-3.5 text-aqua-600" />
+                  <span>学习该品系提纯育种方法</span>
+                </span>
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <a
+                href="/guide/02-water-quality/"
+                class="flex items-center justify-between p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-xs font-semibold transition-colors"
+              >
+                <span class="flex items-center gap-1.5">
+                  <Thermometer class="w-3.5 h-3.5 text-slate-500" />
+                  <span>水质与环境参数管理</span>
+                </span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+
+            {/* 标签 */}
+            {tags && tags.length > 0 && (
+              <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-1.5">
                 {tags.map((tag) => (
-                  <span
-                    class="px-2.5 py-1 rounded-lg bg-aqua-50/80 text-aqua-700 text-xs border border-aqua-100/80 hover:bg-aqua-100 transition-colors"
-                  >
+                  <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px] font-medium">
                     #{tag}
                   </span>
                 ))}
@@ -208,49 +363,52 @@ const difficultyBadgeClass = `inline-flex items-center px-2.5 py-0.5 rounded-ful
       </aside>
     </div>
 
-    {/* 相关品种：同品系延伸阅读 */}
+    <!-- ───────────────────────────────────────────── -->
+    <!-- 同品系相关推荐 (Related Breeds)              -->
+    <!-- ───────────────────────────────────────────── -->
     {related.length > 0 && (
-      <section class="mt-16">
+      <section class="mt-14 sm:mt-18 pt-8 border-t border-slate-200">
         <div class="flex items-end justify-between mb-6">
-          <h2 class="text-xl sm:text-2xl font-bold text-slate-900">相关品种</h2>
-          <a href="/breeds/" class="text-sm text-aqua-600 hover:text-aqua-700 font-medium">
-            更多品种 →
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-900">
+              同属 {family} 的相关品种
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">探索同品系家族下的其他经典变异与花色表现</p>
+          </div>
+          <a href="/breeds/" class="text-xs sm:text-sm text-aqua-700 hover:text-aqua-800 font-semibold">
+            查看全部图鉴 →
           </a>
         </div>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {related.map((item) => (
             <a
               href={`/breed/${item.id}/`}
-              class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-1.5 hover:border-aqua-400/70 transition-all duration-300 flex flex-col"
+              class="group bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs hover:shadow-card hover:-translate-y-1 hover:border-aqua-400 transition-all duration-300 flex flex-col"
             >
-              <div class="relative aspect-[4/3] overflow-hidden">
-                <div class="h-full transition-transform duration-700 ease-[var(--ease-out-expo)] group-hover:scale-[1.05]">
-                  <BreedImage
-                    alt={item.data.title}
-                    image={item.data.image?.src}
-                    gradientFrom={COLOR_GRADIENTS[item.data.color]}
-                  />
-                </div>
+              <div class="relative aspect-[16/10] overflow-hidden bg-slate-100">
+                <BreedImage
+                  alt={item.data.title}
+                  image={item.data.image?.src}
+                  gradientFrom={COLOR_GRADIENTS[item.data.color]}
+                />
               </div>
-              <div class="p-5 flex flex-col gap-2 flex-1">
-                <h3 class="font-bold text-slate-900 group-hover:text-aqua-700 transition-colors">
-                  {item.data.title}
-                </h3>
-                {item.data.enName && (
-                  <p class="text-xs text-slate-400 font-serif italic">{item.data.enName}</p>
-                )}
-                <div class="mt-auto pt-2 flex items-center justify-between">
-                  <span
-                    class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${DIFFICULTY_BADGES[item.data.difficulty].className}`}
-                  >
-                    {DIFFICULTY_BADGES[item.data.difficulty].label}
+
+              <div class="p-4 flex flex-col gap-1.5 flex-1 justify-between">
+                <div>
+                  <h3 class="font-bold text-slate-900 group-hover:text-aqua-700 transition-colors text-sm sm:text-base">
+                    {item.data.title}
+                  </h3>
+                  {item.data.enName && (
+                    <p class="text-xs text-slate-400 font-serif italic mt-0.5">{item.data.enName}</p>
+                  )}
+                </div>
+
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span class={`px-2 py-0.5 rounded text-[11px] font-semibold ${DIFFICULTY_CONFIG[item.data.difficulty].textClass}`}>
+                    {DIFFICULTY_CONFIG[item.data.difficulty].label.split('·')[0]}
                   </span>
-                  <span class="inline-flex items-center gap-1.5 text-xs text-slate-400">
-                    <span
-                      class="w-2 h-2 rounded-full"
-                      style={`background: ${COLOR_GRADIENTS[item.data.color]}`}
-                      aria-hidden="true"
-                    ></span>
+                  <span class="text-slate-500 font-medium">
                     {COLOR_LABELS[item.data.color]}
                   </span>
                 </div>
@@ -260,5 +418,5 @@ const difficultyBadgeClass = `inline-flex items-center px-2.5 py-0.5 rounded-ful
         </div>
       </section>
     )}
-  </section>
+  </div>
 </BaseLayout>

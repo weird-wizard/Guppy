@@ -1,12 +1,27 @@
 ---
-import { Gauge, CheckCircle, AlertTriangle, AlertOctagon, Info } from 'lucide-astro';
+import { Gauge, Info, Target, AlertTriangle, AlertOctagon } from 'lucide-astro';
+
+interface RulerTick {
+  position: string; // '0%', '25%', '50%', etc.
+  label: string; // '16°', '20°', '24°', etc.
+  isMajor?: boolean;
+}
 
 interface ParameterItem {
   name: string;
   ideal: string;
-  range: string;
-  danger: string;
-  status?: 'safe' | 'warning' | 'danger';
+  statusBadge?: string;
+  statusType?: 'danger' | 'warning' | 'safe';
+  // 标尺参数
+  rulerMin: string;
+  rulerMax: string;
+  ticks: RulerTick[];
+  // 最佳目标区间在标尺上的百分比定位
+  targetLeft: string;
+  targetWidth: string;
+  targetLabel: string;
+  // 危险区间在标尺上的背景渐变
+  trackGradient: string;
   note: string;
 }
 
@@ -18,56 +33,129 @@ interface Props {
 }
 
 const {
-  title = '孔雀鱼水质核心参数黄金基准表',
-  subtitle = '保持水质参数长期稳定是孔雀鱼不生病、高繁育率的绝对基石',
+  title = '孔雀鱼水质核心参数精密标尺对照表',
+  subtitle = '以实验室级精密刻度直观比对各指标安全阈值与黄金舒适温区',
   parameters = [
     {
       name: '饲养水温 (Temperature)',
       ideal: '24℃ - 26℃',
-      range: '22℃ - 28℃',
-      danger: '<18℃ 或 >30℃',
-      status: 'safe',
-      note: '24小时内温差严禁超过2℃；低于18℃免疫力骤降，高于30℃加速母鱼塌腰早衰。'
+      rulerMin: '16℃',
+      rulerMax: '32℃',
+      ticks: [
+        { position: '0%', label: '16℃', isMajor: true },
+        { position: '12.5%', label: '18℃' },
+        { position: '25%', label: '20℃', isMajor: true },
+        { position: '37.5%', label: '22℃' },
+        { position: '50%', label: '24℃', isMajor: true },
+        { position: '62.5%', label: '26℃' },
+        { position: '75%', label: '28℃', isMajor: true },
+        { position: '87.5%', label: '30℃' },
+        { position: '100%', label: '32℃', isMajor: true },
+      ],
+      targetLeft: '50%',
+      targetWidth: '12.5%',
+      targetLabel: '24-26℃ 黄金最佳温区',
+      trackGradient: 'linear-gradient(90deg, #fee2e2 0%, #fee2e2 12.5%, #fef3c7 12.5%, #fef3c7 37.5%, #ecfdf5 37.5%, #ecfdf5 50%, #10b981 50%, #10b981 62.5%, #ecfdf5 62.5%, #ecfdf5 75%, #fef3c7 75%, #fef3c7 87.5%, #fee2e2 87.5%, #fee2e2 100%)',
+      note: '变温动物核心生理指标。24小时内温差严禁超过2℃；低于18℃免疫力骤降易患白点，高于30℃母鱼加速塌腰早衰。'
     },
     {
       name: '酸碱度 (pH)',
       ideal: 'pH 7.0 - 7.5',
-      range: 'pH 6.8 - 7.8',
-      danger: '<6.5 或 >8.5',
-      status: 'safe',
-      note: '孔雀鱼为弱碱性鱼类，弱酸性老水会导致黏膜受损、尾鳍腐烂，可用珊瑚骨缓慢提升。'
+      rulerMin: 'pH 6.0',
+      rulerMax: 'pH 9.0',
+      ticks: [
+        { position: '0%', label: '6.0', isMajor: true },
+        { position: '16.6%', label: '6.5' },
+        { position: '33.3%', label: '7.0', isMajor: true },
+        { position: '50%', label: '7.5', isMajor: true },
+        { position: '66.6%', label: '8.0' },
+        { position: '83.3%', label: '8.5', isMajor: true },
+        { position: '100%', label: '9.0', isMajor: true },
+      ],
+      targetLeft: '33.3%',
+      targetWidth: '16.7%',
+      targetLabel: 'pH 7.0-7.5 弱碱最佳',
+      trackGradient: 'linear-gradient(90deg, #fee2e2 0%, #fee2e2 16.6%, #fef3c7 16.6%, #fef3c7 26.6%, #ecfdf5 26.6%, #ecfdf5 33.3%, #10b981 33.3%, #10b981 50%, #ecfdf5 50%, #ecfdf5 60%, #fef3c7 60%, #fef3c7 83.3%, #fee2e2 83.3%, #fee2e2 100%)',
+      note: '孔雀鱼偏好中性至弱碱性水。老水酸化（pH<6.5）会腐蚀尾鳍（溶尾烂鳍）；可用少量珊瑚骨温和调碱，禁用化学药剂暴跌暴涨。'
     },
     {
       name: '总硬度 (GH)',
       ideal: '8 - 12 dGH',
-      range: '6 - 15 dGH',
-      danger: '<4 dGH (过软)',
-      status: 'safe',
-      note: '中等硬度水体有助于骨骼钙化与鱼鳍舒展，过软的纯净水需补充水族矿物质。'
+      rulerMin: '0 dGH',
+      rulerMax: '20 dGH',
+      ticks: [
+        { position: '0%', label: '0', isMajor: true },
+        { position: '20%', label: '4' },
+        { position: '40%', label: '8', isMajor: true },
+        { position: '60%', label: '12', isMajor: true },
+        { position: '80%', label: '16' },
+        { position: '100%', label: '20 dGH', isMajor: true },
+      ],
+      targetLeft: '40%',
+      targetWidth: '20%',
+      targetLabel: '8-12 dGH 骨骼优美',
+      trackGradient: 'linear-gradient(90deg, #fee2e2 0%, #fee2e2 20%, #fef3c7 20%, #fef3c7 30%, #ecfdf5 30%, #ecfdf5 40%, #10b981 40%, #10b981 60%, #ecfdf5 60%, #ecfdf5 80%, #fef3c7 80%, #fef3c7 100%)',
+      note: '水中钙镁离子浓度。中等硬度有助于骨骼钙化与鱼鳍舒展；RO 纯净水需补充矿物质，自来水通常无需刻意调节。'
     },
     {
       name: '氨氮 (Ammonia NH3/NH4+)',
       ideal: '0 mg/L',
-      range: '<0.02 mg/L',
-      danger: '≥0.25 mg/L (剧毒)',
-      status: 'danger',
-      note: '未成熟硝化系统的头号杀手，0.25 mg/L 即可灼伤鱼鳃诱发红斑，需立即换水抽底。'
+      statusBadge: '严防剧毒',
+      statusType: 'danger',
+      rulerMin: '0 mg/L',
+      rulerMax: '0.50 mg/L',
+      ticks: [
+        { position: '0%', label: '0.00', isMajor: true },
+        { position: '10%', label: '0.05' },
+        { position: '20%', label: '0.10', isMajor: true },
+        { position: '50%', label: '0.25 (致死红线)', isMajor: true },
+        { position: '100%', label: '0.50+ mg/L', isMajor: true },
+      ],
+      targetLeft: '0%',
+      targetWidth: '8%',
+      targetLabel: '0.00 绝对安全目标',
+      trackGradient: 'linear-gradient(90deg, #10b981 0%, #10b981 10%, #ecfdf5 10%, #ecfdf5 20%, #fef3c7 20%, #fef3c7 50%, #fee2e2 50%, #fee2e2 100%)',
+      note: '残饵与排泄物分解出的剧毒物质。未成熟硝化系统的头号杀手，0.25 mg/L 即可灼伤鱼鳃诱发充血红斑，需立即抽底换水。'
     },
     {
       name: '亚硝酸盐 (Nitrite NO2-)',
       ideal: '0 mg/L',
-      range: '<0.1 mg/L',
-      danger: '≥0.2 mg/L (高危)',
-      status: 'warning',
-      note: '破坏血液携氧能力致鱼窒息浮头，是养水未达标阶段最常见的致死因素。'
+      statusBadge: '定期监控',
+      statusType: 'warning',
+      rulerMin: '0 mg/L',
+      rulerMax: '0.40 mg/L',
+      ticks: [
+        { position: '0%', label: '0.00', isMajor: true },
+        { position: '25%', label: '0.10', isMajor: true },
+        { position: '50%', label: '0.20 (高危)', isMajor: true },
+        { position: '75%', label: '0.30' },
+        { position: '100%', label: '0.40+ mg/L', isMajor: true },
+      ],
+      targetLeft: '0%',
+      targetWidth: '10%',
+      targetLabel: '0.00 生态达标',
+      trackGradient: 'linear-gradient(90deg, #10b981 0%, #10b981 10%, #ecfdf5 10%, #ecfdf5 25%, #fef3c7 25%, #fef3c7 50%, #fee2e2 50%, #fee2e2 100%)',
+      note: '破坏血液血红蛋白携氧能力致鱼窒息浮头。新缸养水期（第 5-10 天）最易爆发的高危毒素，达标后方可放鱼。'
     },
     {
       name: '硝酸盐 (Nitrate NO3-)',
       ideal: '<20 mg/L',
-      range: '<40 mg/L',
-      danger: '≥50 mg/L (老水毒素)',
-      status: 'warning',
-      note: '长期累积会抑制幼鱼生长并诱发腹水炸鳞，规律每周换水 1/4-1/3 是唯一有效排出手段。'
+      statusBadge: '换水稀释',
+      statusType: 'warning',
+      rulerMin: '0 mg/L',
+      rulerMax: '80 mg/L',
+      ticks: [
+        { position: '0%', label: '0', isMajor: true },
+        { position: '25%', label: '20', isMajor: true },
+        { position: '50%', label: '40 (警戒)', isMajor: true },
+        { position: '62.5%', label: '50 (老水毒素)' },
+        { position: '100%', label: '80+ mg/L', isMajor: true },
+      ],
+      targetLeft: '0%',
+      targetWidth: '25%',
+      targetLabel: '<20 极佳熟水',
+      trackGradient: 'linear-gradient(90deg, #10b981 0%, #10b981 25%, #ecfdf5 25%, #ecfdf5 50%, #fef3c7 50%, #fef3c7 62.5%, #fee2e2 62.5%, #fee2e2 100%)',
+      note: '氮循环最终产物，虽毒性较低但长期积累会抑制幼鱼发育并诱发腹水炸鳞。每周规律换水 1/4-1/3 是唯一有效排出手段。'
     }
   ],
   footerNote = '水质管理核心铁律：【稳定性远胜于精确值】。小幅度温和调整，严禁使用化学猛药暴跌暴涨！'
@@ -75,8 +163,8 @@ const {
 ---
 
 <div class="my-6 sm:my-8 rounded-2xl border border-slate-200/90 bg-white shadow-card overflow-hidden">
-  {/* 顶部标题栏 */}
-  <div class="p-4 sm:p-5 bg-gradient-to-r from-aqua-50/80 via-white to-blue-50/40 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+  {/* 顶部标题栏与三色图例 */}
+  <div class="p-4 sm:p-5 bg-gradient-to-r from-aqua-50/80 via-white to-blue-50/40 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
     <div class="flex items-center gap-2.5">
       <span class="w-8 h-8 rounded-lg bg-aqua-600 text-white grid place-items-center shadow-xs shrink-0">
         <Gauge class="w-4.5 h-4.5" />
@@ -90,50 +178,118 @@ const {
         )}
       </div>
     </div>
-    <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-aqua-100/80 text-aqua-800 border border-aqua-200/60 self-start sm:self-auto shrink-0">
-      水质安全监测标准
-    </span>
+
+    {/* 三色纯净图例说明 */}
+    <div class="flex items-center gap-2.5 text-[11px] font-medium text-slate-600 bg-white/90 px-3 py-1 rounded-full border border-slate-200/80 shadow-2xs self-start sm:self-auto shrink-0">
+      <span class="flex items-center gap-1">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-2xs"></span>
+        <span class="font-semibold text-emerald-800">黄金最佳</span>
+      </span>
+      <span class="text-slate-300">·</span>
+      <span class="flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-100 border border-emerald-300"></span>
+        <span>正常耐受</span>
+      </span>
+      <span class="text-slate-300">·</span>
+      <span class="flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-amber-300"></span>
+        <span>过渡警戒</span>
+      </span>
+      <span class="text-slate-300">·</span>
+      <span class="flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-rose-300"></span>
+        <span>危险红线</span>
+      </span>
+    </div>
   </div>
 
   {/* 参数矩阵列表 */}
   <div class="divide-y divide-slate-100">
     {parameters.map((param) => {
-      const isDangerous = param.status === 'danger';
-      const isWarning = param.status === 'warning';
-      
+      const isDanger = param.statusType === 'danger';
+      const isWarning = param.statusType === 'warning';
+
       return (
-        <div class="p-4 sm:p-5 hover:bg-slate-50/60 transition-colors">
-          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5 sm:gap-4 mb-2">
+        <div class="p-4 sm:p-5 hover:bg-slate-50/40 transition-colors space-y-3">
+          {/* 顶栏：参数名 + 警示徽章 */}
+          <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <span class="font-bold text-slate-900 text-sm sm:text-[15px]">
+              <span class="font-bold text-slate-900 text-sm sm:text-base">
                 {param.name}
               </span>
-              {isDangerous && (
-                <span class="text-[10px] font-bold px-2 py-0.2 rounded bg-rose-100 text-rose-700 border border-rose-200">
-                  严防剧毒
+              {param.statusBadge && (
+                <span class:list={[
+                  'text-[10px] font-bold px-2 py-0.5 rounded border',
+                  isDanger && 'bg-rose-50 text-rose-700 border-rose-200',
+                  isWarning && 'bg-amber-50 text-amber-800 border-amber-200',
+                ]}>
+                  {param.statusBadge}
                 </span>
               )}
-              {isWarning && (
-                <span class="text-[10px] font-bold px-2 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-200">
-                  定期监控
-                </span>
-              )}
-            </div>
-            
-            <div class="flex items-center gap-2 text-xs font-mono">
-              <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200/80 font-bold">
-                🎯 最佳：{param.ideal}
-              </span>
-              <span class="text-slate-500 hidden sm:inline">
-                安全：{param.range}
-              </span>
-              <span class="text-rose-600 font-semibold hidden md:inline">
-                危险：{param.danger}
-              </span>
             </div>
           </div>
 
-          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pl-0 sm:pl-1">
+          {/* ───────────────────────────────────────────── */}
+          {/* 核心亮点：精密物理刻度标尺组件 (Precision Calibrated Ruler) */}
+          {/* ───────────────────────────────────────────── */}
+          <div class="pt-1 pb-1">
+            <div class="relative w-full rounded-xl bg-slate-50/90 border border-slate-200/90 px-3.5 pb-3 pt-8 overflow-hidden shadow-inner">
+              
+              {/* 标尺上方目标区间定位气泡 */}
+              <div
+                class="absolute top-2 h-5 rounded-md border border-emerald-300 bg-white px-2 text-[10px] sm:text-[11px] font-bold text-emerald-800 shadow-2xs flex items-center gap-1.5 z-10 whitespace-nowrap"
+                style={`left: clamp(0.75rem, calc(0.875rem + (100% - 1.75rem) * ${parseFloat(param.targetLeft) / 100}), calc(100% - 11rem));`}
+              >
+                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-xs shrink-0"></span>
+                <span>{param.targetLabel}</span>
+              </div>
+
+              {/* 标尺色阶主轨道 */}
+              <div
+                class="h-2.5 w-full rounded-full overflow-hidden shadow-xs ring-1 ring-slate-200"
+                style={`background: ${param.trackGradient}`}
+              ></div>
+
+              {/* 标尺刻度线与数字轴（严格水平与垂直对齐） */}
+              <div class="relative w-full h-7 mt-1.5">
+                {param.ticks.map((tick) => {
+                  const isFirst = tick.position === '0%';
+                  const isLast = tick.position === '100%';
+
+                  return (
+                    <div
+                      class:list={[
+                        'absolute top-0 flex flex-col pointer-events-none',
+                        isFirst ? 'items-start -translate-x-0' : isLast ? 'items-end translate-x-0' : 'items-center -translate-x-1/2'
+                      ]}
+                      style={isLast ? 'right: 0;' : `left: ${tick.position};`}
+                    >
+                      {/* 刻度短线容器：固定高度 10px，统一垂直基线 */}
+                      <div class="h-2.5 flex items-start justify-center w-full">
+                        <div class:list={[
+                          'w-px shrink-0',
+                          tick.isMajor ? 'h-2.5 bg-slate-600' : 'h-1.5 bg-slate-300'
+                        ]}></div>
+                      </div>
+
+                      {/* 刻度数值：位于完全统一的水平线上 */}
+                      <span class:list={[
+                        'text-[9px] sm:text-[10px] font-mono leading-none mt-1.5 whitespace-nowrap tabular-nums',
+                        tick.isMajor ? 'font-bold text-slate-700' : 'text-slate-400 hidden sm:block',
+                        isFirst && 'text-left',
+                        isLast && 'text-right',
+                      ]}>
+                        {tick.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* 简明机理与避坑要点 */}
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed pt-0.5">
             {param.note}
           </p>
         </div>
